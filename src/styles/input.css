@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
+
+.auth-layout {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #4970fc;
+  background-image: url(../assets/auth-bg.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.logo-bg {
+  width: 100%;
+  background-image: url(../assets/auth-bg.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.ant-menu .ant-menu-submenu-selected .ant-menu-item-selected,
+.ant-menu-submenu:hover .ant-menu-item:hover{
+  color: #4970FC !important;
+  background: transparent !important;
+}
+.ant-menu .ant-menu-item:hover,
+.ant-menu-item-selected{
+  background: white !important;
+  color: #4970FC !important;
+}
