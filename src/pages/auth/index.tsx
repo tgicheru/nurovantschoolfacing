@@ -57,7 +57,7 @@ function AuthPage() {
       </div>
 
       {/* Right Section*/}
-      <div className="flex items-center justify-center w-full lg:w-[55%]">
+      <div className="flex items-center justify-center w-full lg:w-[55%] bg-white h-full">
         <div className="max-w-[420px] w-full flex items-center justify-center flex-col gap-[23px]">
           <div className="flex w-full items-center justify-center gap-[14px] flex-col">
             <div style={{ width: "124px" }}>
