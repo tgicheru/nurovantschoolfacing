@@ -8,9 +8,6 @@ const EmailPassword = lazy(() => import("../pages/auth/emailPassword"));
 const Verify = lazy(() => import("../pages/auth/verify"));
 const PhoneRegister = lazy(() => import("../pages/auth/phoneRegister"));
 
-// public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-const TeacherAuth = lazy(() => import("../pages/teacher/auth"));
-
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
 
@@ -20,13 +17,6 @@ export const routes = [
     path: "/",
     label: "Home",
     component: <Home />,
-  },
-
-  // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  {
-    path: "/teacher",
-    label: "Teacher",
-    component: <TeacherAuth />,
   },
 
   // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -60,5 +50,4 @@ export const routes = [
     label: "Phone Register",
     component: <PhoneRegister />,
   },
-
 ];

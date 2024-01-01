@@ -13,6 +13,7 @@ module.exports = {
         primary: "#4970fc",
         silver: "#A2A2A1",
         dark: "#1b1b1b",
+        gray: "#e0e0e0",
       },
       backgroundImage: {
         pattern: "url('/src/assets/auth-bg.png')",
