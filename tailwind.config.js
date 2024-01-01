@@ -10,10 +10,13 @@ module.exports = {
         montserrat: ["Montserrat", "sans-serif"],
       },
       colors: {
+        secondary: "#101828",
         primary: "#4970fc",
         silver: "#A2A2A1",
+        light: "#f9f9f9",
         dark: "#1b1b1b",
-        gray: "#e0e0e0",
+        gray: "#667085",
+        lit: "#EEF2F9",
       },
       backgroundImage: {
         pattern: "url('/src/assets/auth-bg.png')",
