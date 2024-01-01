@@ -25,6 +25,8 @@ export const formatCurrency = (value: number, currency?: string) =>
     })
     FileSaver.saveAs(data, `zero-${name}.xlsx`)
   }
+
+  export const isEqual = (data: any, key: any) => (data === key)
   
   export const handleDataReduce = (data: any, key: string) => {
     return data?.reduce((a: any, b: any) => Number(a) + Number(b?.[key] || b), 0)
