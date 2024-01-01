@@ -9,7 +9,7 @@ const Verify = lazy(() => import("../pages/auth/verify"));
 const PhoneRegister = lazy(() => import("../pages/auth/phoneRegister"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-const TeacherAuth = lazy(() => import("../pages/teacher/auth"));
+// const TeacherAuth = lazy(() => import("../pages/teacher/auth"));
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
@@ -23,11 +23,11 @@ export const routes = [
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  {
-    path: "/teacher",
-    label: "Teacher",
-    component: <TeacherAuth />,
-  },
+  // {
+  //   path: "/teacher",
+  //   label: "Teacher",
+  //   component: <TeacherAuth />,
+  // },
 
   // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
