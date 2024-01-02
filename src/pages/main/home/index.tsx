@@ -1,10 +1,12 @@
 import moment from "moment";
 import React, { useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   Form,
   Input,
   Modal,
+  QRCode,
   Tabs,
   Tag,
   Upload,
@@ -26,6 +28,7 @@ import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
 import modalAtom from "../../../atoms/modal/modal.atom";
 import { useSetRecoilState } from "recoil";
+import InviteModal from "../../../components/modals/InviteModal";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -34,12 +37,18 @@ function Home() {
   const [activeTab, setActiveTab] = useState(param.get("tab") || "lecture");
   const [isGenerate, setIsGenerate] = useState(false);
   const [upldFile, setUpldFile] = useState<any>({});
+  const [isRecord, setIsRecord] = useState(false);
+  const [isInvite, setIsInvite] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const handleUpldFileClr = () => setUpldFile({});
   const onGenClose = () => setIsGenerate(false);
   const onGenOpen = () => setIsGenerate(true);
+  const onRecClose = () => setIsRecord(false);
+  const onInvClose = () => setIsInvite(false);
   const [isOpen, setIsOpen] = useState(false);
   const onCreClose = () => setIsCreate(false);
+  const onInvOpen = () => setIsInvite(true);
+  const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
   const onCreOpen = () => setIsCreate(true);
   const activeAction = param.get("action");
@@ -54,6 +63,7 @@ function Home() {
   const setModal = useSetRecoilState(modalAtom);
 
   const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -144,7 +154,7 @@ function Home() {
       dataIndex: "",
       render: () => (
         <div className="flex items-center gap-3">
-          <Button className="text-primary" type="text" icon={<IoMailOutline />}>
+          <Button onClick={()=>handleInvite("quiz")} className="text-primary" type="text" icon={<IoMailOutline />}>
             Send Invitation
           </Button>
         </div>
@@ -173,7 +183,36 @@ function Home() {
       dataIndex: "",
       render: () => (
         <div className="flex items-center gap-3">
-          <Button className="text-primary" type="text" icon={<IoMailOutline />}>
+          <Button onClick={()=>handleInvite("flashcard")} className="text-primary" type="text" icon={<IoMailOutline />}>
+            Send Invitation
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const recapColumns: ColumnsType<any> = [
+    {
+      title: "Name",
+      dataIndex: "",
+      render: () => <p>Untitled 01</p>,
+    },
+    {
+      title: "Date uploaded",
+      dataIndex: "",
+      render: () => <p>{moment().format("L")}</p>,
+    },
+    {
+      title: "Participants",
+      dataIndex: "",
+      render: () => <p>0</p>,
+    },
+    {
+      title: "Actions",
+      dataIndex: "",
+      render: () => (
+        <div className="flex items-center gap-3">
+          <Button onClick={()=>handleInvite("recaps")} className="text-primary" type="text" icon={<IoMailOutline />}>
             Send Invitation
           </Button>
         </div>
@@ -215,6 +254,7 @@ function Home() {
       },
       {
         key: "recaps",
+        column: recapColumns,
         label: (
           <div className="flex items-center gap-3">
             <p>Recaps</p>
@@ -421,9 +461,7 @@ function Home() {
             <p className="ant-upload-text">
               {upldFile?.file
                 ? "Your file has been uploaded"
-                : `${(
-                    <b className="text-primary">Click to upload</b>
-                  )} or drag and drop`}
+                : <><b className="text-primary">Click to upload</b> or drag and drop</>}
             </p>
             <p className="ant-upload-hint">
               {upldFile?.file ? (
@@ -444,6 +482,7 @@ function Home() {
             className="text-primary !text-base !font-medium"
             type="text"
             size="large"
+            onClick={onRecOpen}
             icon={<IoIosVideocam />}
           >
             Make a live recording
@@ -457,6 +496,37 @@ function Home() {
             shape="round"
           >
             Create Lecture
+          </Button>
+        </div>
+      </Modal>
+
+      {/* record lecture modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+      <Modal onCancel={onRecClose} closeIcon={false} footer={false} open={isRecord}>
+        <div className="flex flex-col justify-center items-center gap-5">
+          <div className="text-center">
+            <p className="text-[32px] font-semibold text-secondary">
+              Make a Live Lecture
+            </p>
+            <p className="ant-upload-hint">
+              How long do you want to record for?
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {Array.from(Array(3).keys()).map((idx) => (
+              <Button className="!rounded-xl" size="large">{`${
+                (idx + 3) * 5
+              } mins`}</Button>
+            ))}
+          </div>
+          <Button
+            // disabled={!upldFile?.file}
+            onClick={onClose}
+            className="bg-primary !w-full md:!w-[70%]"
+            type="primary"
+            size="large"
+            shape="round"
+          >
+            Start Recording
           </Button>
         </div>
       </Modal>
@@ -501,6 +571,12 @@ function Home() {
           {CreateContent}
         </div>
       </Modal>
+
+      {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+      <InviteModal
+        isOpen={isInvite}
+        onClose={onInvClose}
+      />
     </div>
   );
 }
