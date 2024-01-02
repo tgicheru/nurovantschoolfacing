@@ -13,7 +13,7 @@ const MainLayout = ({ children }: Props) => {
   const onOpen = () => setIsOpen(true);
   return (
     <ModalContainer>
-      <div className="w-full h-screen flex p-0 m-0 bg-light font-Inter">
+      <div className="w-full h-screen flex p-0 m-0 bg-light font-montserrat">
         {/* sidebar component can come in here  */}
         <div className={`${isOpen ? "w-[5%]" : "w-full md:w-[20%] lg:w-[25%]"} h-full`}>
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
