@@ -40,7 +40,7 @@ const Layout = ({ children }: Props) => {
         content: "Welcome! please authenticate to proceed.",
         key: "updatable",
       });
-      navigate("/auth");
+      // navigate("/auth");
     }
   }, [isLoggedIn, isMainLayout, navigate]);
   return (
