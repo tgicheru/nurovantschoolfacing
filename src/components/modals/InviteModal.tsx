@@ -45,7 +45,7 @@ function InviteModal({ isOpen, onClose }: Props) {
             type="success"
           />
           <Button
-            className="bg-primary !w-full mt-4"
+            className="bg-primary !w-full mt-5"
             htmlType="submit"
             type="primary"
             size="large"
