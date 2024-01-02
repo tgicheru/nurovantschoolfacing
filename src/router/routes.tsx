@@ -60,5 +60,4 @@ export const routes = [
     label: "Phone Register",
     component: <PhoneRegister />,
   },
-
 ];
