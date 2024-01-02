@@ -1,7 +1,7 @@
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import modalAtom from "../atoms/modal/modal.atom";
 import { ReactNode, FC } from "react";
-import { AnalysisModal, SuccessModal, WelcomeModal } from "./modals";
+import { AnalysisModal, QuizModal, SuccessModal, WelcomeModal } from "./modals";
 
 interface Props {
   children?: ReactNode;
@@ -23,6 +23,10 @@ export const ModalContainer: FC<Props> = ({ children }) => {
 
   if (modalType === "Analysis") {
     display = <AnalysisModal />;
+  }
+
+  if (modalType === "Quiz") {
+    display = <QuizModal />;
   }
 
   return (

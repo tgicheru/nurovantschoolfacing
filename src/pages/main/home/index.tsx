@@ -385,12 +385,12 @@ function Home() {
       <div className="flex justify-between items-center px-5 md:px-10">
         <div>
           <p
-            className="text-3xl font-bold text-secondary cursor-pointer"
+            className="text-3xl font-bold text-secondary"
             onClick={() => {
-              setModal({
-                showModal: true,
-                modalType: "Analysis",
-              });
+              // setModal({
+              //   showModal: true,
+              //   modalType: "Quiz",
+              // });
             }}
           >
             Hello Lanre

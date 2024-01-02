@@ -4,9 +4,11 @@ import { recoilPersist } from "recoil-persist";
 type ModalType =
   | "Welcome"
   | "Success"
-  | "ImportDocument"
+  | "Quiz"
   | "Analysis"
   | "LiveLecture"
+  | "Flashcard"
+  | "Recap"
   | "";
 
 export interface ModalState {

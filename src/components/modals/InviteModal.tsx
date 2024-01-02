@@ -1,36 +1,40 @@
-import { Alert, Button, Form, Input, Modal, QRCode } from 'antd'
-import React from 'react'
-import { IoMailOutline } from 'react-icons/io5'
+import { Alert, Button, Form, Input, Modal, QRCode } from "antd";
+import React from "react";
+import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
-  isOpen: boolean,
-  onClose: any,
-}
-function InviteModal({
-  isOpen,
-  onClose,
-}: Props) {
+  isOpen: boolean;
+  onClose: any;
+};
+function InviteModal({ isOpen, onClose }: Props) {
   return (
-    <Modal
-      onCancel={onClose}
-      closeIcon={false}
-      open={isOpen}
-      footer={false}
-    >
-      <Form layout="vertical" className="flex flex-col md:flex-row justify-between gap-5">
+    <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
+      <Form
+        layout="vertical"
+        className="flex flex-col md:flex-row justify-between gap-5"
+      >
         <div className="w-full md:w-[35%] space-y-3 text-center">
           <QRCode value="https://nurovant.ai" className="!w-full" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">
-          <p className="text-[32px] font-semibold text-secondary capitalize">Invitation</p>
+          <p className="text-[32px] font-semibold text-secondary capitalize">
+            Invitation
+          </p>
           <Form.Item label="Send invites to participants" name="email">
             <Input
               className="!rounded-xl"
               placeholder="Enter quiz name"
-              suffix={<Button className="text-primary" type="text" size="small" icon={<IoMailOutline />}>
-                Copy link
-              </Button>}
+              suffix={
+                <Button
+                  className="text-primary"
+                  type="text"
+                  size="small"
+                  icon={<IoMailOutline />}
+                >
+                  Copy link
+                </Button>
+              }
               size="large"
               required
             />
@@ -52,7 +56,7 @@ function InviteModal({
         </div>
       </Form>
     </Modal>
-  )
+  );
 }
 
-export default InviteModal
+export default InviteModal;
