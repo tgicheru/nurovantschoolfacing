@@ -21,7 +21,7 @@ function SideBar({
   const items = useMemo(() => [
     {
       key: "/",
-      label: <Link hidden={isOpen} to="/">Home</Link>,
+      label: <Link hidden={!isOpen} to="/">Home</Link>,
       icon: <BiHomeAlt2 className='!text-lg !font-medium' />,
     },
     // {
@@ -39,19 +39,21 @@ function SideBar({
   const extras = useMemo(() => [
     {
       key: "hide",
-      label: <Button onClick={onOpen} hidden={isOpen} className='!bg-none !p-0 !m-0 text-base font-medium' type='text'>Hide</Button>,
-      icon: !isOpen ? <IoPlayBackOutline onClick={onOpen} className='!text-lg !font-medium' /> : <IoPlayForwardOutline onClick={onClose} className='!text-lg !font-medium' />,
+      label: <Button onClick={onOpen} hidden={!isOpen} className='!bg-none !p-0 !m-0 text-base font-medium' type='text'>Hide</Button>,
+      icon: isOpen ? <IoPlayBackOutline onClick={onClose} className='!text-lg !font-medium' /> : <IoPlayForwardOutline onClick={onOpen} className='!text-lg !font-medium' />,
     },
     {
       key: "/settings",
-      label: <Link hidden={isOpen} to="/settings">Settings</Link>,
+      label: <Link hidden={!isOpen} to="/settings">Settings</Link>,
       icon: <BsGear className='!text-lg !font-medium' />,
     },
   ], [isOpen, onClose, onOpen])
+
+  const handleMenu = (d: any) => console.log(d)
   return (
     <div className='w-full h-full flex flex-col justify-between items-center px-3 py-10'>
       <div className='w-full flex flex-col justify-center items-center gap-10'>
-        <Logo isIcon={isOpen} />
+        <Logo isIcon={!isOpen} />
         <Menu
           style={{ border: 0, background: "transparent", color: "#646462", fontSize: "16px", fontWeight: "500" }}
           defaultSelectedKeys={[pathname]}
@@ -68,6 +70,7 @@ function SideBar({
           style={{ border: 0, background: "transparent", color: "#646462", fontSize: "16px", fontWeight: "500" }} 
           defaultSelectedKeys={[pathname]}
           defaultOpenKeys={[pathname]}
+          onChange={handleMenu}
           className='space-y-3'
           key="lower-menu"
           id="lower-menu"
@@ -78,9 +81,9 @@ function SideBar({
         <div className='flex justify-between items-center'>
           <div className='flex items-center gap-3'>
             <Avatar alt='user' size="large">AD</Avatar>
-            <p hidden={isOpen} className='text-primary'>olivia@nurovant.ai</p>
+            <p hidden={!isOpen} className='text-primary'>olivia@nurovant.ai</p>
           </div>
-          <Button hidden={isOpen} className='text-primary !p-0 !m-0' type='text' icon={<LuLogOut className='!text-lg !font-medium' />} />
+          <Button hidden={!isOpen} className='text-primary !p-0 !m-0' type='text' icon={<LuLogOut className='!text-lg !font-medium' />} />
         </div>
       </div>
     </div>

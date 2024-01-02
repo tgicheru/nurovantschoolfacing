@@ -13,7 +13,7 @@ const MainLayout = ({ children }: Props) => {
   return (
     <div className="w-full h-screen flex p-0 m-0 bg-light font-Inter">
       {/* sidebar component can come in here  */}
-      <div className={`${isOpen?"w-[5%]":"w-full md:w-[20%] lg:w-[25%]"} h-full`}>
+      <div className={`${!isOpen?"w-[5%]":"w-full md:w-[20%] lg:w-[25%]"} h-full`}>
         <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       </div>
 
