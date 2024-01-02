@@ -1,4 +1,4 @@
-import { Button, Tabs, Tag } from 'antd'
+import { Button, Collapse, CollapseProps, Divider, Tabs, Tag } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa6'
 import CustomPagination from '../../../../components/CustomPagination';
@@ -6,6 +6,8 @@ import CustomTable from '../../../../components/CustomTable';
 import { isEqual } from '../../../../context/utils';
 import { ColumnsType } from 'antd/es/table';
 import InviteModal from '../../../../components/modals/InviteModal';
+import { PiCaretDownBold, PiCaretLeftBold, PiCaretUpBold } from 'react-icons/pi';
+import { LuTrash } from 'react-icons/lu';
 
 type Props = {
 }
@@ -35,33 +37,82 @@ function QuizSection({}: Props) {
     },  
   ];
 
+  const handleDelete = () => alert("delete this")
+
+  const items: CollapseProps['items'] = Array.from(Array(4).keys()).map(d => ({
+    key: `quiz-${d}`,
+    children: <p>hello world</p>,
+    label: `${d+1}, Question ${d+1}`,
+    extra: <Button onClick={handleDelete} className='!m-0 !p-0' type='text' icon={<LuTrash />} />,
+    style: {
+      marginBottom: 20,
+      border: '1px solid #E6E9ED',
+      borderRadius: "10px",
+    },
+  }));
+
   const tabs = useMemo(
     () => [
       {
         key: "participants",
-        column: participantColumns,
+        action: (
+          <Button
+            onClick={onInvOpen}
+            className="bg-primary !rounded-2xl"
+            type="primary"
+            size="large"
+            icon={<FaPlus />}
+          >
+            Invite Member
+          </Button>
+        ),
         label: (
           <div className="flex items-center gap-3">
             <p>Participants</p>
             <Tag className="!bg-lit !border-0">1</Tag>
           </div>
         ),
+        component: (<CustomTable column={participantColumns} pagination={false} />)
       },
       {
         key: "questions",
+        action: (
+          <Button
+            onClick={onInvOpen}
+            className="bg-primary !rounded-2xl"
+            type="primary"
+            size="large"
+            icon={<FaPlus />}
+          >
+            Create
+          </Button>
+        ),
         label: (
           <div className="flex items-center gap-3">
             <p>Questions</p>
             <Tag className="!bg-lit !border-0">1</Tag>
           </div>
         ),
+        component: (
+          <div className='w-full md:w-[60%] p-5'>
+            <Collapse
+              accordion
+              bordered={false}
+              defaultActiveKey={['1']}
+              expandIconPosition='right'
+              expandIcon={({ isActive }) => (isActive ? <PiCaretUpBold className='text-lg' /> : <PiCaretDownBold className='text-lg' />)}
+              style={{ background: "#fff" }}
+              items={items}
+            />
+          </div>
+        )
       },
     ],
     []
   );
 
-  const column = useMemo(
-    () => tabs.find((d) => isEqual(d.key, activeTab))?.column,
+  const CurrentTab = useMemo(
+    () => tabs.find((d) => isEqual(d.key, activeTab)),
     [activeTab, tabs]
   );
   return (
@@ -70,15 +121,7 @@ function QuizSection({}: Props) {
         <p className="text-3xl font-bold text-secondary cursor-pointer">
           Quiz 01
         </p>
-        <Button
-          onClick={onInvOpen}
-          className="bg-primary !rounded-2xl"
-          type="primary"
-          size="large"
-          icon={<FaPlus />}
-        >
-          Invite Member
-        </Button>
+        {CurrentTab?.action}
       </div>
 
       <div className="w-full">
@@ -99,9 +142,8 @@ function QuizSection({}: Props) {
             onChange={setPage}
           />
         </div>
-        <div>
-          <CustomTable column={column} pagination={false} />
-        </div>
+        <Divider className='m-0 p-0' />
+        {CurrentTab?.component}
       </div>
 
       {/* invite modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
