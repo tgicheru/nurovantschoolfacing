@@ -5,8 +5,9 @@ const Authentication = lazy(() => import("../pages/auth"));
 const EmailLogin = lazy(() => import("../pages/auth/emailLogin"));
 const EmailRegister = lazy(() => import("../pages/auth/emailRegister"));
 const EmailPassword = lazy(() => import("../pages/auth/emailPassword"));
-const Verify = lazy(() => import("../pages/auth/verify"));
 const PhoneRegister = lazy(() => import("../pages/auth/phoneRegister"));
+const Verify = lazy(() => import("../pages/auth/verify"));
+const Logout = lazy(() => import("../pages/auth/logout"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // const TeacherAuth = lazy(() => import("../pages/teacher/auth"));
@@ -49,6 +50,11 @@ export const routes = [
     path: "/auth/verify/:id",
     label: "Verify",
     component: <Verify />,
+  },
+  {
+    path: "/auth/logout",
+    label: "Logout",
+    component: <Logout />,
   },
   {
     path: "/auth/password",

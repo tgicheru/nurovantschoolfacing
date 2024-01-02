@@ -41,7 +41,7 @@ function InviteModal({
             type="success"
           />
           <Button
-            className="bg-primary !w-full"
+            className="bg-primary !w-full mt-5"
             htmlType="submit"
             type="primary"
             size="large"
