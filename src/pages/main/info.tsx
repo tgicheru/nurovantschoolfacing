@@ -1,10 +1,7 @@
 import { CustomButton } from "../../components";
-import { Link } from "react-router-dom";
 import AuthContainer from "../../components/AuthContainer";
 import { useState } from "react";
 import { useUpdateInformation } from "../../hooks/auth/authentications";
-import authAtom from "../../atoms/auth/auth.atom";
-import { useRecoilValue } from "recoil";
 
 const HeaderText = ({ text }: { text: string }) => (
   <h3 className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[42px] tracking-[-0.4px] font-semibold text-[#646462]">
@@ -13,8 +10,6 @@ const HeaderText = ({ text }: { text: string }) => (
 );
 function AuthPage() {
   const { mutate } = useUpdateInformation();
-  const authData = useRecoilValue(authAtom);
-  console.log(authData);
 
   const [teachingExperience, setTeachingExperience] = useState<string>("0-1");
   const [similarApp, setSimilarApp] = useState<string>("yes");

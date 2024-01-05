@@ -18,6 +18,7 @@ type Props = {
 };
 function SideBar({ isOpen, onOpen, onClose }: Props) {
   const { pathname } = useLocation();
+
   const navigate = useNavigate();
   const items = useMemo(
     () => [
@@ -57,11 +58,11 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
           />
         ),
       },
-      {
-        key: "/settings",
-        label: isOpen ? "" : "Settings",
-        icon: <BsGear className="!text-lg !font-medium" />,
-      },
+      // {
+      //   key: "/settings",
+      //   label: isOpen ? "" : "Settings",
+      //   icon: <BsGear className="!text-lg !font-medium" />,
+      // },
     ],
     [isOpen, onClose, onOpen]
   );
@@ -75,7 +76,11 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
   };
   const handleLogout = () => navigate("/auth/logout");
   return (
-    <div className="w-full h-full flex flex-col justify-between items-center px-3 py-10">
+    <div
+      className={`"w-full h-full flex flex-col justify-between items-center px-3 py-10 ${
+        pathname === "/info" && "hidden"
+      }`}
+    >
       <div className="w-full flex flex-col justify-center items-center gap-10">
         <Logo isIcon={isOpen} />
         <Menu
