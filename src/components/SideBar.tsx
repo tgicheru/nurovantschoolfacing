@@ -122,7 +122,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
               {(user?.info?.name !== null || user?.info?.name === undefined) &&
                 extractAvatar(user?.info?.name)}
             </Avatar>
-            <p hidden={isOpen} className="text-primary text-[12px]">
+            <p hidden={isOpen} className="text-primary text-[12px] w-[100px] truncate">
               {user?.info?.email}
             </p>
           </div>

@@ -7,6 +7,7 @@ import {
   Input,
   Modal,
   QRCode,
+  Spin,
   Tabs,
   Tag,
   Upload,
@@ -23,15 +24,17 @@ import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
 import { BiTestTube } from "react-icons/bi";
-import { isEqual } from "../../../context/utils";
+import { handleCapitalize, isEqual } from "../../../context/utils";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
-import modalAtom from "../../../atoms/modal/modal.atom";
+import modalAtom, { ModalType } from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
 import { awsConfig } from "../../../aws/awsConfig";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
+import { useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
+import { useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -57,9 +60,22 @@ function Home() {
   const activeAction = param.get("action");
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
+  const lectureId = param.get("id");
 
-  const handleAction = (action: string) => {
-    setParam({ action });
+  const {
+    data: getLectData,
+    refetch: getLectFetch,
+    isFetching: getLectLoad,
+  } = useGetLectures({ limit, page });
+
+  const {
+    data: getAllQuizData,
+    refetch: getAllQuizFetch,
+    isFetching: getAllQuizLoad,
+  } = useGetAllQuiz({ limit, page });
+
+  const handleAction = (action: string, id: string) => {
+    setParam({ action, id });
     onGenOpen();
   };
 
@@ -87,21 +103,21 @@ function Home() {
   const lectureColumns: ColumnsType<any> = [
     {
       title: "Name",
-      dataIndex: "",
-      render: () => <p>Untitled 01</p>,
+      dataIndex: "lecture_title",
+      render: (d) => <p>{d || "NIL"}</p>,
     },
     {
       title: "Date uploaded",
-      dataIndex: "",
-      render: () => <p>{moment().format("L")}</p>,
+      dataIndex: "lecture_date",
+      render: (d) => <p>{moment(d).format("L")}</p>,
     },
     {
       title: "Actions",
-      dataIndex: "",
-      render: () => (
+      dataIndex: "_id",
+      render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleAction("quiz")}
+            onClick={() => handleAction("quiz", d)}
             className="text-primary"
             type="text"
             icon={<BiTestTube />}
@@ -109,7 +125,7 @@ function Home() {
             Quiz
           </Button>
           <Button
-            onClick={() => handleAction("flashcards")}
+            onClick={() => handleAction("flashcard", d)}
             className="text-primary"
             type="text"
             icon={<TbCards />}
@@ -117,7 +133,7 @@ function Home() {
             Flashcards
           </Button>
           <Button
-            onClick={() => handleAction("recaps")}
+            onClick={() => handleAction("recap", d)}
             className="text-primary"
             type="text"
             icon={<PiRepeatFill />}
@@ -133,20 +149,20 @@ function Home() {
     {
       title: "Name",
       dataIndex: "",
-      render: () => (
+      render: (d) => (
         <Button
-          onClick={() => handleViewQuiz("n7r5")}
+          onClick={() => handleViewQuiz(d?._id)}
           className="text-primary"
           type="text"
         >
-          Quiz 01
+          {d?.name}
         </Button>
       ),
     },
     {
       title: "Date uploaded",
-      dataIndex: "",
-      render: () => <p>{moment().format("L")}</p>,
+      dataIndex: "createdAt",
+      render: (d) => <p>{moment(d).format("L")}</p>,
     },
     {
       title: "Participants",
@@ -244,20 +260,26 @@ function Home() {
       {
         key: "lecture",
         column: lectureColumns,
+        data: getLectData?.lectures,
         label: (
           <div className="flex items-center gap-3">
             <p>Lecture</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getLectData?.lectures?.length}
+            </Tag>
           </div>
         ),
       },
       {
         key: "quiz",
         column: quizColumns,
+        data: getAllQuizData?.data,
         label: (
           <div className="flex items-center gap-3">
             <p>Quiz</p>
-            <Tag className="!bg-lit !border-0">0</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllQuizData?.data?.length}
+            </Tag>
           </div>
         ),
       },
@@ -282,7 +304,7 @@ function Home() {
         ),
       },
     ],
-    []
+    [getLectData, getAllQuizData]
   );
 
   const handleTab = (tab: string) => {
@@ -293,6 +315,93 @@ function Home() {
     () => tabs.find((d) => isEqual(d.key, activeTab))?.column,
     [activeTab, tabs]
   );
+  const data = useMemo(
+    () => tabs.find((d) => isEqual(d.key, activeTab))?.data,
+    [activeTab, tabs]
+  );
+
+  const successAction = () => {
+    onClose();
+    getLectFetch();
+    getAllQuizFetch();
+    setModal({
+      modalType: (handleCapitalize(activeAction!) || "Success") as ModalType,
+      showModal: true,
+    });
+  };
+
+  // const handleUpload = () => {
+  //   console.log(upldFile);
+  //   if (!upldFile) {
+  //     console.error("No file selected");
+  //     return;
+  //   }
+
+  //   // Configure AWS with your credentials
+  //   AWS.config.update({
+  //     accessKeyId: awsConfig.accessKeyId,
+  //     secretAccessKey: awsConfig.secretAccessKey,
+  //     region: awsConfig.region,
+  //   });
+
+  //   // Create an S3 service object
+  //   const s3 = new AWS.S3();
+
+  //   // Specify the bucket and key (object key) for the upload
+  //   const uploadParams = {
+  //     Bucket: "nurovantfrontend",
+  //     Key: `audio/${upldFile.name}`, // You can customize the key based on your requirement
+  //     Body: upldFile.file.url,
+  //     ContentType: upldFile.type,
+  //   };
+
+  //   // Upload the file
+  //   s3.upload(
+  //     uploadParams,
+  //     (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
+  //       if (err) {
+  //         console.error("Error uploading file", err);
+  //       } else {
+  //         console.log("File uploaded successfully", data);
+  //         // Handle success, update UI, etc.
+  //       }
+  //     }
+  //   );
+  // };
+
+  const { mutate: postLectAction, isLoading: postLectLoad } =
+    usePostLecture(successAction);
+
+  const { mutate: postQuizAction, isLoading: postQuizLoad } =
+    usePostQuiz(successAction);
+
+  const handleUploadTest = () => {
+    postLectAction({
+      file_url: "s3://nurovantfrontend/Demons-And-Angels-1.mp3",
+      file_type: "audio",
+      file_name: "Demons-And-Angels-1.mp3",
+      lecture_name: "omega",
+      upload_type: "audio upload",
+    });
+  };
+
+  const handleCreateQuiz = (value: any) => {
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, lectureId)
+    );
+    const payload = {
+      ...value,
+      title: value?.quiz_title,
+      file_url: lecture?.contentUrl,
+      file_type: lecture?.contentType,
+      file_name: lecture?.lecture_title,
+      lecture_id: lectureId,
+    };
+    postQuizAction(payload);
+  };
+
+  const isFetchLoad = getLectLoad || getAllQuizLoad;
+  const isActionLoad = postQuizLoad;
 
   const CreateContent = useMemo(
     () =>
@@ -300,8 +409,8 @@ function Home() {
         {
           key: "quiz",
           component: (
-            <Form layout="vertical">
-              <Form.Item label="Name of Quiz" name="name">
+            <Form onFinish={handleCreateQuiz} layout="vertical">
+              <Form.Item label="Name of Quiz" name="quiz_title">
                 <Input
                   className="!rounded-xl"
                   placeholder="Enter quiz name"
@@ -328,6 +437,7 @@ function Home() {
               </Form.Item>
               <Button
                 className="bg-primary !w-full"
+                loading={isActionLoad}
                 htmlType="submit"
                 type="primary"
                 size="large"
@@ -339,7 +449,7 @@ function Home() {
           ),
         },
         {
-          key: "flashcards",
+          key: "flashcard",
           component: (
             <Form layout="vertical">
               <Form.Item label="Name of Flash cards" name="name">
@@ -362,7 +472,7 @@ function Home() {
           ),
         },
         {
-          key: "recaps",
+          key: "recap",
           component: (
             <Form layout="vertical">
               <Form.Item label="Name of Recaps" name="name">
@@ -385,7 +495,7 @@ function Home() {
           ),
         },
       ]?.find((d) => isEqual(d.key, activeAction))?.component,
-    [activeAction]
+    [activeAction, lectureId, getLectData, getAllQuizData, isActionLoad]
   );
 
   const SectionContent = useMemo(
@@ -454,215 +564,227 @@ function Home() {
 
   if (SectionContent) return SectionContent;
   return (
-    <div className="w-full h-full md:py-5 space-y-5">
-      <div className="flex justify-between items-center px-5 md:px-10">
-        <div>
-          <p
-            className="text-3xl font-bold text-secondary"
-            onClick={() => {
-              // setModal({
-              //   showModal: true,
-              //   modalType: "Quiz",
-              // });
-            }}
-          >
-            Hello {user?.info?.name}
-          </p>
-          <p className="text-base font-normal text-gray">
-            Welcome to your dashboard
-          </p>
-        </div>
-        <Button
-          onClick={onOpen}
-          className="bg-primary !rounded-2xl"
-          type="primary"
-          size="large"
-          icon={<FaPlus />}
-        >
-          Create
-        </Button>
-      </div>
-
-      <div className="w-full">
+    <Spin spinning={isFetchLoad}>
+      <div className="w-full h-full md:py-5 space-y-5">
         <div className="flex justify-between items-center px-5 md:px-10">
-          <Tabs
-            activeKey={activeTab}
-            defaultActiveKey={activeTab}
-            items={tabs}
-            onChange={handleTab}
-            className="!p-0 !m-0"
-          />
-          <CustomPagination
-            total={75}
-            pageSize={limit}
-            sizeChanger
-            current={page}
-            size="small"
-            onChange={setPage}
-          />
+          <div>
+            <p
+              className="text-3xl font-bold text-secondary"
+              onClick={() => {
+                // setModal({
+                //   showModal: true,
+                //   modalType: "Quiz",
+                // });
+              }}
+            >
+              Hello {user?.info?.name}
+            </p>
+            <p className="text-base font-normal text-gray">
+              Welcome to your dashboard
+            </p>
+          </div>
+          <Button
+            onClick={onOpen}
+            className="bg-primary !rounded-2xl"
+            type="primary"
+            size="large"
+            icon={<FaPlus />}
+          >
+            Create
+          </Button>
         </div>
-        <div>
-          <CustomTable column={column} pagination={false} />
-        </div>
-      </div>
 
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        <VideoRecordIcon bg="#4970FC" color="#fff" />
-        <p className="text-[40px] font-semibold text-secondary mb-5">
-          Lectures
-        </p>
-        <Button
-          onClick={onOpen}
-          className="bg-primary !px-20 !rounded-2xl"
-          type="primary"
-          size="large"
+        <div hidden={!getLectData?.lectures?.length} className="w-full">
+          <div className="flex justify-between items-center px-5 md:px-10">
+            <Tabs
+              activeKey={activeTab}
+              defaultActiveKey={activeTab}
+              items={tabs}
+              onChange={handleTab}
+              className="!p-0 !m-0"
+            />
+            <CustomPagination
+              total={75}
+              pageSize={limit}
+              sizeChanger
+              current={page}
+              size="small"
+              onChange={setPage}
+            />
+          </div>
+          <div>
+            <CustomTable data={data} column={column} pagination={false} />
+          </div>
+        </div>
+
+        <div hidden={Boolean(getLectData?.lectures?.length)}>
+          <div className="w-full h-full flex flex-col justify-center items-center">
+            <VideoRecordIcon bg="#4970FC" color="#fff" />
+            <p className="text-[40px] font-semibold text-secondary mb-5">
+              Lectures
+            </p>
+            <Button
+              onClick={onOpen}
+              className="bg-primary !px-20 !rounded-2xl"
+              type="primary"
+              size="large"
+            >
+              Create New
+            </Button>
+          </div>
+        </div>
+
+        {/* upload document modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Modal
+          onCancel={onClose}
+          closeIcon={false}
+          footer={false}
+          open={isOpen}
         >
-          Create New
-        </Button>
-      </div>
-
-      {/* upload document modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal onCancel={onClose} closeIcon={false} footer={false} open={isOpen}>
-        <div className="flex flex-col justify-center items-center gap-5">
-          <p className="text-[32px] font-semibold text-secondary">
-            Import Document
-          </p>
-          <Upload.Dragger {...uploadProps}>
-            <p className="ant-upload-drag-icon">
-              <LuUploadCloud className="text-gray text-2xl bg-light mx-auto" />
-            </p>
-            <p className="ant-upload-text">
-              {upldFile?.file ? (
-                "Your file has been uploaded"
-              ) : (
-                <>
-                  <b className="text-primary">Click to upload</b> or drag and
-                  drop
-                </>
-              )}
-            </p>
-            <p className="ant-upload-hint">
-              {upldFile?.file ? (
-                <Button
-                  onClick={handleUpldFileClr}
-                  type="text"
-                  danger
-                  size="large"
-                >
-                  Delete
-                </Button>
-              ) : (
-                "SVG, PNG, JPG or GIF (max. 800x400px)"
-              )}
-            </p>
-          </Upload.Dragger>
-          <Button
-            className="text-primary !text-base !font-medium"
-            type="text"
-            size="large"
-            onClick={() => {
-              onRecOpen();
-              onClose();
-            }}
-            icon={<IoIosVideocam />}
-          >
-            Make a live recording
-          </Button>
-          <Button
-            disabled={!upldFile?.file}
-            onClick={() => {
-              handleUpload();
-            }}
-            className="bg-primary !w-full md:!w-[70%]"
-            type="primary"
-            size="large"
-            shape="round"
-          >
-            Create Lecture
-          </Button>
-        </div>
-      </Modal>
-
-      {/* record lecture modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal
-        onCancel={onRecClose}
-        closeIcon={false}
-        footer={false}
-        open={isRecord}
-      >
-        <div className="flex flex-col justify-center items-center gap-5">
-          <div className="text-center">
+          <div className="flex flex-col justify-center items-center gap-5">
             <p className="text-[32px] font-semibold text-secondary">
-              Make a Live Lecture
+              Import Document
             </p>
-            <p className="ant-upload-hint">
-              How long do you want to record for?
+            <Upload.Dragger {...uploadProps}>
+              <p className="ant-upload-drag-icon">
+                <LuUploadCloud className="text-gray text-2xl bg-light mx-auto" />
+              </p>
+              <p className="ant-upload-text">
+                {upldFile?.file ? (
+                  "Your file has been uploaded"
+                ) : (
+                  <>
+                    <b className="text-primary">Click to upload</b> or drag and
+                    drop
+                  </>
+                )}
+              </p>
+              <p className="ant-upload-hint">
+                {upldFile?.file ? (
+                  <Button
+                    onClick={handleUpldFileClr}
+                    type="text"
+                    danger
+                    size="large"
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  "SVG, PNG, JPG or GIF (max. 800x400px)"
+                )}
+              </p>
+            </Upload.Dragger>
+            <Button
+              className="text-primary !text-base !font-medium"
+              type="text"
+              size="large"
+              onClick={() => {
+                onRecOpen();
+                onClose();
+              }}
+              icon={<IoIosVideocam />}
+            >
+              Make a live recording
+            </Button>
+            <Button
+              disabled={!upldFile?.file}
+              onClick={handleUploadTest}
+              loading={postLectLoad}
+              // onClick={() => {
+              //   handleUpload();
+              // }}
+              className="bg-primary !w-full md:!w-[70%]"
+              type="primary"
+              size="large"
+              shape="round"
+            >
+              Create Lecture
+            </Button>
+          </div>
+        </Modal>
+
+        {/* record lecture modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Modal
+          onCancel={onRecClose}
+          closeIcon={false}
+          footer={false}
+          open={isRecord}
+        >
+          <div className="flex flex-col justify-center items-center gap-5">
+            <div className="text-center">
+              <p className="text-[32px] font-semibold text-secondary">
+                Make a Live Lecture
+              </p>
+              <p className="ant-upload-hint">
+                How long do you want to record for?
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {Array.from(Array(3).keys()).map((idx) => (
+                <Button className="!rounded-xl" size="large">{`${
+                  (idx + 3) * 5
+                } mins`}</Button>
+              ))}
+            </div>
+            <Button
+              // disabled={!upldFile?.file}
+              onClick={onClose}
+              className="bg-primary !w-full md:!w-[70%]"
+              type="primary"
+              size="large"
+              shape="round"
+            >
+              Start Recording
+            </Button>
+          </div>
+        </Modal>
+
+        {/* generate from content modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Modal
+          onCancel={onGenClose}
+          open={isGenerate}
+          closeIcon={false}
+          footer={false}
+          width={350}
+        >
+          <div className="flex flex-col justify-center items-center gap-3">
+            <p className="text-[32px] font-semibold text-secondary capitalize">
+              {activeAction}
             </p>
+            <p className="text-sm font-normal text-secondary capitalize">{`Create ${activeAction} from this content`}</p>
+            <Button
+              onClick={onCreOpen}
+              loading={isActionLoad}
+              className="bg-primary !w-full"
+              type="primary"
+              size="large"
+              shape="round"
+            >
+              Generate
+            </Button>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            {Array.from(Array(3).keys()).map((idx) => (
-              <Button className="!rounded-xl" size="large">{`${
-                (idx + 3) * 5
-              } mins`}</Button>
-            ))}
+        </Modal>
+
+        {/* create from content modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Modal
+          onCancel={onCreClose}
+          closeIcon={false}
+          open={isCreate}
+          footer={false}
+        >
+          <div className="space-y-5">
+            <div className="text-center">
+              <p className="text-[32px] font-semibold text-secondary capitalize">{` Create ${activeAction}`}</p>
+              <p className="text-sm font-normal text-secondary capitalize">{`Please fill the information below to personalise your ${activeAction}.`}</p>
+            </div>
+            {CreateContent}
           </div>
-          <Button
-            // disabled={!upldFile?.file}
-            onClick={onClose}
-            className="bg-primary !w-full md:!w-[70%]"
-            type="primary"
-            size="large"
-            shape="round"
-          >
-            Start Recording
-          </Button>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* generate from content modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal
-        onCancel={onGenClose}
-        open={isGenerate}
-        closeIcon={false}
-        footer={false}
-        width={350}
-      >
-        <div className="flex flex-col justify-center items-center gap-3">
-          <p className="text-[32px] font-semibold text-secondary capitalize">
-            {activeAction}
-          </p>
-          <p className="text-sm font-normal text-secondary capitalize">{`Create ${activeAction} from this content`}</p>
-          <Button
-            onClick={onCreOpen}
-            className="bg-primary !w-full"
-            type="primary"
-            size="large"
-            shape="round"
-          >
-            Generate
-          </Button>
-        </div>
-      </Modal>
-
-      {/* create from content modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal
-        onCancel={onCreClose}
-        closeIcon={false}
-        open={isCreate}
-        footer={false}
-      >
-        <div className="space-y-5">
-          <div className="text-center">
-            <p className="text-[32px] font-semibold text-secondary capitalize">{` Create ${activeAction}`}</p>
-            <p className="text-sm font-normal text-secondary capitalize">{`Please fill the information below to personalise your ${activeAction}.`}</p>
-          </div>
-          {CreateContent}
-        </div>
-      </Modal>
-
-      {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <InviteModal isOpen={isInvite} onClose={onInvClose} />
-    </div>
+        {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <InviteModal isOpen={isInvite} onClose={onInvClose} />
+      </div>
+    </Spin>
   );
 }
 
