@@ -9,7 +9,7 @@ function LoginPage() {
   const mobile = params.get("mobile");
 
   return (
-    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10">
+    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10 max-w-[500px] mx-auto">
       <div className="text-center flex flex-col items-center gap-2">
         <p className="text-4xl font-bold">
           Login With Your {mobile ? "Phone Number" : "Email"}

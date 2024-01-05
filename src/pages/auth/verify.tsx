@@ -33,7 +33,7 @@ function VerifyPage() {
   };
 
   return (
-    <div className="w-full text-white px-5 py-10 md:p-14 space-y-5">
+    <div className="w-full text-white px-5 py-10 md:p-14 space-y-5 max-w-[500px] mx-auto">
       <div className="text-center space-y-3">
         <p className="text-4xl font-bold">
           Verify {email ? "Email Address" : "Phone number"}

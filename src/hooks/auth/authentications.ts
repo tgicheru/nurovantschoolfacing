@@ -192,7 +192,7 @@ export function usePassword(url: string) {
 
 export function useGoogleRegister() {
   const navigate = useNavigate();
-  const url = "/api/auth/register_socials";
+  const url = "/api/teachers/auth";
   const axios = useContext(AxiosContext);
   const setAuth = useSetRecoilState(authAtom);
 
@@ -206,7 +206,7 @@ export function useGoogleRegister() {
           description: response?.message || "action successful.",
         });
 
-        console.log(response);
+        // console.log(response);
         setAuth({ isLoggedIn: true, user: response?.data });
 
         navigate(`/`);

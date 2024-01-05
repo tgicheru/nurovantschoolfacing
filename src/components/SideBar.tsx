@@ -7,6 +7,9 @@ import { BiHomeAlt2 } from "react-icons/bi";
 import { BsGear } from "react-icons/bs";
 import { Avatar, Button, Divider, Menu } from "antd";
 import { isEqual } from "../context/utils";
+import authAtom from "../atoms/auth/auth.atom";
+import { useRecoilValue } from "recoil";
+import { extractAvatar } from "../constants";
 
 type Props = {
   isOpen: boolean;
@@ -15,7 +18,7 @@ type Props = {
 };
 function SideBar({ isOpen, onOpen, onClose }: Props) {
   const { pathname } = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const items = useMemo(
     () => [
       {
@@ -63,12 +66,14 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
     [isOpen, onClose, onOpen]
   );
 
-  const handleMenu = ({key}: any) => {
-    if (!isEqual(key, "hide")) return navigate(key)
-    if (isOpen) return onClose()
-    return onOpen()
-  }
-  const handleLogout = () => navigate("/auth/logout")
+  const { user } = useRecoilValue(authAtom);
+
+  const handleMenu = ({ key }: any) => {
+    if (!isEqual(key, "hide")) return navigate(key);
+    if (isOpen) return onClose();
+    return onOpen();
+  };
+  const handleLogout = () => navigate("/auth/logout");
   return (
     <div className="w-full h-full flex flex-col justify-between items-center px-3 py-10">
       <div className="w-full flex flex-col justify-center items-center gap-10">
@@ -109,10 +114,10 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Avatar alt="user" size="large">
-              AD
+              {extractAvatar(user?.info?.name)}
             </Avatar>
-            <p hidden={isOpen} className="text-primary">
-              olivia@nurovant.ai
+            <p hidden={isOpen} className="text-primary text-[12px]">
+              {user?.info?.email}
             </p>
           </div>
           <Button

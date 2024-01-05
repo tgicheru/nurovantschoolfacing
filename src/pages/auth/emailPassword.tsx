@@ -28,7 +28,7 @@ function RegisterPage() {
     }
   };
   return (
-    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10">
+    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10 max-w-[500px] mx-auto">
       <div className="text-center">
         <p className="text-4xl font-bold">Set a password</p>
         <p className="text-lg font-medium px-5">

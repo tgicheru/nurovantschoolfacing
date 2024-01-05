@@ -23,3 +23,10 @@ export const AllNationsCode = [
     new_field: "Nigeria",
   },
 ];
+
+export const extractAvatar = (name: string) => {
+  const splitName = name.split(" ");
+  const firstLetter = splitName[0].charAt(0);
+  const secondLetter = splitName[1]?.charAt(0);
+  return `${firstLetter}${secondLetter}`;
+};

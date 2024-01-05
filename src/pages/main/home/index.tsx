@@ -27,8 +27,11 @@ import { isEqual } from "../../../context/utils";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
 import modalAtom from "../../../atoms/modal/modal.atom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
+import { awsConfig } from "../../../aws/awsConfig";
+import AWS from "aws-sdk";
+import authAtom from "../../../atoms/auth/auth.atom";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -61,6 +64,7 @@ function Home() {
   };
 
   const setModal = useSetRecoilState(modalAtom);
+  const { user } = useRecoilValue(authAtom);
 
   const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
   const handleInvite = (id: string) => onInvOpen();
@@ -154,7 +158,12 @@ function Home() {
       dataIndex: "",
       render: () => (
         <div className="flex items-center gap-3">
-          <Button onClick={()=>handleInvite("quiz")} className="text-primary" type="text" icon={<IoMailOutline />}>
+          <Button
+            onClick={() => handleInvite("quiz")}
+            className="text-primary"
+            type="text"
+            icon={<IoMailOutline />}
+          >
             Send Invitation
           </Button>
         </div>
@@ -183,7 +192,12 @@ function Home() {
       dataIndex: "",
       render: () => (
         <div className="flex items-center gap-3">
-          <Button onClick={()=>handleInvite("flashcard")} className="text-primary" type="text" icon={<IoMailOutline />}>
+          <Button
+            onClick={() => handleInvite("flashcard")}
+            className="text-primary"
+            type="text"
+            icon={<IoMailOutline />}
+          >
             Send Invitation
           </Button>
         </div>
@@ -212,7 +226,12 @@ function Home() {
       dataIndex: "",
       render: () => (
         <div className="flex items-center gap-3">
-          <Button onClick={()=>handleInvite("recaps")} className="text-primary" type="text" icon={<IoMailOutline />}>
+          <Button
+            onClick={() => handleInvite("recaps")}
+            className="text-primary"
+            type="text"
+            icon={<IoMailOutline />}
+          >
             Send Invitation
           </Button>
         </div>
@@ -379,6 +398,46 @@ function Home() {
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
     [activeSection]
   );
+
+  const handleUpload = () => {
+    console.log(upldFile);
+    if (!upldFile) {
+      console.error("No file selected");
+      return;
+    }
+
+    // Configure AWS with your credentials
+    AWS.config.update({
+      accessKeyId: awsConfig.accessKeyId,
+      secretAccessKey: awsConfig.secretAccessKey,
+      region: awsConfig.region,
+    });
+
+    // Create an S3 service object
+    const s3 = new AWS.S3();
+
+    // Specify the bucket and key (object key) for the upload
+    const uploadParams = {
+      Bucket: "nurovantfrontend",
+      Key: `audio/${upldFile.name}`, // You can customize the key based on your requirement
+      Body: upldFile.file.url,
+      ContentType: upldFile.type,
+    };
+
+    // Upload the file
+    s3.upload(
+      uploadParams,
+      (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
+        if (err) {
+          console.error("Error uploading file", err);
+        } else {
+          console.log("File uploaded successfully", data);
+          // Handle success, update UI, etc.
+        }
+      }
+    );
+  };
+
   if (SectionContent) return SectionContent;
   return (
     <div className="w-full h-full md:py-5 space-y-5">
@@ -393,7 +452,7 @@ function Home() {
               // });
             }}
           >
-            Hello Lanre
+            Hello {user?.info?.name}
           </p>
           <p className="text-base font-normal text-gray">
             Welcome to your dashboard
@@ -459,9 +518,14 @@ function Home() {
               <LuUploadCloud className="text-gray text-2xl bg-light mx-auto" />
             </p>
             <p className="ant-upload-text">
-              {upldFile?.file
-                ? "Your file has been uploaded"
-                : <><b className="text-primary">Click to upload</b> or drag and drop</>}
+              {upldFile?.file ? (
+                "Your file has been uploaded"
+              ) : (
+                <>
+                  <b className="text-primary">Click to upload</b> or drag and
+                  drop
+                </>
+              )}
             </p>
             <p className="ant-upload-hint">
               {upldFile?.file ? (
@@ -482,14 +546,19 @@ function Home() {
             className="text-primary !text-base !font-medium"
             type="text"
             size="large"
-            onClick={onRecOpen}
+            onClick={() => {
+              onRecOpen();
+              onClose();
+            }}
             icon={<IoIosVideocam />}
           >
             Make a live recording
           </Button>
           <Button
             disabled={!upldFile?.file}
-            onClick={onClose}
+            onClick={() => {
+              handleUpload();
+            }}
             className="bg-primary !w-full md:!w-[70%]"
             type="primary"
             size="large"
@@ -501,7 +570,12 @@ function Home() {
       </Modal>
 
       {/* record lecture modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal onCancel={onRecClose} closeIcon={false} footer={false} open={isRecord}>
+      <Modal
+        onCancel={onRecClose}
+        closeIcon={false}
+        footer={false}
+        open={isRecord}
+      >
         <div className="flex flex-col justify-center items-center gap-5">
           <div className="text-center">
             <p className="text-[32px] font-semibold text-secondary">
@@ -573,10 +647,7 @@ function Home() {
       </Modal>
 
       {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <InviteModal
-        isOpen={isInvite}
-        onClose={onInvClose}
-      />
+      <InviteModal isOpen={isInvite} onClose={onInvClose} />
     </div>
   );
 }
