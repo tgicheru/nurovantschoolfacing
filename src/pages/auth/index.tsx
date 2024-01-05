@@ -94,7 +94,7 @@ function AuthPage() {
 
         {/* Other login options */}
         <div className="flex w-full items-center justify-center flex-row gap-[32px]">
-          <img src={AppleIcon} alt="apple-icon" className="cursor-pointer" />
+          {/* <img src={AppleIcon} alt="apple-icon" className="cursor-pointer" /> */}
           <img
             src={GoogleIcon}
             alt="google-icon"
