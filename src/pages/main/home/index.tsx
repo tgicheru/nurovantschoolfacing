@@ -415,13 +415,27 @@ function Home() {
 
     // Create an S3 service object
     const s3 = new AWS.S3();
+    let audioBlob: Blob | null = null;
+
+    if (upldFile.file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const blob = new Blob([reader.result as ArrayBuffer], {
+          type: upldFile.file.type,
+        });
+        audioBlob = blob;
+      };
+
+      reader.readAsArrayBuffer(upldFile.file);
+    }
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       Bucket: "nurovantfrontend",
       Key: `audio/${upldFile.name}`, // You can customize the key based on your requirement
-      Body: upldFile.file.url,
-      ContentType: upldFile.type,
+      Body: JSON.stringify(audioBlob),
+      ContentType: upldFile.file.type,
     };
 
     // Upload the file
