@@ -18,6 +18,7 @@ type Props = {
 };
 function SideBar({ isOpen, onOpen, onClose }: Props) {
   const { pathname } = useLocation();
+
   const navigate = useNavigate();
   const items = useMemo(
     () => [
@@ -57,11 +58,11 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
           />
         ),
       },
-      {
-        key: "/settings",
-        label: isOpen ? "" : "Settings",
-        icon: <BsGear className="!text-lg !font-medium" />,
-      },
+      // {
+      //   key: "/settings",
+      //   label: isOpen ? "" : "Settings",
+      //   icon: <BsGear className="!text-lg !font-medium" />,
+      // },
     ],
     [isOpen, onClose, onOpen]
   );
@@ -75,7 +76,11 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
   };
   const handleLogout = () => navigate("/auth/logout");
   return (
-    <div className="w-full h-full flex flex-col justify-between items-center px-3 py-10">
+    <div
+      className={`"w-full h-full flex flex-col justify-between items-center px-3 py-10 ${
+        pathname === "/info" && "hidden"
+      }`}
+    >
       <div className="w-full flex flex-col justify-center items-center gap-10">
         <Logo isIcon={isOpen} />
         <Menu
@@ -114,7 +119,8 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Avatar alt="user" size="large">
-              {extractAvatar(user?.info?.name)}
+              {(user?.info?.name !== null || user?.info?.name === undefined) &&
+                extractAvatar(user?.info?.name)}
             </Avatar>
             <p hidden={isOpen} className="text-primary text-[12px] w-[100px] truncate">
               {user?.info?.email}
