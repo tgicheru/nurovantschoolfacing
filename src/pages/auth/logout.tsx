@@ -10,8 +10,8 @@ function LogoutPage() {
   const setAuth = useSetRecoilState(authAtom);
   setAuth({ isLoggedIn: false, user: null });
   setTimeout(() => {
-    navigate("/auth");
-    notification.success({ message: "Logged out", key: "update-able" });
+    navigate("/auth")
+    notification.success({ message: "Logged out", key: "update-able" })
   }, 2000);
   return <Loading />;
 }

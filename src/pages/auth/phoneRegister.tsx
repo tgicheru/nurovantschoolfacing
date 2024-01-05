@@ -33,7 +33,7 @@ function RegisterPage() {
 
   const handleSelectChange = (value: any) => {
     // setSelectBeforeText(value);
-    const selectedValue = value.target.innerText.split("+");
+    const selectedValue = value.target.innerText?.split("+");
     setSelectBeforeText(`+${selectedValue[1]}`);
     const country = AllNationsCode.find(
       (nation) => nation.emoji === selectedValue[0]
