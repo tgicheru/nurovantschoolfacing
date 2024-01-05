@@ -1,7 +1,7 @@
 import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
-type ModalType =
+export type ModalType =
   | "Welcome"
   | "Success"
   | "Quiz"
