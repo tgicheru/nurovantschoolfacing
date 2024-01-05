@@ -6,7 +6,7 @@ import { useEmailRegister } from "../../hooks/auth/authentications";
 function RegisterPage() {
   const { mutate, isLoading } = useEmailRegister();
   return (
-    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10">
+    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10 max-w-[500px] mx-auto">
       <div className="text-center">
         <p className="text-4xl font-bold">Got a Student Email?</p>
         <p className="text-lg font-medium px-5">

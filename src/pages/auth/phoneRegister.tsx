@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, Divider, Form, Input, Select } from "antd";
 import { usePhoneRegister } from "../../hooks/auth/authentications";
 import { AllNationsCode } from "../../constants";
-import { set } from "react-hook-form";
 
 const { Option } = Select;
 
@@ -61,7 +60,7 @@ function RegisterPage() {
   );
 
   return (
-    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10">
+    <div className="w-full text-white px-5 sm:px-10 md:px-14 space-y-10 max-w-[500px] mx-auto">
       <div className="text-center flex flex-col gap-3">
         <p className="text-4xl font-bold">Got a Phone Number?</p>
         <p className="text-lg font-medium px-5">
