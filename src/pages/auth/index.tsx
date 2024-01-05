@@ -6,9 +6,12 @@ import { auth, provider } from "../../firebaseAuth/config";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useGoogleRegister } from "../../hooks/auth/authentications";
 import AuthContainer from "../../components/AuthContainer";
+import { useRecoilState } from "recoil";
+import authAtom from "../../atoms/auth/auth.atom";
 
 function AuthPage() {
   const { mutate } = useGoogleRegister();
+
   const handleGoogleLogin = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -40,7 +43,7 @@ function AuthPage() {
 
   return (
     <AuthContainer>
-      <div className="max-w-[420px] w-full flex items-center justify-center flex-col gap-[23px]">
+      <div className="max-w-[420px] w-full flex items-center justify-center flex-col gap-[23px] h-screen">
         <div className="flex w-full items-center justify-center gap-[14px] flex-col">
           <div style={{ width: "124px" }}>
             {/* <LogoIcon /> */}

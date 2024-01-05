@@ -6,7 +6,7 @@ type Props = {
 };
 const AuthContainer = ({ children }: Props) => {
   return (
-    <div className="w-full flex flex-col lg:flex-row h-screen max-h-screen overflow-hidden items-center justify-center font-montserrat">
+    <div className="w-full flex flex-col lg:flex-row h-full lg:h-screen overflow-hidden items-center justify-center font-montserrat bg-white">
       {/* Left Section*/}
 
       <div className="w-full lg:w-[45%] bg-primary h-full bg-pattern bg-no-repeat hidden lg:flex flex-col items-center justify-center gap-[18px] text-white">

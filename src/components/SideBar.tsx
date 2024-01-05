@@ -114,7 +114,8 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Avatar alt="user" size="large">
-              {extractAvatar(user?.info?.name)}
+              {(user?.info?.name !== null || user?.info?.name === undefined) &&
+                extractAvatar(user?.info?.name)}
             </Avatar>
             <p hidden={isOpen} className="text-primary text-[12px]">
               {user?.info?.email}
