@@ -57,7 +57,7 @@ export function getBinary(file: File) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const data=(reader?.result as any)?.split(',')[1];
+      const data=(reader?.result as any)?.split(',')?.[1];
       resolve(atob(data));
     }
     reader.onerror = (err) => reject(err)
