@@ -93,7 +93,7 @@ function Home() {
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
 
-  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz-questions" });
+  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
   const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
@@ -556,7 +556,7 @@ function Home() {
           conponent: <QuizSection />,
         },
         {
-          key: "quiz-questions",
+          key: "quiz",
           conponent: <QuizQuestionsSection />,
         },
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
