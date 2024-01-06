@@ -1,12 +1,15 @@
-import { Alert, Button, Form, Input, Modal, QRCode } from "antd";
+import { Alert, Button, Form, Input, Modal, QRCode, message } from "antd";
 import React from "react";
 import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
   isOpen: boolean;
+  value?: string;
   onClose: any;
 };
-function InviteModal({ isOpen, onClose }: Props) {
+function InviteModal({ isOpen, onClose, value }: Props) {
+  const url = `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`
+  const handleCopy = () => {message.success("Copied to clipborad"); navigator.clipboard.writeText(url)};
   return (
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
       <Form
@@ -14,7 +17,7 @@ function InviteModal({ isOpen, onClose }: Props) {
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
-          <QRCode value="https://nurovant.ai" className="!w-full" />
+          <QRCode value={url} className="!w-full" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">
@@ -25,11 +28,15 @@ function InviteModal({ isOpen, onClose }: Props) {
             <Input
               className="!rounded-xl"
               placeholder="Enter quiz name"
+              defaultValue={url}
+              value={url}
+              readOnly
               suffix={
                 <Button
                   className="text-primary"
                   type="text"
                   size="small"
+                  onClick={handleCopy}
                   icon={<IoMailOutline />}
                 >
                   Copy link
@@ -44,7 +51,7 @@ function InviteModal({ isOpen, onClose }: Props) {
             className="!rounded-xl text-success border-success bg-[#DEF2E6]"
             type="success"
           />
-          <Button
+          {/* <Button
             className="bg-primary !w-full mt-5"
             htmlType="submit"
             type="primary"
@@ -52,7 +59,7 @@ function InviteModal({ isOpen, onClose }: Props) {
             shape="round"
           >
             Send Invitation
-          </Button>
+          </Button> */}
         </div>
       </Form>
     </Modal>
