@@ -885,7 +885,7 @@ function Home() {
         </Modal>
 
         {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <InviteModal value={`https://nurovant-webapp.vercel.app/page/quiz/?id=`} isOpen={isInvite} onClose={onInvClose} />
+        <InviteModal isOpen={isInvite} onClose={onInvClose} />
       </div>
     </Spin>
   );
