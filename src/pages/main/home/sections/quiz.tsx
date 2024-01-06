@@ -164,7 +164,7 @@ function QuizSection({}: Props) {
         <InviteModal
           isOpen={isInvite}
           onClose={onInvClose}
-          value={`https://nurovantschoolfacing.vercel.app/page/quiz/?id=${id}`}
+          value={`https://nurovant-webapp.vercel.app/page/quiz/?id=${id}`}
         />
       </div>
     </Spin>
