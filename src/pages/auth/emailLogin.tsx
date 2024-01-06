@@ -15,7 +15,7 @@ function LoginPage() {
           Login With Your {mobile ? "Phone Number" : "Email"}
         </p>
         <p className="text-lg font-medium px-5">
-          Let's get on to the world of learning.
+          Let's get on to the world of teaching.
         </p>
       </div>
 
@@ -59,13 +59,13 @@ function LoginPage() {
         <Form.Item hidden name="type">
           <Input />
         </Form.Item>
-        <Divider className="!text-white !border-white">Or</Divider>
+        {/* <Divider className="!text-white !border-white">Or</Divider>
         <Link
           className="text-center text-white underline block text-sm font-medium"
           to={mobile ? "/auth/login" : "/auth/login?mobile=true"}
         >
           Sign in with {mobile ? "email" : "phone number"}
-        </Link>
+        </Link> */}
         <Button
           className="!rounded-3xl !h-[50px] bg-white text-silver hover:!bg-white hover:!text-primary hover:!font-bold"
           loading={isLoading}
