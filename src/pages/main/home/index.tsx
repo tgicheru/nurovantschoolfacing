@@ -27,6 +27,7 @@ import { BiTestTube } from "react-icons/bi";
 import { handleCapitalize, isEqual } from "../../../context/utils";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
+import FlashcardSection from "./sections/flashcard";
 import modalAtom, { ModalType } from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
@@ -93,6 +94,8 @@ function Home() {
   const { user } = useRecoilValue(authAtom);
 
   const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  const handleViewFlashcard = (id: string) =>
+    setParam({ id, section: "flashcard" });
   const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
@@ -203,7 +206,7 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <Button
-          onClick={() => handleViewQuiz(d?._id)}
+          onClick={() => handleViewFlashcard(d?._id)}
           className="text-primary"
           type="text"
         >
@@ -553,6 +556,10 @@ function Home() {
         {
           key: "quiz",
           conponent: <QuizSection />,
+        },
+        {
+          key: "flashcard",
+          conponent: <FlashcardSection />,
         },
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
     [activeSection]

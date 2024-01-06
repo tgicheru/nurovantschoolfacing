@@ -9,21 +9,16 @@ import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useEmailLogin() {
-  // const url = "/login";
+  const url = "/api/teachers/signin_email";
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  // const axios = useContext(AxiosContext);
+  const axios = useContext(AxiosContext);
   const setAuth = useSetRecoilState(authAtom);
   const authData = useRecoilValue(authAtom);
 
   // return useMutation((payload) => postRequest(axios, url, payload), {
   return useMutation(
-    async (payload) =>
-      await {
-        ...(payload as any),
-        email: "johndoe@gmail.com",
-        token: "nyjuhghiouhijgu",
-      },
+    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
         notification.success({
@@ -31,7 +26,8 @@ export function useEmailLogin() {
           description: response?.message || "welcome back.",
         });
         queryClient.invalidateQueries("get:user_profile");
-        setAuth({ isLoggedIn: true, user: response, ...authData });
+        console.log(response);
+        setAuth({ ...authData, isLoggedIn: true, user: response?.data });
         navigate("/");
       },
       onError: (error: any) =>
@@ -49,7 +45,7 @@ export function useEmailLogin() {
 
 export function useEmailRegister() {
   const navigate = useNavigate();
-  const url = "/api/auth/email_otp";
+  const url = "/api/teachers/send_email_otp";
   const axios = useContext(AxiosContext);
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
@@ -113,7 +109,7 @@ export function usePhoneRegister() {
 }
 
 export function useVerify(successAction?: any) {
-  const url = "/api/auth/otp_verify";
+  const url = "/api/teachers/verify_otp";
   const axios = useContext(AxiosContext);
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
