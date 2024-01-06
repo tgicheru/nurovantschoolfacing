@@ -137,7 +137,7 @@ function Home() {
   const handleViewFlashcard = (id: string) =>
     setParam({ id, section: "flashcard" });
   const handleViewQuiz = (id: string) =>
-    setParam({ id, section: "quiz-questions" });
+    setParam({ id, section: "quiz" });
   const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
@@ -885,7 +885,7 @@ function Home() {
         </Modal>
 
         {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <InviteModal isOpen={isInvite} onClose={onInvClose} />
+        <InviteModal value={`https://nurovant-webapp.vercel.app/page/quiz/?id=`} isOpen={isInvite} onClose={onInvClose} />
       </div>
     </Spin>
   );
