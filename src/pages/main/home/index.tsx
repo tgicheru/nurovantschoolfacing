@@ -40,6 +40,7 @@ import {
   useGetAllFlashcards,
   usePostFlashcards,
 } from "../../../hooks/flashcards/flashcards";
+import QuizQuestionsSection from "./sections/quizQuestions";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -93,9 +94,11 @@ function Home() {
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
 
-  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
   const handleViewFlashcard = (id: string) =>
     setParam({ id, section: "flashcard" });
+  const handleViewQuiz = (id: string) =>
+    setParam({ id, section: "quiz-questions" });
   const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
@@ -560,6 +563,10 @@ function Home() {
         {
           key: "flashcard",
           conponent: <FlashcardSection />,
+        },
+        {
+          key: "quiz-questions",
+          conponent: <QuizQuestionsSection />,
         },
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
     [activeSection]
