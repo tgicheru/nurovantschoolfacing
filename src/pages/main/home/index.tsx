@@ -35,6 +35,10 @@ import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
 import { useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
 import { useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
+import {
+  useGetAllFlashcards,
+  usePostFlashcards,
+} from "../../../hooks/flashcards/flashcards";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -73,6 +77,12 @@ function Home() {
     refetch: getAllQuizFetch,
     isFetching: getAllQuizLoad,
   } = useGetAllQuiz({ limit, page });
+
+  const {
+    data: getAllFlashcardData,
+    refetch: getAllFlashcardFetch,
+    isFetching: getAllFlashcardLoad,
+  } = useGetAllFlashcards({ limit, page });
 
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
@@ -191,7 +201,15 @@ function Home() {
     {
       title: "Name",
       dataIndex: "",
-      render: () => <p>Untitled 01</p>,
+      render: (d) => (
+        <Button
+          onClick={() => handleViewQuiz(d?._id)}
+          className="text-primary"
+          type="text"
+        >
+          {d?.name}
+        </Button>
+      ),
     },
     {
       title: "Date uploaded",
@@ -286,10 +304,13 @@ function Home() {
       {
         key: "flash-cards",
         column: flashcardColumns,
+        data: getAllFlashcardData?.data,
         label: (
           <div className="flex items-center gap-3">
             <p>Flash cards</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllFlashcardData?.data?.length}
+            </Tag>
           </div>
         ),
       },
@@ -304,7 +325,7 @@ function Home() {
         ),
       },
     ],
-    [getLectData, getAllQuizData]
+    [getLectData, getAllQuizData, getAllFlashcardData]
   );
 
   const handleTab = (tab: string) => {
@@ -375,6 +396,9 @@ function Home() {
   const { mutate: postQuizAction, isLoading: postQuizLoad } =
     usePostQuiz(successAction);
 
+  const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
+    usePostFlashcards(successAction);
+
   const handleUploadTest = () => {
     postLectAction({
       file_url: "s3://nurovantfrontend/Demons-And-Angels-1.mp3",
@@ -400,8 +424,24 @@ function Home() {
     postQuizAction(payload);
   };
 
+  const handleCreateFlashcard = (value: any) => {
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, lectureId)
+    );
+    const payload = {
+      ...value,
+      title: value?.flashcard_title,
+      file_url: lecture?.contentUrl,
+      file_type: lecture?.contentType,
+      file_name: lecture?.lecture_title,
+      lecture_id: lectureId,
+    };
+    postFlashcardAction(payload);
+  };
+
   const isFetchLoad = getLectLoad || getAllQuizLoad;
   const isActionLoad = postQuizLoad;
+  const isFlashActionLoad = postFlashcardLoad;
 
   const CreateContent = useMemo(
     () =>
@@ -451,8 +491,8 @@ function Home() {
         {
           key: "flashcard",
           component: (
-            <Form layout="vertical">
-              <Form.Item label="Name of Flash cards" name="name">
+            <Form layout="vertical" onFinish={handleCreateFlashcard}>
+              <Form.Item label="Name of Flash cards" name="flashcard_title">
                 <Input
                   className="!rounded-xl"
                   placeholder="Enter flash cards name"
@@ -462,6 +502,7 @@ function Home() {
               <Button
                 className="bg-primary !w-full"
                 htmlType="submit"
+                loading={isFlashActionLoad}
                 type="primary"
                 size="large"
                 shape="round"
@@ -495,7 +536,15 @@ function Home() {
           ),
         },
       ]?.find((d) => isEqual(d.key, activeAction))?.component,
-    [activeAction, lectureId, getLectData, getAllQuizData, isActionLoad]
+    [
+      activeAction,
+      lectureId,
+      getLectData,
+      getAllQuizData,
+      getAllFlashcardData,
+      isActionLoad,
+      isFlashActionLoad,
+    ]
   );
 
   const SectionContent = useMemo(
@@ -543,7 +592,7 @@ function Home() {
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       Bucket: "nurovantfrontend",
-      Key: `audio/${upldFile.name}`, // You can customize the key based on your requirement
+      Key: `audio/${upldFile.file.name}`, // You can customize the key based on your requirement
       Body: JSON.stringify(audioBlob),
       ContentType: upldFile.file.type,
     };
