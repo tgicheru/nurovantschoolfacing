@@ -35,6 +35,10 @@ import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
 import { useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
 import { useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
+import {
+  useGetAllFlashcards,
+  usePostFlashcards,
+} from "../../../hooks/flashcards/flashcards";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -66,13 +70,19 @@ function Home() {
     data: getLectData,
     refetch: getLectFetch,
     isFetching: getLectLoad,
-  } = useGetLectures({limit, page})
+  } = useGetLectures({ limit, page });
 
   const {
     data: getAllQuizData,
     refetch: getAllQuizFetch,
     isFetching: getAllQuizLoad,
-  } = useGetAllQuiz({limit, page})
+  } = useGetAllQuiz({ limit, page });
+
+  const {
+    data: getAllFlashcardData,
+    refetch: getAllFlashcardFetch,
+    isFetching: getAllFlashcardLoad,
+  } = useGetAllFlashcards({ limit, page });
 
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
@@ -191,7 +201,15 @@ function Home() {
     {
       title: "Name",
       dataIndex: "",
-      render: () => <p>Untitled 01</p>,
+      render: (d) => (
+        <Button
+          onClick={() => handleViewQuiz(d?._id)}
+          className="text-primary"
+          type="text"
+        >
+          {d?.name}
+        </Button>
+      ),
     },
     {
       title: "Date uploaded",
@@ -264,7 +282,9 @@ function Home() {
         label: (
           <div className="flex items-center gap-3">
             <p>Lecture</p>
-            <Tag className="!bg-lit !border-0">{getLectData?.lectures?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getLectData?.lectures?.length}
+            </Tag>
           </div>
         ),
       },
@@ -275,17 +295,22 @@ function Home() {
         label: (
           <div className="flex items-center gap-3">
             <p>Quiz</p>
-            <Tag className="!bg-lit !border-0">{getAllQuizData?.data?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllQuizData?.data?.length}
+            </Tag>
           </div>
         ),
       },
       {
         key: "flash-cards",
         column: flashcardColumns,
+        data: getAllFlashcardData?.data,
         label: (
           <div className="flex items-center gap-3">
             <p>Flash cards</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllFlashcardData?.data?.length}
+            </Tag>
           </div>
         ),
       },
@@ -300,7 +325,7 @@ function Home() {
         ),
       },
     ],
-    [getLectData, getAllQuizData]
+    [getLectData, getAllQuizData, getAllFlashcardData]
   );
 
   const handleTab = (tab: string) => {
@@ -324,7 +349,7 @@ function Home() {
       modalType: (handleCapitalize(activeAction!) || "Success") as ModalType,
       showModal: true,
     });
-  }
+  };
 
   // const handleUpload = () => {
   //   console.log(upldFile);
@@ -365,15 +390,14 @@ function Home() {
   //   );
   // };
 
-  const {
-    mutate: postLectAction,
-    isLoading: postLectLoad,
-  } = usePostLecture(successAction)
+  const { mutate: postLectAction, isLoading: postLectLoad } =
+    usePostLecture(successAction);
 
-  const {
-    mutate: postQuizAction,
-    isLoading: postQuizLoad,
-  } = usePostQuiz(successAction)
+  const { mutate: postQuizAction, isLoading: postQuizLoad } =
+    usePostQuiz(successAction);
+
+  const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
+    usePostFlashcards(successAction);
 
   const handleUploadTest = () => {
     postLectAction({
@@ -382,11 +406,13 @@ function Home() {
       file_name: "Demons-And-Angels-1.mp3",
       lecture_name: "omega",
       upload_type: "audio upload",
-    })
-  }
+    });
+  };
 
   const handleCreateQuiz = (value: any) => {
-    const lecture = getLectData?.lectures?.find((d: any) => isEqual(d?._id, lectureId))
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, lectureId)
+    );
     const payload = {
       ...value,
       title: value?.quiz_title,
@@ -394,12 +420,28 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: lectureId,
-    }
-    postQuizAction(payload)
-  }
+    };
+    postQuizAction(payload);
+  };
 
-  const isFetchLoad = (getLectLoad || getAllQuizLoad)
-  const isActionLoad = (postQuizLoad)
+  const handleCreateFlashcard = (value: any) => {
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, lectureId)
+    );
+    const payload = {
+      ...value,
+      title: value?.flashcard_title,
+      file_url: lecture?.contentUrl,
+      file_type: lecture?.contentType,
+      file_name: lecture?.lecture_title,
+      lecture_id: lectureId,
+    };
+    postFlashcardAction(payload);
+  };
+
+  const isFetchLoad = getLectLoad || getAllQuizLoad;
+  const isActionLoad = postQuizLoad;
+  const isFlashActionLoad = postFlashcardLoad;
 
   const CreateContent = useMemo(
     () =>
@@ -449,8 +491,8 @@ function Home() {
         {
           key: "flashcard",
           component: (
-            <Form layout="vertical">
-              <Form.Item label="Name of Flash cards" name="name">
+            <Form layout="vertical" onFinish={handleCreateFlashcard}>
+              <Form.Item label="Name of Flash cards" name="flashcard_title">
                 <Input
                   className="!rounded-xl"
                   placeholder="Enter flash cards name"
@@ -460,6 +502,7 @@ function Home() {
               <Button
                 className="bg-primary !w-full"
                 htmlType="submit"
+                loading={isFlashActionLoad}
                 type="primary"
                 size="large"
                 shape="round"
@@ -498,7 +541,9 @@ function Home() {
       lectureId,
       getLectData,
       getAllQuizData,
+      getAllFlashcardData,
       isActionLoad,
+      isFlashActionLoad,
     ]
   );
 
@@ -512,6 +557,60 @@ function Home() {
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
     [activeSection]
   );
+
+  const handleUpload = () => {
+    console.log(upldFile);
+    if (!upldFile) {
+      console.error("No file selected");
+      return;
+    }
+
+    // Configure AWS with your credentials
+    AWS.config.update({
+      accessKeyId: awsConfig.accessKeyId,
+      secretAccessKey: awsConfig.secretAccessKey,
+      region: awsConfig.region,
+    });
+
+    // Create an S3 service object
+    const s3 = new AWS.S3();
+    let audioBlob: Blob | null = null;
+
+    if (upldFile.file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const blob = new Blob([reader.result as ArrayBuffer], {
+          type: upldFile.file.type,
+        });
+        audioBlob = blob;
+      };
+
+      reader.readAsArrayBuffer(upldFile.file);
+    }
+
+    // Specify the bucket and key (object key) for the upload
+    const uploadParams = {
+      Bucket: "nurovantfrontend",
+      Key: `audio/${upldFile.file.name}`, // You can customize the key based on your requirement
+      Body: JSON.stringify(audioBlob),
+      ContentType: upldFile.file.type,
+    };
+
+    // Upload the file
+    s3.upload(
+      uploadParams,
+      (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
+        if (err) {
+          console.error("Error uploading file", err);
+        } else {
+          console.log("File uploaded successfully", data);
+          // Handle success, update UI, etc.
+        }
+      }
+    );
+  };
+
   if (SectionContent) return SectionContent;
   return (
     <Spin spinning={isFetchLoad}>
@@ -563,11 +662,7 @@ function Home() {
             />
           </div>
           <div>
-            <CustomTable
-              data={data}
-              column={column}
-              pagination={false}
-            />
+            <CustomTable data={data} column={column} pagination={false} />
           </div>
         </div>
 
@@ -589,7 +684,12 @@ function Home() {
         </div>
 
         {/* upload document modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <Modal onCancel={onClose} closeIcon={false} footer={false} open={isOpen}>
+        <Modal
+          onCancel={onClose}
+          closeIcon={false}
+          footer={false}
+          open={isOpen}
+        >
           <div className="flex flex-col justify-center items-center gap-5">
             <p className="text-[32px] font-semibold text-secondary">
               Import Document
