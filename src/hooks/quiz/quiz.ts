@@ -40,6 +40,23 @@ export function useGetQuiz(id: string) {
   );
 }
 
+export function useGetQuizParticipants(id: string) {
+  const url = "/api/quiz/get_all_results/";
+  const axios = useContext(AxiosContext);
+  return useQuery(["get:quiz_participants"], () => getRequest(axios as unknown as AxiosInstance, url+id), {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 export function usePostQuiz(successAction?: any) {
   const url = "/api/quiz/create";
   const axios = useContext(AxiosContext);

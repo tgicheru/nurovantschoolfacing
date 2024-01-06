@@ -9,7 +9,7 @@ import InviteModal from '../../../../components/modals/InviteModal';
 import { PiCaretDownBold, PiCaretLeftBold, PiCaretUpBold } from 'react-icons/pi';
 import { LuTrash } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
-import { useGetQuiz } from '../../../../hooks/quiz/quiz';
+import { useGetQuiz, useGetQuizParticipants } from '../../../../hooks/quiz/quiz';
 
 type Props = {
 }
@@ -28,21 +28,26 @@ function QuizSection({}: Props) {
     isFetching: getQuizLoad,
   } = useGetQuiz(id!)
 
+  const {
+    data: getQuizPartData,
+    isFetching: getQuizPartLoad,
+  } = useGetQuizParticipants(id!)
+
   const participantColumns: ColumnsType<any> = [
     {
       title: "Name",
-      dataIndex: "",
-      render: () => <p>John Doe</p>,
+      dataIndex: "user_full_name",
+      render: (d) => <p>{d || "NIL"}</p>,
     },
     {
       title: "Email",
-      dataIndex: "",
-      render: () => <p>johndoe@gmail.com</p>,
+      dataIndex: "email",
+      render: (d) => <p>{d || "NIL"}</p>,
     },
     {
       title: "Score",
-      dataIndex: "",
-      render: () => <p>20</p>,
+      dataIndex: "score",
+      render: (d) => <p>{d || 0}</p>,
     },  
   ];
 
@@ -66,10 +71,10 @@ function QuizSection({}: Props) {
         label: (
           <div className="flex items-center gap-3">
             <p>Participants</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">{getQuizPartData?.data?.length}</Tag>
           </div>
         ),
-        component: (<CustomTable column={participantColumns} pagination={false} />)
+        component: (<CustomTable column={participantColumns} data={getQuizPartData?.data} pagination={false} />)
       },
       {
         key: "questions",
@@ -87,7 +92,7 @@ function QuizSection({}: Props) {
         label: (
           <div className="flex items-center gap-3">
             <p>Questions</p>
-            <Tag className="!bg-lit !border-0">{getQuizData?.data?.questions?.length}</Tag>
+            <Tag className="!bg-lit !border-0">{[...(getQuizData?.data?.questions||[]), ...(getQuizData?.data?.oeq||[])]?.length}</Tag>
           </div>
         ),
         component: (
@@ -99,7 +104,7 @@ function QuizSection({}: Props) {
               expandIconPosition='right'
               expandIcon={({ isActive }) => (isActive ? <PiCaretUpBold className='text-lg' /> : <PiCaretDownBold className='text-lg' />)}
               style={{ background: "#fff" }}
-              items={getQuizData?.data?.questions?.map((d: any, idx: number) => ({
+              items={[...(getQuizData?.data?.questions||[]), ...(getQuizData?.data?.oeq||[])]?.map((d: any, idx: number) => ({
                 key: d?.question,
                 children: <div className='space-y-3'>
                   <p>Options</p>
@@ -109,7 +114,7 @@ function QuizSection({}: Props) {
                   <p>Answer: {d?.answer}</p>
                 </div>,
                 label: `${idx+1}, ${d?.question}`,
-                extra: <Button onClick={handleDelete} className='!m-0 !p-0' type='text' icon={<LuTrash />} />,
+                extra: <Button onClick={handleDelete} hidden className='!m-0 !p-0' type='text' icon={<LuTrash />} />,
                 style: {
                   marginBottom: 20,
                   border: '1px solid #E6E9ED',
@@ -121,15 +126,17 @@ function QuizSection({}: Props) {
         )
       },
     ],
-    [getQuizData]
+    [getQuizData, getQuizPartData]
   );
 
   const CurrentTab = useMemo(
     () => tabs.find((d) => isEqual(d.key, activeTab)),
     [activeTab, tabs]
   );
+
+  const isLoading = (getQuizLoad || getQuizPartLoad)
   return (
-    <Spin spinning={getQuizLoad}>
+    <Spin spinning={isLoading}>
       <div className="w-full h-full md:py-5 space-y-5">
         <div className="flex justify-between items-center px-5 md:px-10">
           <p className="text-3xl font-bold text-secondary cursor-pointer">
@@ -162,8 +169,9 @@ function QuizSection({}: Props) {
 
         {/* invite modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
         <InviteModal
-          isOpen={isInvite}
           onClose={onInvClose}
+          isOpen={isInvite}
+          value={id!}
         />
       </div>
     </Spin>
