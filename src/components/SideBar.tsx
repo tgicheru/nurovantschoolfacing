@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import Logo from "./Logo";
 import { LuClipboardList, LuLogOut, LuUser } from "react-icons/lu";
 import { IoPlayBackOutline, IoPlayForwardOutline } from "react-icons/io5";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { BsGear } from "react-icons/bs";
 import { Avatar, Button, Divider, Menu } from "antd";
@@ -10,6 +10,7 @@ import { isEqual } from "../context/utils";
 import authAtom from "../atoms/auth/auth.atom";
 import { useRecoilValue } from "recoil";
 import { extractAvatar } from "../constants";
+import { FaPlus } from "react-icons/fa";
 
 type Props = {
   isOpen: boolean;
@@ -75,7 +76,8 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
     return onOpen();
   };
   const handleLogout = () => navigate("/auth/logout");
-  return (
+
+  const MenuContent = () => (
     <div
       className={`"w-full h-full flex flex-col justify-between items-center px-3 py-10 ${
         pathname === "/info" && "hidden"
@@ -136,6 +138,37 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
             type="text"
             icon={<LuLogOut className="!text-lg !font-medium" />}
           />
+        </div>
+      </div>
+    </div>
+  )
+  return (
+    <div className='w-full h-full'>
+      <div className='hidden md:block w-full h-full '>
+        <MenuContent />
+      </div>
+
+      <div className='w-full md:hidden bg-white fixed bottom-0 left-0 right-0'>
+        <Divider className='!m-0 !p-0'>
+          <Button
+            icon={<FaPlus className='text-2xl' />}
+            className='bg-primary'
+            type='primary'
+            shape='circle'
+            size='large'
+          />
+        </Divider>
+        <div className='flex justify-between items-center gap-5 flex-nowrap overflow-x-auto p-5'>
+          {items?.map(({key, icon, label}) => (
+            <Link
+              to={key}
+              key={key}
+              className={`${isEqual(key, pathname) ? "text-primary" : "text-silver"} flex flex-col justify-center items-center space-y-3 text-xs font-medium whitespace-nowrap`}
+            >
+              {icon}
+              <p>{label}</p>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
