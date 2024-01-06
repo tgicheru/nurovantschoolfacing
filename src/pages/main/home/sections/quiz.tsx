@@ -87,7 +87,7 @@ function QuizSection({}: Props) {
         label: (
           <div className="flex items-center gap-3">
             <p>Questions</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">{getQuizData?.data?.questions?.length}</Tag>
           </div>
         ),
         component: (
