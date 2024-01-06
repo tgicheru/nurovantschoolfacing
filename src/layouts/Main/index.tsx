@@ -19,16 +19,16 @@ const MainLayout = ({ children }: Props) => {
         {/* sidebar component can come in here  */}
         <div
           className={`${
-            isOpen ? "w-[5%]" : "w-full md:w-[20%] lg:w-[25%]"
+            isOpen ? "w-[5%]" : "w-full md:w-[20%]"
           } h-full ${pathname === "/info" && "hidden"}`}
         >
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
         </div>
 
-        <div className={`w-full h-full ${pathname === "/info" ? "" : "pt-2"}`}>
+        <div className={`${isOpen ? "w-[95%]" : "w-full md:w-[80%]"} h-full ${pathname === "/info" ? "" : "pt-2"}`}>
           {/* main layout pages children  */}
           <div
-            className={`w-full h-full bg-white ${
+            className={`w-full  h-full bg-white ${
               pathname === "/info" ? "" : "rounded-l-3xl overflow-y-auto py-5"
             }`}
           >
