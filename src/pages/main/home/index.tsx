@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Alert,
   Button,
@@ -74,6 +74,23 @@ function Home() {
     null
   );
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (isRecording) {
+      timer = setInterval(() => {
+        setElapsedTime((prevTime) => prevTime + 1);
+      }, 1000);
+    }
+
+    if (elapsedTime === Number(selectedOption) * 60) {
+      handleStopRecording();
+    }
+
+    return () => clearInterval(timer);
+  }, [isRecording]);
 
   const handleStartRecording = () => {
     navigator.mediaDevices
@@ -81,6 +98,7 @@ function Home() {
       .then((stream) => {
         const recorder = new MediaRecorder(stream);
         setMediaRecorder(recorder);
+        setElapsedTime(0);
 
         recorder.ondataavailable = (e) => {
           if (e.data.size > 0) {
@@ -91,7 +109,47 @@ function Home() {
         recorder.onstop = () => {
           const blob = new Blob(recordedChunks, { type: "audio/wav" });
           // Do something with the recorded blob, like saving it or playing it
-          console.log(blob);
+          console.log(blob, blob.size);
+          // Configure AWS with your credentials
+          AWS.config.update({
+            accessKeyId: awsConfig.accessKeyId,
+            secretAccessKey: awsConfig.secretAccessKey,
+            region: awsConfig.region,
+          });
+
+          // Specify the bucket and key (object key) for the upload
+          const uploadParams = {
+            Bucket: "nurovantfrontend",
+            Key: `recording`, // You can customize the key based on your requirement
+            Body: blob,
+            ContentType: blob.type,
+          };
+
+          const s3 = new AWS.S3();
+
+          // Upload the file
+          s3.upload(
+            uploadParams,
+            (
+              err: Error | null,
+              data: AWS.S3.ManagedUpload.SendData | undefined
+            ) => {
+              if (err) {
+                console.error("Error uploading file", err);
+              } else {
+                console.log("File uploaded successfully", data);
+
+                postLectAction({
+                  file_url: data?.Location,
+                  file_type: "audio",
+                  file_name: data?.Key,
+                  lecture_name: data?.Key,
+                  upload_type: "audio upload",
+                });
+                // Handle success, update UI, etc.
+              }
+            }
+          );
         };
 
         recorder.start();
@@ -103,9 +161,34 @@ function Home() {
   const handleStopRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
+      console.log(elapsedTime);
+      console.log(Number(selectedOption) * 60);
       setIsRecording(false);
     }
   };
+
+  const formatTime = (timeInSeconds: number): string => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleSelectChange = (event: any) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const options = [];
+  for (let i = 1; i <= 60; i++) {
+    options.push(
+      <option key={i} value={i}>
+        {i}
+      </option>
+    );
+  }
 
   const {
     data: getLectData,
@@ -390,6 +473,7 @@ function Home() {
     onClose();
     getLectFetch();
     getAllQuizFetch();
+    getAllFlashcardFetch();
     setModal({
       modalType: (handleCapitalize(activeAction!) || "Success") as ModalType,
       showModal: true,
@@ -611,6 +695,7 @@ function Home() {
     [activeSection]
   );
 
+  // const [blob, setBlob] = useState<Blob>();
   const handleUpload = () => {
     console.log(upldFile);
     if (!upldFile) {
@@ -627,16 +712,17 @@ function Home() {
 
     // Create an S3 service object
     const s3 = new AWS.S3();
-    let audioBlob: Blob | null = null;
+    var audioBlob: Blob | null | undefined = null || undefined;
 
     if (upldFile.file) {
       const reader = new FileReader();
 
       reader.onload = () => {
-        const blob = new Blob([reader.result as ArrayBuffer], {
+        var blob = new Blob([reader.result as ArrayBuffer], {
           type: upldFile.file.type,
         });
         audioBlob = blob;
+        // setBlob(blob);
       };
 
       reader.readAsArrayBuffer(upldFile.file);
@@ -645,8 +731,8 @@ function Home() {
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       Bucket: "nurovantfrontend",
-      Key: `audio/${upldFile.file.name}`, // You can customize the key based on your requirement
-      Body: JSON.stringify(audioBlob),
+      Key: `${upldFile.file.name}`, // You can customize the key based on your requirement
+      Body: audioBlob,
       ContentType: upldFile.file.type,
     };
 
@@ -658,6 +744,14 @@ function Home() {
           console.error("Error uploading file", err);
         } else {
           console.log("File uploaded successfully", data);
+
+          postLectAction({
+            file_url: data?.Location,
+            file_type: "audio",
+            file_name: data?.Key,
+            lecture_name: data?.Key,
+            upload_type: "audio upload",
+          });
           // Handle success, update UI, etc.
         }
       }
@@ -821,14 +915,31 @@ function Home() {
                 How long do you want to record for?
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            {/* <div className="grid grid-cols-3 gap-3">
               {Array.from(Array(3).keys()).map((idx) => (
                 <Button className="!rounded-xl" size="large">{`${
                   (idx + 3) * 5
                 } mins`}</Button>
               ))}
+            </div> */}
+            <div className="w-full flex items-center justify-center gap-1">
+              <select value={selectedOption} onChange={handleSelectChange}>
+                <option value="" disabled>
+                  Select an option
+                </option>
+                {options}
+              </select>
+
+              <span className="text-[14px] leading-[20px]">Mins</span>
             </div>
 
+            {isRecording && (
+              <div className="w-full flex items-center justify-center">
+                <p className="text-[14px] leading-[20px] text-center">
+                  Recorded Time: {formatTime(elapsedTime)}
+                </p>
+              </div>
+            )}
             <Button
               // disabled={!upldFile?.file}
               onClick={isRecording ? handleStopRecording : handleStartRecording}
