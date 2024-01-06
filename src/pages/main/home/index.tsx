@@ -68,6 +68,45 @@ function Home() {
   const onOpen = () => setIsOpen(true);
   const lectureId = param.get("id");
 
+  // Live recording section
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+
+  const handleStartRecording = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const recorder = new MediaRecorder(stream);
+        setMediaRecorder(recorder);
+
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            setRecordedChunks((prevChunks) => [...prevChunks, e.data]);
+          }
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: "audio/wav" });
+          // Do something with the recorded blob, like saving it or playing it
+          console.log(blob);
+        };
+
+        recorder.start();
+        setIsRecording(true);
+      })
+      .catch((err) => console.error("Error accessing microphone:", err));
+  };
+
+  const handleStopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
   const {
     data: getLectData,
     refetch: getLectFetch,
@@ -789,15 +828,16 @@ function Home() {
                 } mins`}</Button>
               ))}
             </div>
+
             <Button
               // disabled={!upldFile?.file}
-              onClick={onClose}
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
               className="bg-primary !w-full md:!w-[70%]"
               type="primary"
               size="large"
               shape="round"
             >
-              Start Recording
+              {isRecording ? "Stop Recording" : "Start Recording"}
             </Button>
           </div>
         </Modal>
