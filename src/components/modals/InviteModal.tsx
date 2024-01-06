@@ -4,9 +4,10 @@ import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
   isOpen: boolean;
+  value: string;
   onClose: any;
 };
-function InviteModal({ isOpen, onClose }: Props) {
+function InviteModal({ isOpen, onClose, value }: Props) {
   return (
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
       <Form
@@ -14,7 +15,7 @@ function InviteModal({ isOpen, onClose }: Props) {
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
-          <QRCode value="https://nurovant.ai" className="!w-full" />
+          <QRCode value={value} className="!w-full" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">
