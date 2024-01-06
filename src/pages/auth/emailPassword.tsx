@@ -16,7 +16,7 @@ function RegisterPage() {
   const country = params.get("country");
   const decodedMobile = mobile!?.trimStart().replace(/ /g, "");
   const { mutate, isLoading } = usePassword(
-    email ? "/api/auth/register_email" : "/api/auth/register_mobile"
+    email ? "/api/teachers/signup_email" : "/api/auth/register_mobile"
   );
   const onSubmit = () => {
     if (email) {

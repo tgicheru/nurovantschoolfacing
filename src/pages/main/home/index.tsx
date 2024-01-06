@@ -27,6 +27,7 @@ import { BiTestTube } from "react-icons/bi";
 import { handleCapitalize, isEqual } from "../../../context/utils";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
+import FlashcardSection from "./sections/flashcard";
 import modalAtom, { ModalType } from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
@@ -67,6 +68,45 @@ function Home() {
   const onOpen = () => setIsOpen(true);
   const lectureId = param.get("id");
 
+  // Live recording section
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+
+  const handleStartRecording = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const recorder = new MediaRecorder(stream);
+        setMediaRecorder(recorder);
+
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) {
+            setRecordedChunks((prevChunks) => [...prevChunks, e.data]);
+          }
+        };
+
+        recorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: "audio/wav" });
+          // Do something with the recorded blob, like saving it or playing it
+          console.log(blob);
+        };
+
+        recorder.start();
+        setIsRecording(true);
+      })
+      .catch((err) => console.error("Error accessing microphone:", err));
+  };
+
+  const handleStopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
   const {
     data: getLectData,
     refetch: getLectFetch,
@@ -93,7 +133,11 @@ function Home() {
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
 
-  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  const handleViewFlashcard = (id: string) =>
+    setParam({ id, section: "flashcard" });
+  const handleViewQuiz = (id: string) =>
+    setParam({ id, section: "quiz-questions" });
   const handleInvite = (id: string) => onInvOpen();
 
   const uploadProps: UploadProps = {
@@ -204,7 +248,7 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <Button
-          onClick={() => handleViewQuiz(d?._id)}
+          onClick={() => handleViewFlashcard(d?._id)}
           className="text-primary"
           type="text"
         >
@@ -556,7 +600,11 @@ function Home() {
           conponent: <QuizSection />,
         },
         {
-          key: "quiz",
+          key: "flashcard",
+          conponent: <FlashcardSection />,
+        },
+        {
+          key: "quiz-questions",
           conponent: <QuizQuestionsSection />,
         },
       ].find((d) => isEqual(d.key, activeSection))?.conponent,
@@ -780,15 +828,16 @@ function Home() {
                 } mins`}</Button>
               ))}
             </div>
+
             <Button
               // disabled={!upldFile?.file}
-              onClick={onClose}
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
               className="bg-primary !w-full md:!w-[70%]"
               type="primary"
               size="large"
               shape="round"
             >
-              Start Recording
+              {isRecording ? "Stop Recording" : "Start Recording"}
             </Button>
           </div>
         </Modal>
