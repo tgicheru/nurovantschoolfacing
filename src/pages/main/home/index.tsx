@@ -1,12 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
 import React, { useMemo, useState, useEffect } from "react";
 import {
-  Alert,
   Button,
   Form,
   Input,
   Modal,
-  QRCode,
   Spin,
   Tabs,
   Tag,
@@ -62,11 +61,14 @@ function Home() {
   const onInvOpen = () => setIsInvite(true);
   const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
-  const onCreOpen = () => setIsCreate(true);
+  const onCreOpen = () => {
+    setIsCreate(true);
+    onGenClose();
+  };
   const activeAction = param.get("action");
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
-  const lectureId = param.get("id");
+  const paramId = param.get("id");
 
   // Live recording section
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -217,11 +219,9 @@ function Home() {
   const { user } = useRecoilValue(authAtom);
 
   // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
-  const handleViewFlashcard = (id: string) =>
-    setParam({ id, section: "flashcard" });
-  const handleViewQuiz = (id: string) =>
-    setParam({ id, section: "quiz" });
-  const handleInvite = (id: string) => onInvOpen();
+  const handleViewFlashcard = (id: string) => setParam({ id, section: "flashcard" });
+  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  const handleInvite = (id: string) => {onInvOpen(); setParam({ id })};
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -251,19 +251,20 @@ function Home() {
     },
     {
       title: "Actions",
-      dataIndex: "_id",
+      dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleAction("quiz", d)}
+            onClick={() => handleAction("quiz", d?._id)}
             className="text-primary"
+            disabled={d?.quiz}
             type="text"
             icon={<BiTestTube />}
           >
             Quiz
           </Button>
           <Button
-            onClick={() => handleAction("flashcard", d)}
+            onClick={() => handleAction("flashcard", d?._id)}
             className="text-primary"
             type="text"
             icon={<TbCards />}
@@ -271,9 +272,10 @@ function Home() {
             Flashcards
           </Button>
           <Button
-            onClick={() => handleAction("recap", d)}
+            onClick={() => handleAction("recap", d?._id)}
             className="text-primary"
             type="text"
+            hidden
             icon={<PiRepeatFill />}
           >
             Recaps
@@ -304,19 +306,19 @@ function Home() {
     },
     {
       title: "Participants",
-      dataIndex: "",
-      render: () => <p>0</p>,
+      dataIndex: "participants",
+      render: (d) => <p>{d || 0}</p>,
     },
     {
       title: "Actions",
-      dataIndex: "",
-      render: () => (
+      dataIndex: "_id",
+      render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("quiz")}
+            onClick={() => handleInvite(d)}
             className="text-primary"
-            type="text"
             icon={<IoMailOutline />}
+            type="text"
           >
             Send Invitation
           </Button>
@@ -446,7 +448,7 @@ function Home() {
         key: "recaps",
         column: recapColumns,
         label: (
-          <div className="flex items-center gap-3">
+          <div className="!hidden flex items-center gap-3">
             <p>Recaps</p>
             <Tag className="!bg-lit !border-0">1</Tag>
           </div>
@@ -540,7 +542,7 @@ function Home() {
 
   const handleCreateQuiz = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
-      isEqual(d?._id, lectureId)
+      isEqual(d?._id, paramId)
     );
     const payload = {
       ...value,
@@ -548,14 +550,14 @@ function Home() {
       file_url: lecture?.contentUrl,
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
-      lecture_id: lectureId,
+      lecture_id: paramId,
     };
     postQuizAction(payload);
   };
 
   const handleCreateFlashcard = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
-      isEqual(d?._id, lectureId)
+      isEqual(d?._id, paramId)
     );
     const payload = {
       ...value,
@@ -563,7 +565,7 @@ function Home() {
       file_url: lecture?.contentUrl,
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
-      lecture_id: lectureId,
+      lecture_id: paramId,
     };
     postFlashcardAction(payload);
   };
@@ -667,7 +669,7 @@ function Home() {
       ]?.find((d) => isEqual(d.key, activeAction))?.component,
     [
       activeAction,
-      lectureId,
+      paramId,
       getLectData,
       getAllQuizData,
       getAllFlashcardData,
@@ -762,17 +764,9 @@ function Home() {
   return (
     <Spin spinning={isFetchLoad}>
       <div className="w-full h-full md:py-5 space-y-5">
-        <div className="flex justify-between items-center px-5 md:px-10">
-          <div>
-            <p
-              className="text-3xl font-bold text-secondary"
-              onClick={() => {
-                // setModal({
-                //   showModal: true,
-                //   modalType: "Quiz",
-                // });
-              }}
-            >
+        <div className="flex justify-end md:justify-between items-center px-5 md:px-10">
+          <div className="hidden md:block">
+            <p className="text-3xl font-bold text-secondary">
               Hello {user?.info?.name}
             </p>
             <p className="text-base font-normal text-gray">
@@ -790,14 +784,14 @@ function Home() {
           </Button>
         </div>
 
-        <div hidden={!getLectData?.lectures?.length} className="w-full">
-          <div className="flex justify-between items-center px-5 md:px-10">
+        <div hidden={!getLectData?.lectures?.length} className="w-full space-y-5">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10">
             <Tabs
               activeKey={activeTab}
               defaultActiveKey={activeTab}
               items={tabs}
               onChange={handleTab}
-              className="!p-0 !m-0"
+              className="w-full md:w-auto !p-0 !m-0"
             />
             <CustomPagination
               total={75}
@@ -866,7 +860,7 @@ function Home() {
                     Delete
                   </Button>
                 ) : (
-                  "SVG, PNG, JPG or GIF (max. 800x400px)"
+                  "MP3, M4A, WAV, PDF"
                 )}
               </p>
             </Upload.Dragger>
@@ -996,7 +990,7 @@ function Home() {
         </Modal>
 
         {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <InviteModal isOpen={isInvite} onClose={onInvClose} />
+        <InviteModal isOpen={isInvite} onClose={onInvClose} value={paramId!} />
       </div>
     </Spin>
   );
