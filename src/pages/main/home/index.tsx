@@ -166,6 +166,7 @@ function Home() {
       console.log(elapsedTime);
       console.log(Number(selectedOption) * 60);
       setIsRecording(false);
+      onRecClose();
     }
   };
 
