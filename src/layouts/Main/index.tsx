@@ -35,7 +35,7 @@ const MainLayout = ({ children }: Props) => {
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
         </div>
 
-        <div className={`w-full h-full ${isOpen ? "!w-[95%]" : "md:!w-[80%]"} ${pathname === "/info" ? "" : "pt-2"}`}>
+        <div className={`w-full h-full ${isOpen ? "md:!w-[95%]" : "md:!w-[80%]"} ${pathname === "/info" ? "" : "pt-2"}`}>
           {/* main layout pages children  */}
           <div
             className={`w-full h-full bg-white ${

@@ -1,12 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import moment from "moment";
 import React, { useMemo, useState, useEffect } from "react";
 import {
-  Alert,
   Button,
   Form,
   Input,
   Modal,
-  QRCode,
   Spin,
   Tabs,
   Tag,
@@ -62,7 +61,10 @@ function Home() {
   const onInvOpen = () => setIsInvite(true);
   const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
-  const onCreOpen = () => setIsCreate(true);
+  const onCreOpen = () => {
+    setIsCreate(true);
+    onGenClose();
+  };
   const activeAction = param.get("action");
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
@@ -255,7 +257,7 @@ function Home() {
           <Button
             onClick={() => handleAction("quiz", d?._id)}
             className="text-primary"
-            hidden={d?.quiz}
+            disabled={d?.quiz}
             type="text"
             icon={<BiTestTube />}
           >
@@ -273,6 +275,7 @@ function Home() {
             onClick={() => handleAction("recap", d?._id)}
             className="text-primary"
             type="text"
+            hidden
             icon={<PiRepeatFill />}
           >
             Recaps
@@ -445,7 +448,7 @@ function Home() {
         key: "recaps",
         column: recapColumns,
         label: (
-          <div className="flex items-center gap-3">
+          <div className="!hidden flex items-center gap-3">
             <p>Recaps</p>
             <Tag className="!bg-lit !border-0">1</Tag>
           </div>
@@ -857,7 +860,7 @@ function Home() {
                     Delete
                   </Button>
                 ) : (
-                  "SVG, PNG, JPG or GIF (max. 800x400px)"
+                  "MP3, M4A, WAV, PDF"
                 )}
               </p>
             </Upload.Dragger>

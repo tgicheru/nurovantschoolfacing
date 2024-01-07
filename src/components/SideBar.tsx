@@ -21,32 +21,29 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
-  const items = useMemo(
-    () => [
-      {
-        key: "/",
-        label: isOpen ? "" : "Home",
-        icon: <BiHomeAlt2 className="!text-lg !font-medium" />,
-      },
-      // {
-      //   key: "/respondents",
-      //   label: isOpen ? "" : "Respondents",
-      //   icon: <LuUser className='!text-lg !font-medium' />,
-      // },
-      // {
-      //   key: "/results-database",
-      //   label: isOpen ? "" : "Results Database",
-      //   icon: <LuClipboardList className='!text-lg !font-medium' />,
-      // },
-    ],
-    [isOpen]
-  );
+  const items = [
+    {
+      key: "/",
+      label: "Home",
+      icon: <BiHomeAlt2 className="!text-lg !font-medium" />,
+    },
+    // {
+    //   key: "/respondents",
+    //   label: "Respondents",
+    //   icon: <LuUser className='!text-lg !font-medium' />,
+    // },
+    // {
+    //   key: "/results-database",
+    //   label: "Results Database",
+    //   icon: <LuClipboardList className='!text-lg !font-medium' />,
+    // },
+  ];
 
   const extras = useMemo(
     () => [
       {
         key: "hide",
-        label: isOpen ? "" : "Hide",
+        label: isOpen ? "Open" : "Hide",
         icon: !isOpen ? (
           <IoPlayBackOutline
             onClick={onOpen}
@@ -61,7 +58,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
       },
       // {
       //   key: "/settings",
-      //   label: isOpen ? "" : "Settings",
+      //   label: "Settings",
       //   icon: <BsGear className="!text-lg !font-medium" />,
       // },
     ],
@@ -79,7 +76,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
 
   const MenuContent = () => (
     <div
-      className={`"w-full h-full flex flex-col justify-between items-center px-3 py-10 ${
+      className={`"w-full h-full flex flex-col justify-between items-center ${!isOpen && "px-3"} py-10 ${
         pathname === "/info" && "hidden"
       }`}
     >
@@ -95,13 +92,15 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
           }}
           defaultSelectedKeys={[pathname]}
           defaultOpenKeys={[pathname]}
+          inlineCollapsed={isOpen}
           className="space-y-3"
           onClick={handleMenu}
+          key="main-menu"
           mode="inline"
           items={items}
         />
       </div>
-      <div className="w-full">
+      <div className="w-full flex flex-col justify-center items-center">
         <Menu
           style={{
             border: 0,
@@ -112,13 +111,15 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
           }}
           defaultSelectedKeys={[pathname]}
           defaultOpenKeys={[pathname]}
+          inlineCollapsed={isOpen}
           className="space-y-3"
           onClick={handleMenu}
+          key="extra-menu"
           items={extras}
           mode="inline"
         />
         <Divider />
-        <div className="flex justify-between items-center">
+        <div className={`w-full flex ${isOpen ? "justify-center" : "justify-between"} items-center`}>
           <div className="flex items-center gap-3">
             <Avatar alt="user" size="large">
               {(user?.info?.name !== null || user?.info?.name === undefined) &&
@@ -148,7 +149,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <MenuContent />
       </div>
 
-      <div className='w-full md:hidden bg-white fixed bottom-0 left-0 right-0 z-10'>
+      <div className='w-full md:hidden bg-white fixed bottom-0 left-0 right-0 z-20'>
         <Divider className='!m-0 !p-0'>
           <Button
             icon={<FaPlus className='text-2xl' />}
