@@ -65,8 +65,8 @@ function Home() {
     setIsCreate(true);
     onGenClose();
   };
+  const onClose = () => { handleUpldFileClr(); setIsOpen(false) };
   const activeAction = param.get("action");
-  const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
   const paramId = param.get("id");
 
@@ -166,6 +166,7 @@ function Home() {
       console.log(elapsedTime);
       console.log(Number(selectedOption) * 60);
       setIsRecording(false);
+      onRecClose();
     }
   };
 
@@ -501,6 +502,7 @@ function Home() {
     onClose();
     getLectFetch();
     getAllQuizFetch();
+    handleUpldFileClr();
     getAllFlashcardFetch();
     setModal({
       modalType: (handleCapitalize(activeAction!) || "Success") as ModalType,

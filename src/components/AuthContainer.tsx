@@ -22,7 +22,7 @@ const AuthContainer = ({ children }: Props) => {
       </div>
 
       {/* Right Section*/}
-      <div className="flex items-center justify-center w-full lg:w-[55%] bg-white h-full">
+      <div className="flex items-center justify-center w-full lg:w-[55%] bg-white h-full p-5">
         {children}
       </div>
     </div>
