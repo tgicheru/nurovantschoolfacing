@@ -293,6 +293,7 @@ function Home() {
           <Button
             onClick={() => handleAction("flashcard", d?._id)}
             className="text-primary"
+            disabled={d?.flashcards}
             type="text"
             icon={<TbCards />}
           >
@@ -301,6 +302,7 @@ function Home() {
           <Button
             onClick={() => handleAction("recap", d?._id)}
             className="text-primary"
+            disabled={d?.recaps}
             type="text"
             hidden
             icon={<PiRepeatFill />}
