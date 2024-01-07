@@ -1,4 +1,4 @@
-import { Button, Collapse, CollapseProps, Divider, Spin, Tabs, Tag } from 'antd'
+import { Button, Collapse, Divider, Spin, Tabs, Tag } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa6'
 import CustomPagination from '../../../../components/CustomPagination';
@@ -6,7 +6,7 @@ import CustomTable from '../../../../components/CustomTable';
 import { isEqual } from '../../../../context/utils';
 import { ColumnsType } from 'antd/es/table';
 import InviteModal from '../../../../components/modals/InviteModal';
-import { PiCaretDownBold, PiCaretLeftBold, PiCaretUpBold } from 'react-icons/pi';
+import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
 import { LuTrash } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
 import { useGetQuiz, useGetQuizParticipants } from '../../../../hooks/quiz/quiz';

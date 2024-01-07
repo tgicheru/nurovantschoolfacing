@@ -18,9 +18,9 @@ const MainLayout = ({ children }: Props) => {
   const onOpen = () => setIsOpen(true);
   return (
     <ModalContainer>
-      <div className="w-full h-screen flex p-0 m-0 bg-light font-montserrat">
+      <div className="w-full h-screen flex flex-col md:flex-row p-0 m-0 bg-light font-montserrat">
         <div className="flex justify-between items-center md:hidden p-5">
-          <div className="text-white space-y-">
+          <div className="text-dark space-y-">
             <p className="text-xl font-bold">{`Hello ${user?.info?.name}`}</p>
             <p className="text-sm font-normal">welcome to your dashboard</p>
           </div>
@@ -28,18 +28,18 @@ const MainLayout = ({ children }: Props) => {
         </div>
         {/* sidebar component can come in here  */}
         <div
-          className={`w-0 md:w-[20%]${
-            isOpen ? "!md:w-[5%]" : "w-full md:w-[20%]"
-          } h-full ${pathname === "/info" && "hidden"}`}
+          className={`w-0 ${
+            isOpen ? "md:!w-[5%]" : "md:!w-[20%]"
+          } md:h-full ${pathname === "/info" && "hidden"}`}
         >
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
         </div>
 
-        <div className={`${isOpen ? "w-[95%]" : "w-full md:w-[80%]"} h-full ${pathname === "/info" ? "" : "pt-2"}`}>
+        <div className={`w-full h-full ${isOpen ? "!w-[95%]" : "md:!w-[80%]"} ${pathname === "/info" ? "" : "pt-2"}`}>
           {/* main layout pages children  */}
           <div
-            className={`w-full  h-full bg-white ${
-              pathname === "/info" ? "" : " rounded-t-3xl md:rounded-t-none md:rounded-l-3xl overflow-y-auto p-5"
+            className={`w-full h-full bg-white ${
+              pathname === "/info" ? "" : "rounded-t-3xl md:rounded-t-none md:!rounded-l-3xl overflow-y-auto p-5 md:p-0"
             }`}
           >
             {children}

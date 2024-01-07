@@ -148,7 +148,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <MenuContent />
       </div>
 
-      <div className='w-full md:hidden bg-white fixed bottom-0 left-0 right-0'>
+      <div className='w-full md:hidden bg-white fixed bottom-0 left-0 right-0 z-10'>
         <Divider className='!m-0 !p-0'>
           <Button
             icon={<FaPlus className='text-2xl' />}
