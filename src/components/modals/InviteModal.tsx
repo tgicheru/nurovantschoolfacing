@@ -3,13 +3,14 @@ import React from "react";
 import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
+  otherValue?: string;
   isOpen: boolean;
   value?: string;
   onClose: any;
 };
-function InviteModal({ isOpen, onClose, value }: Props) {
+function InviteModal({ isOpen, onClose, value, otherValue }: Props) {
   const url = `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`
-  const handleCopy = () => {message.success("Copied to clipborad"); navigator.clipboard.writeText(url)};
+  const handleCopy = () => {message.success("Copied to clipboard"); navigator.clipboard.writeText(url)};
   return (
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
       <Form
@@ -17,7 +18,7 @@ function InviteModal({ isOpen, onClose, value }: Props) {
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
-          <QRCode value={url} className="!w-full" />
+          <QRCode value={otherValue || url} className="!w-full" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">
@@ -28,8 +29,8 @@ function InviteModal({ isOpen, onClose, value }: Props) {
             <Input
               className="!rounded-xl"
               placeholder="Enter quiz name"
-              defaultValue={url}
-              value={url}
+              defaultValue={otherValue || url}
+              value={otherValue || url}
               readOnly
               suffix={
                 <Button
