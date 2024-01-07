@@ -613,7 +613,7 @@ function Home() {
                   size="large"
                 />
               </Form.Item>
-              <Form.Item label="Select no of Questions">
+              <Form.Item hidden label="Select no of Questions">
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from(Array(3).keys()).map((idx) => (
                     <Button className="!rounded-xl" size="large">{`${
@@ -622,7 +622,7 @@ function Home() {
                   ))}
                 </div>
               </Form.Item>
-              <Form.Item label="Quiz Duration">
+              <Form.Item hidden label="Quiz Duration">
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from(Array(3).keys()).map((idx) => (
                     <Button className="!rounded-xl" size="large">{`${
