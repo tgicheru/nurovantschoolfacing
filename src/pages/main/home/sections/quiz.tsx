@@ -1,4 +1,4 @@
-import { Button, Collapse, CollapseProps, Divider, Spin, Tabs, Tag } from 'antd'
+import { Button, Collapse, Divider, Spin, Tabs, Tag } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa6'
 import CustomPagination from '../../../../components/CustomPagination';
@@ -6,7 +6,7 @@ import CustomTable from '../../../../components/CustomTable';
 import { isEqual } from '../../../../context/utils';
 import { ColumnsType } from 'antd/es/table';
 import InviteModal from '../../../../components/modals/InviteModal';
-import { PiCaretDownBold, PiCaretLeftBold, PiCaretUpBold } from 'react-icons/pi';
+import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
 import { LuTrash } from 'react-icons/lu';
 import { useSearchParams } from 'react-router-dom';
 import { useGetQuiz, useGetQuizParticipants } from '../../../../hooks/quiz/quiz';
@@ -138,7 +138,7 @@ function QuizSection({}: Props) {
   return (
     <Spin spinning={isLoading}>
       <div className="w-full h-full md:py-5 space-y-5">
-        <div className="flex justify-between items-center px-5 md:px-10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-5 sm:px-5 md:px-10">
           <p className="text-3xl font-bold text-secondary cursor-pointer">
             {getQuizData?.data?.name}
           </p>
@@ -146,7 +146,7 @@ function QuizSection({}: Props) {
         </div>
 
         <div className="w-full">
-          <div className="flex justify-between items-center px-5 md:px-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10">
             <Tabs
               defaultActiveKey={activeTab}
               onChange={setActiveTab}
@@ -163,7 +163,7 @@ function QuizSection({}: Props) {
               onChange={setPage}
             />
           </div>
-          <Divider className='m-0 p-0' />
+          <Divider className='md:m-0 md:p-0' />
           {CurrentTab?.component}
         </div>
 
