@@ -120,7 +120,7 @@ function Home() {
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
             Bucket: "nurovantfrontend",
-            Key: `recording`, // You can customize the key based on your requirement
+            Key: `recording-${blob.size}.wav`, // You can customize the key based on your requirement
             Body: blob,
             ContentType: blob.type,
           };
@@ -219,9 +219,12 @@ function Home() {
   // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
   const handleViewFlashcard = (id: string) =>
     setParam({ id, section: "flashcard" });
-  const handleViewQuiz = (id: string) =>
-    setParam({ id, section: "quiz" });
+  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
   const handleInvite = (id: string) => onInvOpen();
+
+  const [audioBlob, setAudioBlob] = useState<Blob | null | undefined | Body>(
+    null
+  );
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -230,11 +233,29 @@ function Home() {
     method: undefined,
     showUploadList: false,
     className: "!w-full md:!w-[80%]",
-    onChange({ file }) {
+    onChange({ file }: { file: Blob | any }) {
       setUpldFile({
         file: file?.originFileObj,
         fileobj: file,
       });
+
+      if (file?.originFileObj) {
+        const reader = new FileReader();
+
+        reader.onload = (e: any) => {
+          // Create a Blob from the loaded data
+          if (e.target?.result instanceof ArrayBuffer) {
+            const audioBlob = new Blob([e.target.result], { type: file.type });
+            setAudioBlob(audioBlob);
+          }
+
+          // Do something with the Blob, such as sending it to a server or processing it
+          console.log(audioBlob);
+        };
+
+        // Read the content of the file as a data URL
+        reader.readAsArrayBuffer(file?.originFileObj);
+      }
     },
   };
 
@@ -480,7 +501,6 @@ function Home() {
     });
   };
 
-  // const handleUpload = () => {
   //   console.log(upldFile);
   //   if (!upldFile) {
   //     console.error("No file selected");
@@ -712,27 +732,27 @@ function Home() {
 
     // Create an S3 service object
     const s3 = new AWS.S3();
-    var audioBlob: Blob | null | undefined = null || undefined;
+    // var audioBlob: Blob | null | undefined = null || undefined;
 
-    if (upldFile.file) {
-      const reader = new FileReader();
+    // if (upldFile.file) {
+    //   const reader = new FileReader();
 
-      reader.onload = () => {
-        var blob = new Blob([reader.result as ArrayBuffer], {
-          type: upldFile.file.type,
-        });
-        audioBlob = blob;
-        // setBlob(blob);
-      };
+    //   reader.onload = (e: any) => {
+    //     var blob = new Blob([e?.target?.result], {
+    //       type: upldFile.file.type,
+    //     });
+    //     audioBlob = blob;
+    //     // setBlob(blob);
+    //   };
 
-      reader.readAsArrayBuffer(upldFile.file);
-    }
+    //   reader.readAsArrayBuffer(upldFile.file);
+    // }
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       Bucket: "nurovantfrontend",
-      Key: `${upldFile.file.name}`, // You can customize the key based on your requirement
-      Body: audioBlob,
+      Key: `${upldFile.file.name.split(" ").join("")}`, // You can customize the key based on your requirement
+      Body: audioBlob as Body,
       ContentType: upldFile.file.type,
     };
 
@@ -747,7 +767,7 @@ function Home() {
 
           postLectAction({
             file_url: data?.Location,
-            file_type: "audio",
+            file_type: upldFile.file.type,
             file_name: data?.Key,
             lecture_name: data?.Key,
             upload_type: "audio upload",
@@ -884,11 +904,11 @@ function Home() {
             </Button>
             <Button
               disabled={!upldFile?.file}
-              onClick={handleUploadTest}
+              // onClick={handleUploadTest}
               loading={postLectLoad}
-              // onClick={() => {
-              //   handleUpload();
-              // }}
+              onClick={() => {
+                handleUpload();
+              }}
               className="bg-primary !w-full md:!w-[70%]"
               type="primary"
               size="large"
