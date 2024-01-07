@@ -138,7 +138,7 @@ function QuizSection({}: Props) {
   return (
     <Spin spinning={isLoading}>
       <div className="w-full h-full md:py-5 space-y-5">
-        <div className="flex justify-between items-center px-5 md:px-10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-5 sm:px-5 md:px-10">
           <p className="text-3xl font-bold text-secondary cursor-pointer">
             {getQuizData?.data?.name}
           </p>
@@ -146,7 +146,7 @@ function QuizSection({}: Props) {
         </div>
 
         <div className="w-full">
-          <div className="flex justify-between items-center px-5 md:px-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10">
             <Tabs
               defaultActiveKey={activeTab}
               onChange={setActiveTab}
@@ -163,7 +163,7 @@ function QuizSection({}: Props) {
               onChange={setPage}
             />
           </div>
-          <Divider className='m-0 p-0' />
+          <Divider className='md:m-0 md:p-0' />
           {CurrentTab?.component}
         </div>
 
