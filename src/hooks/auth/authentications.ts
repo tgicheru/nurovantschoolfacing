@@ -119,7 +119,7 @@ export function useVerify(successAction?: any) {
           message: "Success!",
           description: response?.message || "action successful.",
         });
-        successAction?.();
+        successAction?.(response);
       },
       onError: (error: any) =>
         notification.error({

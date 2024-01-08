@@ -61,6 +61,7 @@ function Home() {
   const onInvOpen = () => setIsInvite(true);
   const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
+  const inviteType = param.get("type");
   const onCreOpen = () => {
     setIsCreate(true);
     onGenClose();
@@ -223,12 +224,11 @@ function Home() {
   const { user } = useRecoilValue(authAtom);
 
   // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
-  const handleViewFlashcard = (id: string) =>
-    setParam({ id, section: "flashcard" });
+  const handleViewFlashcard = (id: string) => setParam({ id, section: "flashcard" });
   const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
-  const handleInvite = (id: string) => {
+  const handleInvite = (type: string, id: string) => {
     onInvOpen();
-    setParam({ id });
+    setParam({ type, id });
   };
 
   const [audioBlob, setAudioBlob] = useState<Blob | null | undefined | Body>(
@@ -347,7 +347,7 @@ function Home() {
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite(d)}
+            onClick={() => handleInvite("quiz", d)}
             className="text-primary"
             icon={<IoMailOutline />}
             type="text"
@@ -385,11 +385,11 @@ function Home() {
     },
     {
       title: "Actions",
-      dataIndex: "",
-      render: () => (
+      dataIndex: "_id",
+      render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("flashcard")}
+            onClick={() => handleInvite("flashcard", d)}
             className="text-primary"
             type="text"
             icon={<IoMailOutline />}
@@ -419,11 +419,11 @@ function Home() {
     },
     {
       title: "Actions",
-      dataIndex: "",
-      render: () => (
+      dataIndex: "_id",
+      render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("recaps")}
+            onClick={() => handleInvite("recap", d)}
             className="text-primary"
             type="text"
             icon={<IoMailOutline />}
@@ -518,8 +518,10 @@ function Home() {
     });
   };
 
-  const quizSuccessAction = () => {
+  const quizSuccessAction = (res: any) => {
     onClose();
+    onGenClose();
+    onCreClose();
     onRecClose();
     getLectFetch();
     getAllQuizFetch();
@@ -527,13 +529,15 @@ function Home() {
     setModal({
       modalType: "Success",
       showModal: true,
+      path: `/?section=quiz&id=${res?.data?._id}`,
       message: "Quiz generated successfully",
       action: "View Quiz",
     });
   };
 
-  const flashCardSuccessAction = () => {
+  const flashCardSuccessAction = (res: any) => {
     onClose();
+    onGenClose();
     onRecClose();
     onCreClose();
     getLectFetch();
@@ -542,6 +546,7 @@ function Home() {
     setModal({
       modalType: "Success",
       showModal: true,
+      path: `/?section=flashcard&id=${res?.data?._id}`,
       message: "Flashcard generated successfully",
       action: "View Flashcard",
     });
@@ -747,17 +752,17 @@ function Home() {
       [
         {
           key: "quiz",
-          conponent: <QuizSection />,
+          component: <QuizSection />,
         },
         {
           key: "flashcard",
-          conponent: <FlashcardSection />,
+          component: <FlashcardSection />,
         },
         {
           key: "quiz-questions",
-          conponent: <QuizQuestionsSection />,
+          component: <QuizQuestionsSection />,
         },
-      ].find((d) => isEqual(d.key, activeSection))?.conponent,
+      ].find((d) => isEqual(d.key, activeSection))?.component,
     [activeSection]
   );
 
@@ -1068,7 +1073,7 @@ function Home() {
         </Modal>
 
         {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <InviteModal isOpen={isInvite} onClose={onInvClose} value={paramId!} />
+        <InviteModal isOpen={isInvite} onClose={onInvClose} type={inviteType!} value={paramId!} />
       </div>
     </Spin>
   );

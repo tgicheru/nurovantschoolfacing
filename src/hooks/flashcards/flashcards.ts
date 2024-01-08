@@ -35,7 +35,7 @@ export function usePostFlashcards(successAction?: any) {
       postRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
-        successAction?.();
+        successAction?.(response);
         notification.success({
           message: "Success!",
           description: response?.message || "action successful.",

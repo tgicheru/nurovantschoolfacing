@@ -1,15 +1,22 @@
 import { Alert, Button, Form, Input, Modal, QRCode, message } from "antd";
-import React from "react";
 import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
+  type: "quiz" | "flashcard" | "recap" | string;
   otherValue?: string;
   isOpen: boolean;
-  value?: string;
+  value: string;
   onClose: any;
 };
-function InviteModal({ isOpen, onClose, value, otherValue }: Props) {
-  const url = `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`
+function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
+  const urlType = {
+    recap: `https://nurovant-webapp.vercel.app/recap/?id=${value}`,
+    quiz: `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`,
+    flashcard: `https://nurovant-webapp.vercel.app/flashcard/?id=${value}`,
+  }
+
+  const url = (otherValue || urlType?.[type as keyof typeof urlType])
+
   const handleCopy = () => {message.success("Copied to clipboard"); navigator.clipboard.writeText(url)};
   return (
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
@@ -18,7 +25,7 @@ function InviteModal({ isOpen, onClose, value, otherValue }: Props) {
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
-          <QRCode value={otherValue || url} className="!w-full" />
+          <QRCode value={url} className="!w-full" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">
@@ -29,8 +36,8 @@ function InviteModal({ isOpen, onClose, value, otherValue }: Props) {
             <Input
               className="!rounded-xl"
               placeholder="Enter quiz name"
-              defaultValue={otherValue || url}
-              value={otherValue || url}
+              defaultValue={url}
+              value={url}
               readOnly
               suffix={
                 <Button
