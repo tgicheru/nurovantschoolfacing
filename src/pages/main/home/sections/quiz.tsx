@@ -171,6 +171,7 @@ function QuizSection({}: Props) {
         <InviteModal
           onClose={onInvClose}
           isOpen={isInvite}
+          type='quiz'
           value={id!}
         />
       </div>
