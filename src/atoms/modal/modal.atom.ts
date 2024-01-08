@@ -16,6 +16,7 @@ export interface ModalState {
   modalType: ModalType;
   message?: string;
   action?: string;
+  path?: string;
 }
 
 const { persistAtom } = recoilPersist({
