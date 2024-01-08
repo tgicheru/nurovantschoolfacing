@@ -518,7 +518,7 @@ function Home() {
     });
   };
 
-  const quizSuccessAction = () => {
+  const quizSuccessAction = (res: any) => {
     onClose();
     onGenClose();
     onCreClose();
@@ -529,13 +529,15 @@ function Home() {
     setModal({
       modalType: "Success",
       showModal: true,
+      path: `/?section=quiz&id=${res?.data?._id}`,
       message: "Quiz generated successfully",
       action: "View Quiz",
     });
   };
 
-  const flashCardSuccessAction = () => {
+  const flashCardSuccessAction = (res: any) => {
     onClose();
+    onGenClose();
     onRecClose();
     onCreClose();
     getLectFetch();
@@ -544,6 +546,7 @@ function Home() {
     setModal({
       modalType: "Success",
       showModal: true,
+      path: `/?section=flashcard&id=${res?.data?._id}`,
       message: "Flashcard generated successfully",
       action: "View Flashcard",
     });
