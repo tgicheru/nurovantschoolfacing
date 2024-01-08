@@ -65,7 +65,10 @@ function Home() {
     setIsCreate(true);
     onGenClose();
   };
-  const onClose = () => { handleUpldFileClr(); setIsOpen(false) };
+  const onClose = () => {
+    handleUpldFileClr();
+    setIsOpen(false);
+  };
   const activeAction = param.get("action");
   const onOpen = () => setIsOpen(true);
   const paramId = param.get("id");
@@ -808,13 +811,24 @@ function Home() {
         } else {
           console.log("File uploaded successfully", data);
 
-          postLectAction({
-            file_url: data?.Location,
-            file_type: "audio",
-            file_name: data?.Key,
-            lecture_name: data?.Key,
-            upload_type: "audio upload",
-          });
+          if (upldFile?.file?.type === "application/pdf") {
+            postLectAction({
+              file_url: data?.Location,
+              file_type: "pdf",
+              file_name: data?.Key,
+              lecture_name: data?.Key,
+              upload_type: "audio upload",
+            });
+          } else {
+            postLectAction({
+              file_url: data?.Location,
+              file_type: "audio",
+              file_name: data?.Key,
+              lecture_name: data?.Key,
+              upload_type: "audio upload",
+            });
+          }
+
           // Handle success, update UI, etc.
         }
       }
