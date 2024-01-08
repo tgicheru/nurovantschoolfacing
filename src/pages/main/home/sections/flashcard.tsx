@@ -21,6 +21,7 @@ const FlashcardSection = () => {
   const [params, setParams] = useSearchParams();
   const id = params.get("id");
   const [activeQuest, setActiveQuest] = useState(0);
+  const [showMeaning, setShowMeaning] = useState(false);
 
   const resetQuest = () => setActiveQuest(0);
   const goBack = () => navigate("/");
@@ -55,16 +56,23 @@ const FlashcardSection = () => {
         </div>
 
         <div className="w-full flex flex-col justify-center items-center gap-10">
-          <div className="w-[272px] flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10">
+          <div className="w-[282px] flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10">
             <div className="flex items-center justify-center gap-2 flex-col w-full">
               {/* <span className="px-4 py-2 border border-[#F2F2FA] rounded-3xl">
                 {activeQuest + 1}/{getFlashcardData?.data?.flashCards?.length}
               </span> */}
-              <p className="text-dark font-medium text-[32px] leading-[40px] text-center w-full">
-                {CurrentFlashcard?.word}
+              <p className="text-dark text-[32px] leading-[40px] text-center w-full font-bold">
+                {showMeaning
+                  ? CurrentFlashcard?.meaning
+                  : CurrentFlashcard?.word}
               </p>
-              <span className="text-[18px] leading-[20px] text-dark text-center">
-                {CurrentFlashcard?.meaning}
+              <span
+                className="text-[14px] leading-[20px] text-[#c1c1c0] text-center cursor-pointer"
+                onClick={() => {
+                  setShowMeaning((prev) => !prev);
+                }}
+              >
+                Tap to view {showMeaning ? "word" : "meaning"}
               </span>
             </div>
             {/* {CurrentQuest?.answered ? ( */}
@@ -112,7 +120,10 @@ const FlashcardSection = () => {
           <div className="flex gap-10 justify-center items-center">
             <Button
               className="border-primary text-primary rounded-xl"
-              onClick={() => setActiveQuest(activeQuest - 1)}
+              onClick={() => {
+                setActiveQuest(activeQuest - 1);
+                setShowMeaning(false);
+              }}
               disabled={!activeQuest}
               size="large"
             >
@@ -124,7 +135,10 @@ const FlashcardSection = () => {
                 activeQuest + 1,
                 getFlashcardData?.data?.flashCards?.length
               )}
-              onClick={() => setActiveQuest(activeQuest + 1)}
+              onClick={() => {
+                setActiveQuest(activeQuest + 1);
+                setShowMeaning(false);
+              }}
               size="large"
             >
               Next
