@@ -14,6 +14,8 @@ export type ModalType =
 export interface ModalState {
   showModal: boolean;
   modalType: ModalType;
+  message?: string;
+  action?: string;
 }
 
 const { persistAtom } = recoilPersist({

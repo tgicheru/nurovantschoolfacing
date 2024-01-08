@@ -55,7 +55,7 @@ const FlashcardSection = () => {
         </div>
 
         <div className="w-full flex flex-col justify-center items-center gap-10">
-          <div className="w-[50%] flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10">
+          <div className="w-[272px] flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10">
             <div className="flex items-center justify-center gap-2 flex-col w-full">
               {/* <span className="px-4 py-2 border border-[#F2F2FA] rounded-3xl">
                 {activeQuest + 1}/{getFlashcardData?.data?.flashCards?.length}
@@ -63,7 +63,7 @@ const FlashcardSection = () => {
               <p className="text-dark font-medium text-[32px] leading-[40px] text-center w-full">
                 {CurrentFlashcard?.word}
               </p>
-              <span className="text-[14px] leading-[20px] text-[#c1c1c0] text-center">
+              <span className="text-[18px] leading-[20px] text-dark text-center">
                 {CurrentFlashcard?.meaning}
               </span>
             </div>

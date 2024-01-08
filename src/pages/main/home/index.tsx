@@ -502,13 +502,45 @@ function Home() {
 
   const successAction = () => {
     onClose();
+    onRecClose();
     getLectFetch();
     getAllQuizFetch();
     handleUpldFileClr();
     getAllFlashcardFetch();
     setModal({
-      modalType: (handleCapitalize(activeAction!) || "Success") as ModalType,
+      modalType: "Success",
       showModal: true,
+      message: "Lecture generated successfully",
+      action: "View",
+    });
+  };
+
+  const quizSuccessAction = () => {
+    onClose();
+    onRecClose();
+    getLectFetch();
+    getAllQuizFetch();
+    getAllFlashcardFetch();
+    setModal({
+      modalType: "Success",
+      showModal: true,
+      message: "Quiz generated successfully",
+      action: "View Quiz",
+    });
+  };
+
+  const flashCardSuccessAction = () => {
+    onClose();
+    onRecClose();
+    onCreClose();
+    getLectFetch();
+    getAllQuizFetch();
+    getAllFlashcardFetch();
+    setModal({
+      modalType: "Success",
+      showModal: true,
+      message: "Flashcard generated successfully",
+      action: "View Flashcard",
     });
   };
 
@@ -554,10 +586,10 @@ function Home() {
     usePostLecture(successAction);
 
   const { mutate: postQuizAction, isLoading: postQuizLoad } =
-    usePostQuiz(successAction);
+    usePostQuiz(quizSuccessAction);
 
   const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
-    usePostFlashcards(successAction);
+    usePostFlashcards(flashCardSuccessAction);
 
   const handleUploadTest = () => {
     postLectAction({
@@ -778,7 +810,7 @@ function Home() {
 
           postLectAction({
             file_url: data?.Location,
-            file_type: upldFile.file.type,
+            file_type: "audio",
             file_name: data?.Key,
             lecture_name: data?.Key,
             upload_type: "audio upload",
