@@ -157,6 +157,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
             type='primary'
             shape='circle'
             size='large'
+            hidden
           />
         </Divider>
         <div className='flex justify-between items-center gap-5 flex-nowrap overflow-x-auto p-5'>

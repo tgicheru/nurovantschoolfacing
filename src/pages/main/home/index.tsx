@@ -65,8 +65,8 @@ function Home() {
     setIsCreate(true);
     onGenClose();
   };
+  const onClose = () => { handleUpldFileClr(); setIsOpen(false) };
   const activeAction = param.get("action");
-  const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
   const paramId = param.get("id");
 
@@ -166,6 +166,7 @@ function Home() {
       console.log(elapsedTime);
       console.log(Number(selectedOption) * 60);
       setIsRecording(false);
+      onRecClose();
     }
   };
 
@@ -292,6 +293,7 @@ function Home() {
           <Button
             onClick={() => handleAction("flashcard", d?._id)}
             className="text-primary"
+            disabled={d?.flashcards}
             type="text"
             icon={<TbCards />}
           >
@@ -300,6 +302,7 @@ function Home() {
           <Button
             onClick={() => handleAction("recap", d?._id)}
             className="text-primary"
+            disabled={d?.recaps}
             type="text"
             hidden
             icon={<PiRepeatFill />}
@@ -502,6 +505,7 @@ function Home() {
     onRecClose();
     getLectFetch();
     getAllQuizFetch();
+    handleUpldFileClr();
     getAllFlashcardFetch();
     setModal({
       modalType: "Success",
@@ -645,7 +649,7 @@ function Home() {
                   size="large"
                 />
               </Form.Item>
-              <Form.Item label="Select no of Questions">
+              <Form.Item hidden label="Select no of Questions">
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from(Array(3).keys()).map((idx) => (
                     <Button className="!rounded-xl" size="large">{`${
@@ -654,7 +658,7 @@ function Home() {
                   ))}
                 </div>
               </Form.Item>
-              <Form.Item label="Quiz Duration">
+              <Form.Item hidden label="Quiz Duration">
                 <div className="grid grid-cols-3 gap-3">
                   {Array.from(Array(3).keys()).map((idx) => (
                     <Button className="!rounded-xl" size="large">{`${
