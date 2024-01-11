@@ -102,8 +102,8 @@ function QuizSection({}: Props) {
               bordered={false}
               defaultActiveKey={['1']}
               expandIconPosition='right'
-              expandIcon={({ isActive }) => (isActive ? <PiCaretUpBold className='text-lg' /> : <PiCaretDownBold className='text-lg' />)}
               style={{ background: "#fff" }}
+              expandIcon={({ isActive }) => (isActive ? <PiCaretUpBold className='text-lg' /> : <PiCaretDownBold className='text-lg' />)}
               items={[...(getQuizData?.data?.questions||[]), ...(getQuizData?.data?.oeq||[])]?.map((d: any, idx: number) => ({
                 key: d?.question,
                 children: <div className='space-y-3'>
