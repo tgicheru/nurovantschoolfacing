@@ -411,8 +411,8 @@ function Home() {
       title: "Name",
       dataIndex: "",
       render: (d) => <Button
+        disabled={["Processing", "Failed"]?.includes(d?.status)}
         onClick={() => handleView("recaps", d?._id)}
-        disabled={d?.status?.includes("Processing")}
         className="text-primary"
         type="text"
       >
@@ -435,8 +435,8 @@ function Home() {
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
+            disabled={["Processing", "Failed"]?.includes(d?.status)}
             onClick={() => handleInvite("recaps", d?._id)}
-            disabled={d?.status?.includes("Processing")}
             className="text-primary"
             icon={<IoMailOutline />}
             type="text"
