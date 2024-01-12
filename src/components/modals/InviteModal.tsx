@@ -25,7 +25,7 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
-          <QRCode value={url} className="!w-full" />
+          <QRCode value={url} className="!w-auto !md:w-full !mx-auto" />
           <p className="text-sm font-medium text-[#646462]">Scan Bar code</p>
         </div>
         <div className="w-full">

@@ -40,6 +40,8 @@ import {
   usePostFlashcards,
 } from "../../../hooks/flashcards/flashcards";
 import QuizQuestionsSection from "./sections/quizQuestions";
+import { useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
+import RecapSection from "./sections/recap";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -215,6 +217,12 @@ function Home() {
     isFetching: getAllFlashcardLoad,
   } = useGetAllFlashcards({ limit, page });
 
+  const {
+    data: getAllRecapData,
+    refetch: getAllRecapFetch,
+    isFetching: getAllRecapLoad,
+  } = useGetAllRecaps({ limit, page });
+
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
     onGenOpen();
@@ -223,9 +231,7 @@ function Home() {
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
 
-  // const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
-  const handleViewFlashcard = (id: string) => setParam({ id, section: "flashcard" });
-  const handleViewQuiz = (id: string) => setParam({ id, section: "quiz" });
+  const handleView = (section: string, id: string) => setParam({ id, section });
   const handleInvite = (type: string, id: string) => {
     onInvOpen();
     setParam({ type, id });
@@ -294,7 +300,7 @@ function Home() {
             Quiz
           </Button>
           <Button
-            onClick={() => handleAction("flashcard", d?._id)}
+            onClick={() => handleAction("flashcards", d?._id)}
             className="text-primary"
             disabled={d?.flashcards}
             type="text"
@@ -303,12 +309,11 @@ function Home() {
             Flashcards
           </Button>
           <Button
-            onClick={() => handleAction("recap", d?._id)}
+            onClick={() => handleAction("recaps", d?._id)}
             className="text-primary"
+            icon={<PiRepeatFill />}
             disabled={d?.recaps}
             type="text"
-            hidden
-            icon={<PiRepeatFill />}
           >
             Recaps
           </Button>
@@ -323,7 +328,7 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <Button
-          onClick={() => handleViewQuiz(d?._id)}
+          onClick={() => handleView("quiz", d?._id)}
           className="text-primary"
           type="text"
         >
@@ -365,7 +370,7 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <Button
-          onClick={() => handleViewFlashcard(d?._id)}
+          onClick={() => handleView("flashcards", d?._id)}
           className="text-primary"
           type="text"
         >
@@ -389,7 +394,7 @@ function Home() {
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("flashcard", d)}
+            onClick={() => handleInvite("flashcards", d)}
             className="text-primary"
             type="text"
             icon={<IoMailOutline />}
@@ -405,28 +410,36 @@ function Home() {
     {
       title: "Name",
       dataIndex: "",
-      render: () => <p>Untitled 01</p>,
+      render: (d) => <Button
+        disabled={["Processing", "Failed"]?.includes(d?.status)}
+        onClick={() => handleView("recaps", d?._id)}
+        className="text-primary"
+        type="text"
+      >
+        {d?.name}
+      </Button>,
     },
     {
       title: "Date uploaded",
-      dataIndex: "",
-      render: () => <p>{moment().format("L")}</p>,
+      dataIndex: "createdAt",
+      render: (d) => <p>{moment(d).format("L")}</p>,
     },
     {
-      title: "Participants",
-      dataIndex: "",
-      render: () => <p>0</p>,
+      title: "Status",
+      dataIndex: "status",
+      render: (d) => <p>{d || "Completed"}</p>,
     },
     {
       title: "Actions",
-      dataIndex: "_id",
+      dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("recap", d)}
+            disabled={["Processing", "Failed"]?.includes(d?.status)}
+            onClick={() => handleInvite("recaps", d?._id)}
             className="text-primary"
-            type="text"
             icon={<IoMailOutline />}
+            type="text"
           >
             Send Invitation
           </Button>
@@ -479,15 +492,16 @@ function Home() {
       {
         key: "recaps",
         column: recapColumns,
+        data: getAllRecapData?.data,
         label: (
-          <div className="!hidden flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <p>Recaps</p>
-            <Tag className="!bg-lit !border-0">1</Tag>
+            <Tag className="!bg-lit !border-0">{getAllRecapData?.data?.length}</Tag>
           </div>
         ),
       },
     ],
-    [getLectData, getAllQuizData, getAllFlashcardData]
+    [getLectData, getAllQuizData, getAllFlashcardData, getAllRecapData]
   );
 
   const handleTab = (tab: string) => {
@@ -508,6 +522,7 @@ function Home() {
     onRecClose();
     getLectFetch();
     getAllQuizFetch();
+    getAllRecapFetch();
     handleUpldFileClr();
     getAllFlashcardFetch();
     setModal({
@@ -525,6 +540,7 @@ function Home() {
     onRecClose();
     getLectFetch();
     getAllQuizFetch();
+    getAllRecapFetch();
     getAllFlashcardFetch();
     setModal({
       modalType: "Success",
@@ -542,72 +558,55 @@ function Home() {
     onCreClose();
     getLectFetch();
     getAllQuizFetch();
+    getAllRecapFetch();
     getAllFlashcardFetch();
     setModal({
-      modalType: "Success",
       showModal: true,
-      path: `/?section=flashcard&id=${res?.data?._id}`,
-      message: "Flashcard generated successfully",
-      action: "View Flashcard",
+      modalType: "Success",
+      path: `/?section=flashcards&id=${res?.data?._id}`,
+      message: "Flashcards generated successfully",
+      action: "View Flashcards",
     });
   };
 
-  //   console.log(upldFile);
-  //   if (!upldFile) {
-  //     console.error("No file selected");
-  //     return;
-  //   }
-
-  //   // Configure AWS with your credentials
-  //   AWS.config.update({
-  //     accessKeyId: awsConfig.accessKeyId,
-  //     secretAccessKey: awsConfig.secretAccessKey,
-  //     region: awsConfig.region,
-  //   });
-
-  //   // Create an S3 service object
-  //   const s3 = new AWS.S3();
-
-  //   // Specify the bucket and key (object key) for the upload
-  //   const uploadParams = {
-  //     Bucket: "nurovantfrontend",
-  //     Key: `audio/${upldFile.name}`, // You can customize the key based on your requirement
-  //     Body: upldFile.file.url,
-  //     ContentType: upldFile.type,
-  //   };
-
-  //   // Upload the file
-  //   s3.upload(
-  //     uploadParams,
-  //     (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-  //       if (err) {
-  //         console.error("Error uploading file", err);
-  //       } else {
-  //         console.log("File uploaded successfully", data);
-  //         // Handle success, update UI, etc.
-  //       }
-  //     }
-  //   );
-  // };
-
-  const { mutate: postLectAction, isLoading: postLectLoad } =
-    usePostLecture(successAction);
-
-  const { mutate: postQuizAction, isLoading: postQuizLoad } =
-    usePostQuiz(quizSuccessAction);
-
-  const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
-    usePostFlashcards(flashCardSuccessAction);
-
-  const handleUploadTest = () => {
-    postLectAction({
-      file_url: "s3://nurovantfrontend/Demons-And-Angels-1.mp3",
-      file_type: "audio",
-      file_name: "Demons-And-Angels-1.mp3",
-      lecture_name: "omega",
-      upload_type: "audio upload",
+  const recapSuccessAction = (res: any) => {
+    onClose();
+    onGenClose();
+    onRecClose();
+    onCreClose();
+    getLectFetch();
+    getAllQuizFetch();
+    getAllRecapFetch();
+    getAllFlashcardFetch();
+    setModal({
+      showModal: true,
+      path: "/?tab=recaps",
+      modalType: "Success",
+      // path: `/?section=recaps&id=${res?.data?._id}`,
+      message: `Recaps submitted successfully, Status: ${res?.data?.status}`,
+      action: "View Recaps",
     });
   };
+
+  const {
+    mutate: postLectAction,
+    isLoading: postLectLoad,
+  } = usePostLecture(successAction);
+
+  const {
+    mutate: postQuizAction,
+    isLoading: postQuizLoad,
+  } = usePostQuiz(quizSuccessAction);
+
+  const {
+    mutate: postFlashcardAction,
+    isLoading: postFlashcardLoad,
+  } = usePostFlashcards(flashCardSuccessAction);
+
+  const {
+    mutate: postRecapAction,
+    isLoading: postRecapLoad,
+  } = usePostRecaps(recapSuccessAction);
 
   const handleCreateQuiz = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
@@ -639,9 +638,23 @@ function Home() {
     postFlashcardAction(payload);
   };
 
-  const isFetchLoad = getLectLoad || getAllQuizLoad;
-  const isActionLoad = postQuizLoad;
-  const isFlashActionLoad = postFlashcardLoad;
+  const handleCreateRecap = (value: any) => {
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, paramId)
+    );
+    const payload = {
+      ...value,
+      title: value?.name,
+      file_url: lecture?.contentUrl,
+      file_type: lecture?.contentType,
+      file_name: lecture?.lecture_title,
+      lecture_id: paramId,
+    };
+    postRecapAction(payload);
+  };
+
+  const isActionLoad = (postQuizLoad || postFlashcardLoad || postRecapLoad);
+  const isFetchLoad = (getLectLoad || getAllQuizLoad || getAllFlashcardLoad || getAllRecapLoad);
 
   const CreateContent = useMemo(
     () =>
@@ -689,7 +702,7 @@ function Home() {
           ),
         },
         {
-          key: "flashcard",
+          key: "flashcards",
           component: (
             <Form layout="vertical" onFinish={handleCreateFlashcard}>
               <Form.Item label="Name of Flash cards" name="flashcard_title">
@@ -701,8 +714,8 @@ function Home() {
               </Form.Item>
               <Button
                 className="bg-primary !w-full"
+                loading={isActionLoad}
                 htmlType="submit"
-                loading={isFlashActionLoad}
                 type="primary"
                 size="large"
                 shape="round"
@@ -713,18 +726,19 @@ function Home() {
           ),
         },
         {
-          key: "recap",
+          key: "recaps",
           component: (
-            <Form layout="vertical">
+            <Form onFinish={handleCreateRecap} layout="vertical">
               <Form.Item label="Name of Recaps" name="name">
                 <Input
-                  className="!rounded-xl"
                   placeholder="Enter recaps name"
+                  className="!rounded-xl"
                   size="large"
                 />
               </Form.Item>
               <Button
                 className="bg-primary !w-full"
+                loading={isActionLoad}
                 htmlType="submit"
                 type="primary"
                 size="large"
@@ -737,13 +751,13 @@ function Home() {
         },
       ]?.find((d) => isEqual(d.key, activeAction))?.component,
     [
-      activeAction,
       paramId,
       getLectData,
-      getAllQuizData,
-      getAllFlashcardData,
+      activeAction,
       isActionLoad,
-      isFlashActionLoad,
+      getAllQuizData,
+      getAllRecapData,
+      getAllFlashcardData,
     ]
   );
 
@@ -755,8 +769,12 @@ function Home() {
           component: <QuizSection />,
         },
         {
-          key: "flashcard",
+          key: "flashcards",
           component: <FlashcardSection />,
+        },
+        {
+          key: "recaps",
+          component: <RecapSection />,
         },
         {
           key: "quiz-questions",
