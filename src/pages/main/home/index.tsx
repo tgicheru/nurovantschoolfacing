@@ -293,9 +293,9 @@ function Home() {
           <Button
             onClick={() => handleAction("quiz", d?._id)}
             className="text-primary"
+            icon={<BiTestTube />}
             disabled={d?.quiz}
             type="text"
-            icon={<BiTestTube />}
           >
             Quiz
           </Button>
@@ -303,8 +303,8 @@ function Home() {
             onClick={() => handleAction("flashcards", d?._id)}
             className="text-primary"
             disabled={d?.flashcards}
-            type="text"
             icon={<TbCards />}
+            type="text"
           >
             Flashcards
           </Button>
