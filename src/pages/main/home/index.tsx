@@ -23,11 +23,12 @@ import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
 import { BiTestTube } from "react-icons/bi";
-import { handleCapitalize, isEqual } from "../../../context/utils";
+import { isEqual } from "../../../context/utils";
+import { AiOutlineMessage } from "react-icons/ai";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
 import FlashcardSection from "./sections/flashcard";
-import modalAtom, { ModalType } from "../../../atoms/modal/modal.atom";
+import modalAtom from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
 import { awsConfig } from "../../../aws/awsConfig";
@@ -42,6 +43,8 @@ import {
 import QuizQuestionsSection from "./sections/quizQuestions";
 import { useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
 import RecapSection from "./sections/recap";
+import { useGetAllDiscuss, usePostDiscuss } from "../../../hooks/discuss/discuss";
+import DiscussSection from "./sections/discuss";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -223,6 +226,12 @@ function Home() {
     isFetching: getAllRecapLoad,
   } = useGetAllRecaps({ limit, page });
 
+  const {
+    data: getAllDiscussData,
+    refetch: getAllDiscussFetch,
+    isFetching: getAllDiscussLoad,
+  } = useGetAllDiscuss({ limit, page });
+
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
     onGenOpen();
@@ -316,6 +325,15 @@ function Home() {
             type="text"
           >
             Recaps
+          </Button>
+          <Button
+            onClick={() => handleAction("discussion", d?._id)}
+            className="text-primary"
+            icon={<AiOutlineMessage />}
+            disabled={d?.discuss}
+            type="text"
+          >
+            Discuss
           </Button>
         </div>
       ),
@@ -448,6 +466,27 @@ function Home() {
     },
   ];
 
+  const discussColumns: ColumnsType<any> = [
+    {
+      title: "Name",
+      dataIndex: "",
+      render: (d) => (
+        <Button
+          onClick={() => handleView("discuss", d?._id)}
+          className="text-primary"
+          type="text"
+        >
+          {d?.name || "untitled 01"}
+        </Button>
+      ),
+    },
+    {
+      title: "Date created",
+      dataIndex: "createdAt",
+      render: (d) => <p>{moment(d).format("L")}</p>,
+    },
+  ];
+
   const tabs = useMemo(
     () => [
       {
@@ -500,8 +539,19 @@ function Home() {
           </div>
         ),
       },
+      {
+        key: "discuss",
+        column: discussColumns,
+        data: getAllDiscussData?.data,
+        label: (
+          <div className="flex items-center gap-3">
+            <p>Discuss</p>
+            <Tag className="!bg-lit !border-0">{getAllDiscussData?.data?.length}</Tag>
+          </div>
+        ),
+      },
     ],
-    [getLectData, getAllQuizData, getAllFlashcardData, getAllRecapData]
+    [getLectData, getAllQuizData, getAllFlashcardData, getAllRecapData, getAllDiscussData]
   );
 
   const handleTab = (tab: string) => {
@@ -517,14 +567,19 @@ function Home() {
     [activeTab, tabs]
   );
 
-  const successAction = () => {
-    onClose();
-    onRecClose();
+  const handleRefetch = () => {
     getLectFetch();
     getAllQuizFetch();
     getAllRecapFetch();
     handleUpldFileClr();
+    getAllDiscussFetch();
     getAllFlashcardFetch();
+  }
+
+  const successAction = () => {
+    onClose();
+    onRecClose();
+    handleRefetch();
     setModal({
       modalType: "Success",
       showModal: true,
@@ -538,10 +593,7 @@ function Home() {
     onGenClose();
     onCreClose();
     onRecClose();
-    getLectFetch();
-    getAllQuizFetch();
-    getAllRecapFetch();
-    getAllFlashcardFetch();
+    handleRefetch();
     setModal({
       modalType: "Success",
       showModal: true,
@@ -556,10 +608,7 @@ function Home() {
     onGenClose();
     onRecClose();
     onCreClose();
-    getLectFetch();
-    getAllQuizFetch();
-    getAllRecapFetch();
-    getAllFlashcardFetch();
+    handleRefetch();
     setModal({
       showModal: true,
       modalType: "Success",
@@ -574,10 +623,7 @@ function Home() {
     onGenClose();
     onRecClose();
     onCreClose();
-    getLectFetch();
-    getAllQuizFetch();
-    getAllRecapFetch();
-    getAllFlashcardFetch();
+    handleRefetch();
     setModal({
       showModal: true,
       path: "/?tab=recaps",
@@ -585,6 +631,21 @@ function Home() {
       // path: `/?section=recaps&id=${res?.data?._id}`,
       message: `Recaps submitted successfully, Status: ${res?.data?.status}`,
       action: "View Recaps",
+    });
+  };
+
+  const discussSuccessAction = (res: any) => {
+    onClose();
+    onGenClose();
+    onRecClose();
+    onCreClose();
+    handleRefetch();
+    setModal({
+      showModal: true,
+      modalType: "Success",
+      path: `/?section=discuss&id=${res?.data?._id}`,
+      message: `Discussion created successfully`,
+      action: "View Discussion",
     });
   };
 
@@ -607,6 +668,11 @@ function Home() {
     mutate: postRecapAction,
     isLoading: postRecapLoad,
   } = usePostRecaps(recapSuccessAction);
+
+  const {
+    mutate: postDiscussAction,
+    isLoading: postDiscussLoad,
+  } = usePostDiscuss(discussSuccessAction);
 
   const handleCreateQuiz = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
@@ -653,8 +719,23 @@ function Home() {
     postRecapAction(payload);
   };
 
-  const isActionLoad = (postQuizLoad || postFlashcardLoad || postRecapLoad);
-  const isFetchLoad = (getLectLoad || getAllQuizLoad || getAllFlashcardLoad || getAllRecapLoad);
+  const handleCreateDiscuss = (value: any) => {
+    const lecture = getLectData?.lectures?.find((d: any) =>
+      isEqual(d?._id, paramId)
+    );
+    const payload = {
+      ...value,
+      title: value?.name,
+      file_url: lecture?.contentUrl,
+      file_type: lecture?.contentType,
+      file_name: lecture?.lecture_title,
+      lecture_id: paramId,
+    };
+    postDiscussAction(payload);
+  };
+
+  const isActionLoad = (postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad);
+  const isFetchLoad = (getLectLoad || getAllQuizLoad || getAllFlashcardLoad || getAllRecapLoad || getAllDiscussLoad);
 
   const CreateContent = useMemo(
     () =>
@@ -720,7 +801,7 @@ function Home() {
                 size="large"
                 shape="round"
               >
-                Save Flash-Cards
+                Save FlashCards
               </Button>
             </Form>
           ),
@@ -745,6 +826,30 @@ function Home() {
                 shape="round"
               >
                 Save Recaps
+              </Button>
+            </Form>
+          ),
+        },
+        {
+          key: "discussion",
+          component: (
+            <Form onFinish={handleCreateDiscuss} layout="vertical">
+              <Form.Item label="Name of Discussion" name="name">
+                <Input
+                  placeholder="Enter discussion name"
+                  className="!rounded-xl"
+                  size="large"
+                />
+              </Form.Item>
+              <Button
+                className="bg-primary !w-full"
+                loading={isActionLoad}
+                htmlType="submit"
+                type="primary"
+                size="large"
+                shape="round"
+              >
+                Save Discussion
               </Button>
             </Form>
           ),
@@ -775,6 +880,10 @@ function Home() {
         {
           key: "recaps",
           component: <RecapSection />,
+        },
+        {
+          key: "discuss",
+          component: <DiscussSection />,
         },
         {
           key: "quiz-questions",
@@ -1084,7 +1193,7 @@ function Home() {
           <div className="space-y-5">
             <div className="text-center">
               <p className="text-[32px] font-semibold text-secondary capitalize">{` Create ${activeAction}`}</p>
-              <p className="text-sm font-normal text-secondary capitalize">{`Please fill the information below to personalise your ${activeAction}.`}</p>
+              <p className="text-sm font-normal text-secondary capitalize">{`Please fill the information below to personalize your ${activeAction}.`}</p>
             </div>
             {CreateContent}
           </div>
