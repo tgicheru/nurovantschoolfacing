@@ -10,7 +10,7 @@ type Props = {
 };
 function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
   const urlType = {
-    recap: `https://nurovant-webapp.vercel.app/recap/?id=${value}`,
+    recaps: `https://nurovant-webapp.vercel.app/recap/?id=${value}`,
     quiz: `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`,
     flashcard: `https://nurovant-webapp.vercel.app/flashcard/?id=${value}`,
   }
