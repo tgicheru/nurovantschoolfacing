@@ -59,6 +59,7 @@ export function useGetAllRecaps(params?: any) {
     ["get:all_recaps"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
+      refetchInterval: 60000,
       onError: (error: any) =>
         notification.error({
           message: "Error!",
