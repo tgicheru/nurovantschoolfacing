@@ -66,10 +66,10 @@ const RecapSection = () => {
           <div className="md:col-span-2">
             <div className="w-full md:w-[80%] min-h-full mx-auto rounded-xl shadow-2xl drop-shadow-2xl p-5 space-y-5">
               <Divider className="!mb-0 !text-xs !font-normal !text-[#646462]">{currentTab?.title}</Divider>
-              <p className="text-sm font-normal text-[#1B1B1B] text-cente leading-5">{getRecapData?.data?.recaps?.[activeTab]}</p>
+              <p className="text-base font-normal text-[#1B1B1B] text-cente leading-6">{getRecapData?.data?.recaps?.[activeTab]}</p>
               <div className="space-y-3" hidden={!currentTab?.extra || getRecapLoad}>
                 <p className="text-sm font-medium text-dark">Key Points</p>
-                <ul className="text-xs text-dark !list-disc px-5">
+                <ul className="text-sm text-dark !list-disc px-5">
                   {getRecapData?.data?.recaps?.[currentTab?.extra as any]?.map((d: any) => (
                     <li>{d}</li>
                   ))}
