@@ -4,13 +4,11 @@ import { getRequest, postRequest } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
-import { useRecoilValue } from "recoil";
-import authAtom from "../../atoms/auth/auth.atom";
 
 
 export function useGetLectures(params?: any) {
-  const { user } = useRecoilValue(authAtom)
-  const url = `/api/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const url = `/api/lectures/`;
+  // const url = `/api/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
   return useQuery(["get:all_lectures"], () => getRequest(axios as unknown as AxiosInstance, url, params), {
       onError: (error: any) =>

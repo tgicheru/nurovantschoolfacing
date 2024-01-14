@@ -5,13 +5,11 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-export function useGetRecap(id: string) {
-  const url = "/api/recaps/";
+
+export function useGetAllDiscuss(params?: any) {
+  const url = "/api/discussion/";
   const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:single_recap"],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
-    {
+  return useQuery(["get:all_discussion"], () => getRequest(axios as unknown as AxiosInstance, url, params), {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -25,13 +23,30 @@ export function useGetRecap(id: string) {
   );
 }
 
-export function usePostRecaps(successAction?: any) {
-  const url = "/api/recaps/create";
+export function useGetDiscuss(id: string, successAction?: any, errorAction?: any) {
+  const url = "/api/discussion/";
   const axios = useContext(AxiosContext);
-  return useMutation(
-    async (payload: any) =>
-      postRequest(axios as unknown as AxiosInstance, url, payload),
-    {
+  return useQuery(["get:single_discussion", id], () => getRequest(axios as unknown as AxiosInstance, url+id), {
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    },
+  );
+}
+
+export function usePostDiscuss(successAction?: any, errorAction?: any) {
+  const url = "/api/discussion/create";
+  const axios = useContext(AxiosContext);
+  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload), {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -39,7 +54,8 @@ export function usePostRecaps(successAction?: any) {
           description: response?.message || "action successful.",
         });
       },
-      onError: (error: any) =>
+      onError: (error: any) => {
+        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -47,18 +63,17 @@ export function usePostRecaps(successAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        })
+      },
     }
   );
 }
 
-export function useGetAllRecaps(params?: any) {
-  const url = "/api/recaps/";
+export function usePostDiscussChat(successAction?: any, id?: string) {
+  const url = "/api/discussion/chat/";
   const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:all_recaps"],
-    () => getRequest(axios as unknown as AxiosInstance, url, params),
-    {
+  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url+(id || payload?.id), payload), {
+      onSuccess: (response: any) => successAction?.(),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
