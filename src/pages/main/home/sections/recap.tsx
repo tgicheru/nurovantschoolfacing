@@ -1,13 +1,16 @@
 import {
+  Button,
   Divider,
   Spin,
+  message,
 } from "antd";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGetRecap } from "../../../../hooks/recap/recap";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { useMemo, useState } from "react";
-import { FaChevronRight } from "react-icons/fa";
+import { FaChevronRight, FaClipboard } from "react-icons/fa";
 import { isEqual } from "../../../../context/utils";
+import Loading from "../../../../components/loading";
 
 const RecapSection = () => {
   const navigate = useNavigate();
@@ -36,6 +39,20 @@ const RecapSection = () => {
   ], [])
 
   const currentTab = useMemo(() => tabs.find(({key}) => isEqual(key, activeTab)), [activeTab, tabs])
+  const handleCopy = () => {
+    message.success("Copied to clipboard");
+    navigator.clipboard.writeText(`
+      Mini Reflection: ${getRecapData?.data?.mini_reflections},
+      Key Points: ${getRecapData?.data?.bullet_points?.join(", ")}.
+      Overall Reflection ${getRecapData?.data?.reflections}.
+    `);
+  };
+
+  if (getRecapLoad) return <Loading />
+  if (!isEqual(getRecapData?.data?.status, "Success")) return <div className="w-full h-screen flex justify-center items-center px-5 md:px-10 gap-5">
+    <RiArrowGoBackFill className="cursor-pointer text-xl text-[#646462]" onClick={goBack} />
+    <p className="text-[28px] font-bold text-dark">Recaps Data Not Ready Yet!</p>
+  </div>
   return (
     <Spin spinning={getRecapLoad}>
       <div className="w-full min-h-[95vh] flex flex-col items-center md:py-5 space-y-5">
@@ -64,7 +81,7 @@ const RecapSection = () => {
           </div>
 
           <div className="md:col-span-2">
-            <div className="w-full md:w-[80%] min-h-full mx-auto rounded-xl shadow-2xl drop-shadow-2xl p-5 space-y-5">
+            <div className="w-full md:w-[80%] min-h-full mx-auto rounded-xl shadow-2xl drop-shadow-2xl p-5 space-y-5 relative">
               <Divider className="!mb-0 !text-xs !font-normal !text-[#646462]">{currentTab?.title}</Divider>
               <p className="text-base font-normal text-[#1B1B1B] text-cente leading-6">{getRecapData?.data?.recaps?.[activeTab]}</p>
               <div className="space-y-3" hidden={!currentTab?.extra || getRecapLoad}>
@@ -75,6 +92,13 @@ const RecapSection = () => {
                   ))}
                 </ul>
               </div>
+              <Button
+                className="!absolute !right-5 !bottom-5 bg-primary"
+                icon={<FaClipboard />}
+                onClick={handleCopy}
+                shape="circle"
+                type="primary"
+              />
             </div>
           </div>
         </div>
