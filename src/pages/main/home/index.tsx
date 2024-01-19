@@ -43,7 +43,10 @@ import {
 import QuizQuestionsSection from "./sections/quizQuestions";
 import { useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
 import RecapSection from "./sections/recap";
-import { useGetAllDiscuss, usePostDiscuss } from "../../../hooks/discuss/discuss";
+import {
+  useGetAllDiscuss,
+  usePostDiscuss,
+} from "../../../hooks/discuss/discuss";
 import DiscussSection from "./sections/discuss";
 
 function Home() {
@@ -78,6 +81,8 @@ function Home() {
   const activeAction = param.get("action");
   const onOpen = () => setIsOpen(true);
   const paramId = param.get("id");
+
+  const [loading, setLoading] = useState(false);
 
   // Live recording section
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -246,9 +251,9 @@ function Home() {
     setParam({ type, id });
   };
 
-  const [audioBlob, setAudioBlob] = useState<Blob | null | undefined | Body>(
-    null
-  );
+  const [audioBlob, setAudioBlob] = useState<
+    Blob | null | undefined | Body | any
+  >(null);
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -262,6 +267,8 @@ function Home() {
         file: file?.originFileObj,
         fileobj: file,
       });
+
+      console.log(file?.originFileObj);
 
       if (file?.originFileObj) {
         const reader = new FileReader();
@@ -428,14 +435,16 @@ function Home() {
     {
       title: "Name",
       dataIndex: "",
-      render: (d) => <Button
-        disabled={["Processing", "Failed"]?.includes(d?.status)}
-        onClick={() => handleView("recaps", d?._id)}
-        className="text-primary"
-        type="text"
-      >
-        {d?.name}
-      </Button>,
+      render: (d) => (
+        <Button
+          disabled={["Processing", "Failed"]?.includes(d?.status)}
+          onClick={() => handleView("recaps", d?._id)}
+          className="text-primary"
+          type="text"
+        >
+          {d?.name}
+        </Button>
+      ),
     },
     {
       title: "Date uploaded",
@@ -535,7 +544,9 @@ function Home() {
         label: (
           <div className="flex items-center gap-3">
             <p>Recaps</p>
-            <Tag className="!bg-lit !border-0">{getAllRecapData?.data?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllRecapData?.data?.length}
+            </Tag>
           </div>
         ),
       },
@@ -546,12 +557,20 @@ function Home() {
         label: (
           <div className="flex items-center gap-3">
             <p>Discuss</p>
-            <Tag className="!bg-lit !border-0">{getAllDiscussData?.data?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getAllDiscussData?.data?.length}
+            </Tag>
           </div>
         ),
       },
     ],
-    [getLectData, getAllQuizData, getAllFlashcardData, getAllRecapData, getAllDiscussData]
+    [
+      getLectData,
+      getAllQuizData,
+      getAllFlashcardData,
+      getAllRecapData,
+      getAllDiscussData,
+    ]
   );
 
   const handleTab = (tab: string) => {
@@ -574,9 +593,10 @@ function Home() {
     handleUpldFileClr();
     getAllDiscussFetch();
     getAllFlashcardFetch();
-  }
+  };
 
   const successAction = () => {
+    setLoading(false);
     onClose();
     onRecClose();
     handleRefetch();
@@ -649,30 +669,20 @@ function Home() {
     });
   };
 
-  const {
-    mutate: postLectAction,
-    isLoading: postLectLoad,
-  } = usePostLecture(successAction);
+  const { mutate: postLectAction, isLoading: postLectLoad } =
+    usePostLecture(successAction);
 
-  const {
-    mutate: postQuizAction,
-    isLoading: postQuizLoad,
-  } = usePostQuiz(quizSuccessAction);
+  const { mutate: postQuizAction, isLoading: postQuizLoad } =
+    usePostQuiz(quizSuccessAction);
 
-  const {
-    mutate: postFlashcardAction,
-    isLoading: postFlashcardLoad,
-  } = usePostFlashcards(flashCardSuccessAction);
+  const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
+    usePostFlashcards(flashCardSuccessAction);
 
-  const {
-    mutate: postRecapAction,
-    isLoading: postRecapLoad,
-  } = usePostRecaps(recapSuccessAction);
+  const { mutate: postRecapAction, isLoading: postRecapLoad } =
+    usePostRecaps(recapSuccessAction);
 
-  const {
-    mutate: postDiscussAction,
-    isLoading: postDiscussLoad,
-  } = usePostDiscuss(discussSuccessAction);
+  const { mutate: postDiscussAction, isLoading: postDiscussLoad } =
+    usePostDiscuss(discussSuccessAction);
 
   const handleCreateQuiz = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
@@ -734,8 +744,14 @@ function Home() {
     postDiscussAction(payload);
   };
 
-  const isActionLoad = (postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad);
-  const isFetchLoad = (getLectLoad || getAllQuizLoad || getAllFlashcardLoad || getAllRecapLoad || getAllDiscussLoad);
+  const isActionLoad =
+    postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad;
+  const isFetchLoad =
+    getLectLoad ||
+    getAllQuizLoad ||
+    getAllFlashcardLoad ||
+    getAllRecapLoad ||
+    getAllDiscussLoad;
 
   const CreateContent = useMemo(
     () =>
@@ -894,10 +910,12 @@ function Home() {
   );
 
   // const [blob, setBlob] = useState<Blob>();
-  const handleUpload = () => {
+  const handleUpload = async () => {
+    setLoading(true);
     console.log(upldFile);
     if (!upldFile) {
       console.error("No file selected");
+      setLoading(false);
       return;
     }
 
@@ -909,7 +927,12 @@ function Home() {
     });
 
     // Create an S3 service object
-    const s3 = new AWS.S3();
+    // Initialize AWS S3
+    const s3 = new AWS.S3({
+      accessKeyId: awsConfig.accessKeyId,
+      secretAccessKey: awsConfig.secretAccessKey,
+      region: awsConfig.region,
+    });
     // var audioBlob: Blob | null | undefined = null || undefined;
 
     // if (upldFile.file) {
@@ -935,36 +958,91 @@ function Home() {
     };
 
     // Upload the file
-    s3.upload(
-      uploadParams,
-      (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-        if (err) {
-          console.error("Error uploading file", err);
-        } else {
-          console.log("File uploaded successfully", data);
+    if (upldFile?.file?.type === "application/pdf") {
+      const params = {
+        Bucket: "nurovantfrontend",
+        Key: `${upldFile.file.name.split(" ").join("")}`,
+      };
+      try {
+        // Initiate the multipart upload
+        const uploadData = await s3.createMultipartUpload(params).promise();
 
-          if (upldFile?.file?.type === "application/pdf") {
-            postLectAction({
-              file_url: data?.Location,
-              file_type: "pdf",
-              file_name: data?.Key,
-              lecture_name: data?.Key,
-              upload_type: "audio upload",
-            });
+        // Set the part size (5 MB in this example)
+        const partSize = 5 * 1024 * 1024;
+
+        // Calculate the number of parts
+        const numParts = Math.ceil(upldFile?.file.size / partSize);
+
+        // Upload each part
+        const uploadPromises = [];
+        for (let i = 0; i < numParts; i++) {
+          const start = i * partSize;
+          const end = Math.min(start + partSize, upldFile?.file.size);
+
+          const part = await s3
+            .uploadPart({
+              Bucket: "nurovantfrontend",
+              Key: `${upldFile.file.name.split(" ").join("")}`,
+              PartNumber: i + 1,
+              UploadId: uploadData.UploadId!,
+              Body: upldFile?.file.slice(start, end),
+            })
+            .promise();
+
+          uploadPromises.push({ PartNumber: i + 1, ETag: part.ETag });
+        }
+
+        // Complete the multipart upload
+        const finalUp = await s3
+          .completeMultipartUpload({
+            Bucket: "nurovantfrontend",
+            Key: `${upldFile.file.name.split(" ").join("")}`,
+            UploadId: uploadData.UploadId!,
+            MultipartUpload: {
+              Parts: uploadPromises,
+            },
+          })
+          .promise();
+
+        console.log("finalUpload: ", finalUp);
+
+        postLectAction({
+          file_url: finalUp?.Location,
+          file_type: "pdf",
+          file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+          lecture_name: finalUp?.Key,
+          upload_type: "audio upload",
+        });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    } else {
+      s3.upload(
+        uploadParams,
+        (
+          err: Error | null,
+          data: AWS.S3.ManagedUpload.SendData | undefined
+        ) => {
+          if (err) {
+            console.error("Error uploading file", err);
           } else {
+            console.log("File uploaded successfully", data);
+
             postLectAction({
               file_url: data?.Location,
               file_type: "audio",
-              file_name: data?.Key,
+              file_name: `${user?._id}-uploadAudio-${moment().format(
+                "DD-MM-YYYY"
+              )}`,
               lecture_name: data?.Key,
               upload_type: "audio upload",
             });
-          }
 
-          // Handle success, update UI, etc.
+            // Handle success, update UI, etc.
+          }
         }
-      }
-    );
+      );
+    }
   };
 
   if (SectionContent) return SectionContent;
@@ -1089,7 +1167,7 @@ function Home() {
             <Button
               disabled={!upldFile?.file}
               // onClick={handleUploadTest}
-              loading={postLectLoad}
+              loading={loading}
               onClick={() => {
                 handleUpload();
               }}
@@ -1200,7 +1278,12 @@ function Home() {
         </Modal>
 
         {/* invitation modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <InviteModal isOpen={isInvite} onClose={onInvClose} type={inviteType!} value={paramId!} />
+        <InviteModal
+          isOpen={isInvite}
+          onClose={onInvClose}
+          type={inviteType!}
+          value={paramId!}
+        />
       </div>
     </Spin>
   );
