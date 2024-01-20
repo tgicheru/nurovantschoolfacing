@@ -337,7 +337,7 @@ function Home() {
             onClick={() => handleAction("discussion", d?._id)}
             className="text-primary"
             icon={<AiOutlineMessage />}
-            disabled={d?.discuss}
+            disabled={d?.discussions}
             type="text"
           >
             Discuss

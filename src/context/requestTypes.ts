@@ -4,11 +4,11 @@ import { notification } from "antd";
 
 const handleExpOut = () => {
   notification.error({message: "Error!", description: "Token Expired Please Re-login."});
-  setTimeout(() => {window.location.pathname = "/auth/login"}, 2000);
+  setTimeout(() => {window.location.pathname = "/auth"}, 2000);
 }
 
 const handleError = (error: any) => {
-  if(error?.message?.includes("jwt expired")) return handleExpOut()
+  if(["Token is not valid!"].includes(error?.message)) return handleExpOut()
   return Promise.reject(error)
 }
 const head = { "Content-Type": "multipart/form-data", Accept: "multipart/form-data" }
