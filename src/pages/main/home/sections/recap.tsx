@@ -81,7 +81,7 @@ const RecapSection = () => {
           </div>
 
           <div className="md:col-span-2">
-            <div className="w-full md:w-[80%] min-h-full mx-auto rounded-xl shadow-2xl drop-shadow-2xl p-5 space-y-5 relative">
+            <div className="w-full md:w-[80%] min-h-full mx-auto rounded-xl shadow-2xl drop-shadow-2xl p-5 !pb-16 space-y-5 relative">
               <Divider className="!mb-0 !text-xs !font-normal !text-[#646462]">{currentTab?.title}</Divider>
               <p className="text-base font-normal text-[#1B1B1B] text-cente leading-6">{getRecapData?.data?.recaps?.[activeTab]}</p>
               <div className="space-y-3" hidden={!currentTab?.extra || getRecapLoad}>

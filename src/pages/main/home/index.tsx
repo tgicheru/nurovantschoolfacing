@@ -13,6 +13,7 @@ import {
   UploadProps,
 } from "antd";
 import { FaPlus } from "react-icons/fa6";
+import { GoTrash } from "react-icons/go";
 import { TbCards } from "react-icons/tb";
 import { PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
@@ -34,16 +35,18 @@ import InviteModal from "../../../components/modals/InviteModal";
 import { awsConfig } from "../../../aws/awsConfig";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
-import { useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
-import { useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
+import { useDeleteLecture, useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
+import { useDeleteQuiz, useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
 import {
+  useDeleteFlashcard,
   useGetAllFlashcards,
   usePostFlashcards,
 } from "../../../hooks/flashcards/flashcards";
 import QuizQuestionsSection from "./sections/quizQuestions";
-import { useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
+import { useDeleteRecap, useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
 import RecapSection from "./sections/recap";
 import {
+  useDeleteDiscuss,
   useGetAllDiscuss,
   usePostDiscuss,
 } from "../../../hooks/discuss/discuss";
@@ -207,6 +210,7 @@ function Home() {
     );
   }
 
+  // get data hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   const {
     data: getLectData,
     refetch: getLectFetch,
@@ -237,10 +241,96 @@ function Home() {
     isFetching: getAllDiscussLoad,
   } = useGetAllDiscuss({ limit, page });
 
+  const handleRefetch = () => {
+    getLectFetch();
+    getAllQuizFetch();
+    getAllRecapFetch();
+    handleUpldFileClr();
+    getAllDiscussFetch();
+    getAllFlashcardFetch();
+  };
+
+  // get data hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  const {
+    mutate: deleteLectAction,
+    isLoading: deleteLecLoad,
+  } = useDeleteLecture(handleRefetch);
+
+  const {
+    mutate: deleteQuiztAction,
+    isLoading: deleteQuizLoad,
+  } = useDeleteQuiz(handleRefetch);
+
+  const {
+    mutate: deleteFlashtAction,
+    isLoading: deleteFlashLoad,
+  } = useDeleteFlashcard(handleRefetch);
+
+  const {
+    mutate: deleteRectAction,
+    isLoading: deleteRecLoad,
+  } = useDeleteRecap(handleRefetch);
+
+  const {
+    mutate: deleteDisctAction,
+    isLoading: deleteDiscLoad,
+  } = useDeleteDiscuss(handleRefetch);
+
+  const deleteLoad = (deleteLecLoad || deleteQuizLoad || deleteFlashLoad || deleteRecLoad || deleteDiscLoad);
+
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
     onGenOpen();
   };
+
+  const handleDelete = (
+    type: "lecture" | "quiz" | "flashcard" | "recap" | "discuss",
+    id: string,
+  ) => {
+    const actions = {
+      flashcard: () => deleteFlashtAction(id),
+      discuss: () => deleteDisctAction(id),
+      lecture: () => deleteLectAction(id),
+      quiz: () => deleteQuiztAction(id),
+      recap: () => deleteRectAction(id),
+    }
+    const action = () => {
+      actions?.[type]?.();
+      Modal.destroyAll();
+    }
+    Modal.confirm({
+      footer: false,
+      title: false,
+      icon: <></>,
+      content: (
+        <div className="w-full pl-7 flex flex-col justify-between items-center gap-5 text-center">
+          <p className="text-3xl font-bold text-dark">
+            Are you sure you want to delete this data?
+          </p>
+          <p className="text-[14px] leading-[24px] font-medium text-[#646462]">
+            Deleting this data would permanently remove it from your account.
+          </p>
+          <div className="w-full items-center justify-center !gap-3">
+            <Button
+              onClick={Modal.destroyAll}
+              type="text"
+              className="!border !rounded-md !border-[#C1C1C0] !text-[#C1C1C0] !font-medium !text-[14px] !leading-[20px] !mr-3"
+            >
+              No, keep
+            </Button>
+            <Button
+              className="!font-medium !text-[14px] !leading-[20px]"
+              loading={deleteLoad}
+              onClick={action}
+              danger
+            >
+              Yes, Delete
+            </Button>
+          </div>
+        </div>
+      ),
+    });
+  }
 
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
@@ -345,6 +435,15 @@ function Home() {
         </div>
       ),
     },
+    {
+      dataIndex: "_id",
+      render: (d) => <Button
+        onClick={() => handleDelete("lecture", d)}
+        icon={<GoTrash className="text-lg" />}
+        loading={deleteLoad}
+        type="text"
+      />
+    },
   ];
 
   const quizColumns: ColumnsType<any> = [
@@ -387,6 +486,15 @@ function Home() {
         </div>
       ),
     },
+    {
+      dataIndex: "_id",
+      render: (d) => <Button
+        onClick={() => handleDelete("quiz", d)}
+        icon={<GoTrash className="text-lg" />}
+        loading={deleteLoad}
+        type="text"
+      />
+    },
   ];
 
   const flashcardColumns: ColumnsType<any> = [
@@ -428,6 +536,15 @@ function Home() {
           </Button>
         </div>
       ),
+    },
+    {
+      dataIndex: "_id",
+      render: (d) => <Button
+        onClick={() => handleDelete("flashcard", d)}
+        icon={<GoTrash className="text-lg" />}
+        loading={deleteLoad}
+        type="text"
+      />
     },
   ];
 
@@ -473,6 +590,15 @@ function Home() {
         </div>
       ),
     },
+    {
+      dataIndex: "_id",
+      render: (d) => <Button
+        onClick={() => handleDelete("recap", d)}
+        icon={<GoTrash className="text-lg" />}
+        loading={deleteLoad}
+        type="text"
+      />
+    },
   ];
 
   const discussColumns: ColumnsType<any> = [
@@ -493,6 +619,15 @@ function Home() {
       title: "Date created",
       dataIndex: "createdAt",
       render: (d) => <p>{moment(d).format("L")}</p>,
+    },
+    {
+      dataIndex: "_id",
+      render: (d) => <Button
+        onClick={() => handleDelete("discuss", d)}
+        icon={<GoTrash className="text-lg" />}
+        loading={deleteLoad}
+        type="text"
+      />
     },
   ];
 
@@ -565,6 +700,7 @@ function Home() {
       },
     ],
     [
+      deleteLoad,
       getLectData,
       getAllQuizData,
       getAllFlashcardData,
@@ -585,15 +721,6 @@ function Home() {
     () => tabs.find((d) => isEqual(d.key, activeTab))?.data,
     [activeTab, tabs]
   );
-
-  const handleRefetch = () => {
-    getLectFetch();
-    getAllQuizFetch();
-    getAllRecapFetch();
-    handleUpldFileClr();
-    getAllDiscussFetch();
-    getAllFlashcardFetch();
-  };
 
   const successAction = () => {
     setLoading(false);
@@ -745,7 +872,7 @@ function Home() {
   };
 
   const isActionLoad =
-    postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad;
+    postLectLoad || postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad;
   const isFetchLoad =
     getLectLoad ||
     getAllQuizLoad ||

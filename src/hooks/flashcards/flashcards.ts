@@ -1,11 +1,29 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { getRequest, postRequest } from "../../context/requestTypes";
+import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
-import { useRecoilValue } from "recoil";
-import authAtom from "../../atoms/auth/auth.atom";
+
+export function useGetAllFlashcards(params?: any) {
+  const url = "/api/flashcards/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_flashcards"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
 
 export function useGetFlashcard(id: string) {
   const url = "/api/flashcards/";
@@ -54,14 +72,19 @@ export function usePostFlashcards(successAction?: any) {
   );
 }
 
-export function useGetAllFlashcards(params?: any) {
+export function useDeleteFlashcard(successAction?: any, errorAction?: any) {
   const url = "/api/flashcards/";
   const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:all_flashcards"],
-    () => getRequest(axios as unknown as AxiosInstance, url, params),
-    {
-      onError: (error: any) =>
+  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -69,7 +92,8 @@ export function useGetAllFlashcards(params?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        })
+      },
     }
   );
 }
