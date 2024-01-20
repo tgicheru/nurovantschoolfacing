@@ -1,6 +1,6 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { getRequest, postRequest } from "../../context/requestTypes";
+import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
@@ -83,6 +83,32 @@ export function usePostDiscussChat(successAction?: any, id?: string) {
                 ?.join(", ")
             : "something went wrong please check internet connection.",
         }),
+    }
+  );
+}
+
+export function useDeleteDiscuss(successAction?: any, errorAction?: any) {
+  const url = "/api/discussion/";
+  const axios = useContext(AxiosContext);
+  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        })
+      },
     }
   );
 }
