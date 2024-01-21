@@ -56,7 +56,7 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
             />
           </Form.Item>
           <Alert
-            message="Invitees would only be able to access the quiz from the Nurovant mobile app"
+            message="Invitees would be able to access this material from the web interface."
             className="!rounded-xl text-success border-success bg-[#DEF2E6]"
             type="success"
           />
