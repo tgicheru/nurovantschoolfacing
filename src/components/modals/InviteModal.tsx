@@ -10,7 +10,7 @@ type Props = {
 };
 function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
   const urlType = {
-    recaps: `https://app.nurovant.com/recap/?id=${value}`,
+    recap: `https://app.nurovant.com/recap/?id=${value}`,
     quiz: `https://app.nurovant.com/page/quiz/?id=${value}`,
     flashcard: `https://app.nurovant.com/flashcard/?id=${value}`,
   }
@@ -22,6 +22,7 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
       <Form
         layout="vertical"
+        initialValues={{ url }}
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
@@ -32,10 +33,10 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
           <p className="text-[32px] font-semibold text-secondary capitalize">
             Invitation
           </p>
-          <Form.Item label="Send invites to participants" name="email">
+          <Form.Item label="Send invites to participants" name="url">
             <Input
               className="!rounded-xl"
-              placeholder="Enter quiz name"
+              placeholder="Enter url"
               defaultValue={url}
               value={url}
               readOnly

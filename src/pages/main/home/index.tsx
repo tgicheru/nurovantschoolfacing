@@ -527,7 +527,7 @@ function Home() {
       render: (d) => (
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => handleInvite("flashcards", d)}
+            onClick={() => handleInvite("flashcard", d)}
             className="text-primary"
             type="text"
             icon={<IoMailOutline />}
@@ -580,7 +580,7 @@ function Home() {
         <div className="flex items-center gap-3">
           <Button
             disabled={["Processing", "Failed"]?.includes(d?.status)}
-            onClick={() => handleInvite("recaps", d?._id)}
+            onClick={() => handleInvite("recap", d?._id)}
             className="text-primary"
             icon={<IoMailOutline />}
             type="text"
