@@ -35,15 +35,27 @@ import InviteModal from "../../../components/modals/InviteModal";
 import { awsConfig } from "../../../aws/awsConfig";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
-import { useDeleteLecture, useGetLectures, usePostLecture } from "../../../hooks/lecture/lecture";
-import { useDeleteQuiz, useGetAllQuiz, usePostQuiz } from "../../../hooks/quiz/quiz";
+import {
+  useDeleteLecture,
+  useGetLectures,
+  usePostLecture,
+} from "../../../hooks/lecture/lecture";
+import {
+  useDeleteQuiz,
+  useGetAllQuiz,
+  usePostQuiz,
+} from "../../../hooks/quiz/quiz";
 import {
   useDeleteFlashcard,
   useGetAllFlashcards,
   usePostFlashcards,
 } from "../../../hooks/flashcards/flashcards";
 import QuizQuestionsSection from "./sections/quizQuestions";
-import { useDeleteRecap, useGetAllRecaps, usePostRecaps } from "../../../hooks/recap/recap";
+import {
+  useDeleteRecap,
+  useGetAllRecaps,
+  usePostRecaps,
+} from "../../../hooks/recap/recap";
 import RecapSection from "./sections/recap";
 import {
   useDeleteDiscuss,
@@ -251,32 +263,27 @@ function Home() {
   };
 
   // get data hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  const {
-    mutate: deleteLectAction,
-    isLoading: deleteLecLoad,
-  } = useDeleteLecture(handleRefetch);
+  const { mutate: deleteLectAction, isLoading: deleteLecLoad } =
+    useDeleteLecture(handleRefetch);
 
-  const {
-    mutate: deleteQuiztAction,
-    isLoading: deleteQuizLoad,
-  } = useDeleteQuiz(handleRefetch);
+  const { mutate: deleteQuiztAction, isLoading: deleteQuizLoad } =
+    useDeleteQuiz(handleRefetch);
 
-  const {
-    mutate: deleteFlashtAction,
-    isLoading: deleteFlashLoad,
-  } = useDeleteFlashcard(handleRefetch);
+  const { mutate: deleteFlashtAction, isLoading: deleteFlashLoad } =
+    useDeleteFlashcard(handleRefetch);
 
-  const {
-    mutate: deleteRectAction,
-    isLoading: deleteRecLoad,
-  } = useDeleteRecap(handleRefetch);
+  const { mutate: deleteRectAction, isLoading: deleteRecLoad } =
+    useDeleteRecap(handleRefetch);
 
-  const {
-    mutate: deleteDisctAction,
-    isLoading: deleteDiscLoad,
-  } = useDeleteDiscuss(handleRefetch);
+  const { mutate: deleteDisctAction, isLoading: deleteDiscLoad } =
+    useDeleteDiscuss(handleRefetch);
 
-  const deleteLoad = (deleteLecLoad || deleteQuizLoad || deleteFlashLoad || deleteRecLoad || deleteDiscLoad);
+  const deleteLoad =
+    deleteLecLoad ||
+    deleteQuizLoad ||
+    deleteFlashLoad ||
+    deleteRecLoad ||
+    deleteDiscLoad;
 
   const handleAction = (action: string, id: string) => {
     setParam({ action, id });
@@ -285,7 +292,7 @@ function Home() {
 
   const handleDelete = (
     type: "lecture" | "quiz" | "flashcard" | "recap" | "discuss",
-    id: string,
+    id: string
   ) => {
     const actions = {
       flashcard: () => deleteFlashtAction(id),
@@ -293,11 +300,11 @@ function Home() {
       lecture: () => deleteLectAction(id),
       quiz: () => deleteQuiztAction(id),
       recap: () => deleteRectAction(id),
-    }
+    };
     const action = () => {
       actions?.[type]?.();
       Modal.destroyAll();
-    }
+    };
     Modal.confirm({
       footer: false,
       title: false,
@@ -330,7 +337,7 @@ function Home() {
         </div>
       ),
     });
-  }
+  };
 
   const setModal = useSetRecoilState(modalAtom);
   const { user } = useRecoilValue(authAtom);
@@ -437,12 +444,14 @@ function Home() {
     },
     {
       dataIndex: "_id",
-      render: (d) => <Button
-        onClick={() => handleDelete("lecture", d)}
-        icon={<GoTrash className="text-lg" />}
-        loading={deleteLoad}
-        type="text"
-      />
+      render: (d) => (
+        <Button
+          onClick={() => handleDelete("lecture", d)}
+          icon={<GoTrash className="text-lg" />}
+          loading={deleteLoad}
+          type="text"
+        />
+      ),
     },
   ];
 
@@ -488,12 +497,14 @@ function Home() {
     },
     {
       dataIndex: "_id",
-      render: (d) => <Button
-        onClick={() => handleDelete("quiz", d)}
-        icon={<GoTrash className="text-lg" />}
-        loading={deleteLoad}
-        type="text"
-      />
+      render: (d) => (
+        <Button
+          onClick={() => handleDelete("quiz", d)}
+          icon={<GoTrash className="text-lg" />}
+          loading={deleteLoad}
+          type="text"
+        />
+      ),
     },
   ];
 
@@ -539,12 +550,14 @@ function Home() {
     },
     {
       dataIndex: "_id",
-      render: (d) => <Button
-        onClick={() => handleDelete("flashcard", d)}
-        icon={<GoTrash className="text-lg" />}
-        loading={deleteLoad}
-        type="text"
-      />
+      render: (d) => (
+        <Button
+          onClick={() => handleDelete("flashcard", d)}
+          icon={<GoTrash className="text-lg" />}
+          loading={deleteLoad}
+          type="text"
+        />
+      ),
     },
   ];
 
@@ -592,12 +605,14 @@ function Home() {
     },
     {
       dataIndex: "_id",
-      render: (d) => <Button
-        onClick={() => handleDelete("recap", d)}
-        icon={<GoTrash className="text-lg" />}
-        loading={deleteLoad}
-        type="text"
-      />
+      render: (d) => (
+        <Button
+          onClick={() => handleDelete("recap", d)}
+          icon={<GoTrash className="text-lg" />}
+          loading={deleteLoad}
+          type="text"
+        />
+      ),
     },
   ];
 
@@ -622,12 +637,14 @@ function Home() {
     },
     {
       dataIndex: "_id",
-      render: (d) => <Button
-        onClick={() => handleDelete("discuss", d)}
-        icon={<GoTrash className="text-lg" />}
-        loading={deleteLoad}
-        type="text"
-      />
+      render: (d) => (
+        <Button
+          onClick={() => handleDelete("discuss", d)}
+          icon={<GoTrash className="text-lg" />}
+          loading={deleteLoad}
+          type="text"
+        />
+      ),
     },
   ];
 
@@ -872,7 +889,11 @@ function Home() {
   };
 
   const isActionLoad =
-    postLectLoad || postQuizLoad || postFlashcardLoad || postRecapLoad || postDiscussLoad;
+    postLectLoad ||
+    postQuizLoad ||
+    postFlashcardLoad ||
+    postRecapLoad ||
+    postDiscussLoad;
   const isFetchLoad =
     getLectLoad ||
     getAllQuizLoad ||
@@ -1078,7 +1099,7 @@ function Home() {
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: "nurovantfrontend",
+      Bucket: "nurovant-prod-content/source_content",
       Key: `${upldFile.file.name.split(" ").join("")}`, // You can customize the key based on your requirement
       Body: audioBlob as Body,
       ContentType: upldFile.file.type,
@@ -1087,7 +1108,7 @@ function Home() {
     // Upload the file
     if (upldFile?.file?.type === "application/pdf") {
       const params = {
-        Bucket: "nurovantfrontend",
+        Bucket: "nurovant-prod-content/source_content",
         Key: `${upldFile.file.name.split(" ").join("")}`,
       };
       try {
@@ -1108,7 +1129,7 @@ function Home() {
 
           const part = await s3
             .uploadPart({
-              Bucket: "nurovantfrontend",
+              Bucket: "nurovant-prod-content/source_content",
               Key: `${upldFile.file.name.split(" ").join("")}`,
               PartNumber: i + 1,
               UploadId: uploadData.UploadId!,
@@ -1122,7 +1143,7 @@ function Home() {
         // Complete the multipart upload
         const finalUp = await s3
           .completeMultipartUpload({
-            Bucket: "nurovantfrontend",
+            Bucket: "nurovant-prod-content/source_content",
             Key: `${upldFile.file.name.split(" ").join("")}`,
             UploadId: uploadData.UploadId!,
             MultipartUpload: {
