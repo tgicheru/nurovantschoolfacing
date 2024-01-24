@@ -63,6 +63,7 @@ import {
   usePostDiscuss,
 } from "../../../hooks/discuss/discuss";
 import DiscussSection from "./sections/discuss";
+import { ImSpinner } from "react-icons/im";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -74,6 +75,10 @@ function Home() {
   const [isRecord, setIsRecord] = useState(false);
   const [isInvite, setIsInvite] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
+  const [isLoadOpen, setIsLoadOpen] = useState(false);
+
+  const onLoadClose = () => setIsLoadOpen(false);
+  const onLoadOpen = () => setIsLoadOpen(true);
   const handleUpldFileClr = () => setUpldFile({});
   const onGenClose = () => setIsGenerate(false);
   const onGenOpen = () => setIsGenerate(true);
@@ -116,12 +121,14 @@ function Home() {
       }, 1000);
     }
 
-    if (elapsedTime === Number(selectedOption) * 60) {
+    const realTime = Number(selectedOption) * 60;
+
+    if (selectedOption !== 0 && elapsedTime === realTime) {
       handleStopRecording();
     }
 
     return () => clearInterval(timer);
-  }, [isRecording]);
+  }, [isRecording, elapsedTime]);
 
   const handleStartRecording = () => {
     navigator.mediaDevices
@@ -138,6 +145,7 @@ function Home() {
         };
 
         recorder.onstop = () => {
+          onLoadOpen();
           const blob = new Blob(recordedChunks, { type: "audio/wav" });
           // Do something with the recorded blob, like saving it or playing it
           console.log(blob, blob.size);
@@ -170,6 +178,7 @@ function Home() {
             ) => {
               if (err) {
                 console.error("Error uploading file", err);
+                onLoadClose();
               } else {
                 console.log("File uploaded successfully", data);
 
@@ -210,7 +219,7 @@ function Home() {
       .padStart(2, "0")}`;
   };
 
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState(0);
 
   const handleSelectChange = (event: any) => {
     setSelectedOption(event.target.value);
@@ -747,6 +756,7 @@ function Home() {
     onClose();
     onRecClose();
     handleRefetch();
+    onLoadClose();
     setModal({
       modalType: "Success",
       showModal: true,
@@ -1383,7 +1393,7 @@ function Home() {
             </div> */}
             <div className="w-full flex items-center justify-center gap-1">
               <select value={selectedOption} onChange={handleSelectChange}>
-                <option value="" disabled>
+                <option value={0} disabled>
                   Select an option
                 </option>
                 {options}
@@ -1409,6 +1419,41 @@ function Home() {
             >
               {isRecording ? "Stop Recording" : "Start Recording"}
             </Button>
+          </div>
+        </Modal>
+
+        {/* loading modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Modal
+          styles={{
+            content: {
+              background: "none",
+              padding: 0,
+            },
+          }}
+          onCancel={onLoadClose}
+          open={isLoadOpen}
+          closeIcon={false}
+          footer={false}
+        >
+          <div className="w-full h-full text-center p-5 md:p-10 bg-white rounded-2xl flex flex-col justify-center gap-5 items-center">
+            <ImSpinner className="text-[100px] animate-spin text-primary" />
+            <p className="text-[30px] font-extrabold text-dark">
+              Analyzing your <br /> content
+            </p>
+            <p className="text-sm font-medium text-[#646462]">
+              Please hold on while we analyze your content{" "}
+            </p>
+            {/* <Button
+              className="text-primary text-lg font-extrabold"
+              onClick={() => {
+                onLoadClose();
+              }}
+              size="large"
+              type="text"
+              block
+            >
+              Done
+            </Button> */}
           </div>
         </Modal>
 
