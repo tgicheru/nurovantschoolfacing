@@ -150,8 +150,11 @@ function Home() {
 
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
-            Bucket: "nurovantfrontend",
-            Key: `recording-${blob.size}.wav`, // You can customize the key based on your requirement
+            Bucket: "nurovant-prod-content/source_content",
+            Key: `${new Date()
+              .toLocaleTimeString([], { hour12: false })
+              .split(":")
+              .join("_")}--recording-${blob.size}.wav`, // You can customize the key based on your requirement
             Body: blob,
             ContentType: blob.type,
           };
@@ -1057,6 +1060,11 @@ function Home() {
     [activeSection]
   );
 
+  function removeSpacesFromPdfName(pdfName: string) {
+    const trimmedName = pdfName.trim();
+    return trimmedName.replace(/[^a-zA-Z0-9.]/g, "");
+  }
+
   // const [blob, setBlob] = useState<Blob>();
   const handleUpload = async () => {
     setLoading(true);
@@ -1100,82 +1108,102 @@ function Home() {
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       Bucket: "nurovant-prod-content/source_content",
-      Key: `${upldFile.file.name.split(" ").join("")}`, // You can customize the key based on your requirement
+      Key: `${new Date()
+        .toLocaleTimeString([], { hour12: false })
+        .split(":")
+        .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`, // You can customize the key based on your requirement
       Body: audioBlob as Body,
       ContentType: upldFile.file.type,
     };
 
     // Upload the file
-    if (upldFile?.file?.type === "application/pdf") {
-      const params = {
-        Bucket: "nurovant-prod-content/source_content",
-        Key: `${upldFile.file.name.split(" ").join("")}`,
-      };
-      try {
-        // Initiate the multipart upload
-        const uploadData = await s3.createMultipartUpload(params).promise();
+    // if (upldFile?.file?.type === "application/pdf") {
+    //   const params = {
+    //     Bucket: "nurovant-prod-content/source_content",
+    //     Key: `${new Date()
+    //       .toLocaleTimeString([], { hour12: false })
+    //       .split(":")
+    //       .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
+    //   };
+    //   try {
+    //     // Initiate the multipart upload
+    //     const uploadData = await s3.createMultipartUpload(params).promise();
 
-        // Set the part size (5 MB in this example)
-        const partSize = 5 * 1024 * 1024;
+    //     // Set the part size (5 MB in this example)
+    //     const partSize = 5 * 1024 * 1024;
 
-        // Calculate the number of parts
-        const numParts = Math.ceil(upldFile?.file.size / partSize);
+    //     // Calculate the number of parts
+    //     const numParts = Math.ceil(upldFile?.file.size / partSize);
 
-        // Upload each part
-        const uploadPromises = [];
-        for (let i = 0; i < numParts; i++) {
-          const start = i * partSize;
-          const end = Math.min(start + partSize, upldFile?.file.size);
+    //     // Upload each part
+    //     const uploadPromises = [];
+    //     for (let i = 0; i < numParts; i++) {
+    //       const start = i * partSize;
+    //       const end = Math.min(start + partSize, upldFile?.file.size);
 
-          const part = await s3
-            .uploadPart({
-              Bucket: "nurovant-prod-content/source_content",
-              Key: `${upldFile.file.name.split(" ").join("")}`,
-              PartNumber: i + 1,
-              UploadId: uploadData.UploadId!,
-              Body: upldFile?.file.slice(start, end),
-            })
-            .promise();
+    //       const part = await s3
+    //         .uploadPart({
+    //           Bucket: "nurovant-prod-content/source_content",
+    //           Key: `${new Date()
+    //             .toLocaleTimeString([], { hour12: false })
+    //             .split(":")
+    //             .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
+    //           PartNumber: i + 1,
+    //           UploadId: uploadData.UploadId!,
+    //           Body: upldFile?.file.slice(start, end),
+    //         })
+    //         .promise();
 
-          uploadPromises.push({ PartNumber: i + 1, ETag: part.ETag });
-        }
+    //       uploadPromises.push({ PartNumber: i + 1, ETag: part.ETag });
+    //     }
 
-        // Complete the multipart upload
-        const finalUp = await s3
-          .completeMultipartUpload({
-            Bucket: "nurovant-prod-content/source_content",
-            Key: `${upldFile.file.name.split(" ").join("")}`,
-            UploadId: uploadData.UploadId!,
-            MultipartUpload: {
-              Parts: uploadPromises,
-            },
-          })
-          .promise();
+    //     // Complete the multipart upload
+    //     const finalUp = await s3
+    //       .completeMultipartUpload({
+    //         Bucket: "nurovant-prod-content/source_content",
+    //         Key: `${new Date()
+    //           .toLocaleTimeString([], { hour12: false })
+    //           .split(":")
+    //           .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
+    //         UploadId: uploadData.UploadId!,
+    //         MultipartUpload: {
+    //           Parts: uploadPromises,
+    //         },
+    //       })
+    //       .promise();
 
-        console.log("finalUpload: ", finalUp);
+    //     console.log("finalUpload: ", finalUp);
 
-        postLectAction({
-          file_url: finalUp?.Location,
-          file_type: "pdf",
-          file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-          lecture_name: finalUp?.Key,
-          upload_type: "audio upload",
-        });
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
-    } else {
-      s3.upload(
-        uploadParams,
-        (
-          err: Error | null,
-          data: AWS.S3.ManagedUpload.SendData | undefined
-        ) => {
-          if (err) {
-            console.error("Error uploading file", err);
+    //     postLectAction({
+    //       file_url: finalUp?.Location,
+    //       file_type: "pdf",
+    //       file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+    //       lecture_name: finalUp?.Key,
+    //       upload_type: "audio upload",
+    //     });
+    //   } catch (error) {
+    //     console.error("Error uploading file:", error);
+    //   }
+    // } else {
+    s3.upload(
+      uploadParams,
+      (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
+        if (err) {
+          console.error("Error uploading file", err);
+        } else {
+          console.log("File uploaded successfully", data);
+
+          if (upldFile?.file?.type === "application/pdf") {
+            postLectAction({
+              file_url: data?.Location,
+              file_type: "pdf",
+              file_name: `${user?._id}-uploadPdf-${moment().format(
+                "DD-MM-YYYY"
+              )}`,
+              lecture_name: data?.Key,
+              upload_type: "audio upload",
+            });
           } else {
-            console.log("File uploaded successfully", data);
-
             postLectAction({
               file_url: data?.Location,
               file_type: "audio",
@@ -1185,12 +1213,13 @@ function Home() {
               lecture_name: data?.Key,
               upload_type: "audio upload",
             });
-
-            // Handle success, update UI, etc.
           }
+
+          // Handle success, update UI, etc.
         }
-      );
-    }
+      }
+    );
+    // }
   };
 
   if (SectionContent) return SectionContent;
