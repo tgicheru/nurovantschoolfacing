@@ -10,9 +10,9 @@ type Props = {
 };
 function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
   const urlType = {
-    recaps: `https://nurovant-webapp.vercel.app/recap/?id=${value}`,
-    quiz: `https://nurovant-webapp.vercel.app/page/quiz/?id=${value}`,
-    flashcard: `https://nurovant-webapp.vercel.app/flashcard/?id=${value}`,
+    recap: `https://app.nurovant.com/recap/?id=${value}`,
+    quiz: `https://app.nurovant.com/page/quiz/?id=${value}`,
+    flashcard: `https://app.nurovant.com/flashcard/?id=${value}`,
   }
 
   const url = (otherValue || urlType?.[type as keyof typeof urlType])
@@ -22,6 +22,7 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
     <Modal onCancel={onClose} closeIcon={false} open={isOpen} footer={false}>
       <Form
         layout="vertical"
+        initialValues={{ url }}
         className="flex flex-col md:flex-row justify-between gap-5"
       >
         <div className="w-full md:w-[35%] space-y-3 text-center">
@@ -32,10 +33,10 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
           <p className="text-[32px] font-semibold text-secondary capitalize">
             Invitation
           </p>
-          <Form.Item label="Send invites to participants" name="email">
+          <Form.Item label="Send invites to participants" name="url">
             <Input
               className="!rounded-xl"
-              placeholder="Enter quiz name"
+              placeholder="Enter url"
               defaultValue={url}
               value={url}
               readOnly
@@ -55,7 +56,7 @@ function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {
             />
           </Form.Item>
           <Alert
-            message="Invitees would only be able to access the quiz from the Nurovant mobile app"
+            message="Invitees would be able to access this material from the web interface."
             className="!rounded-xl text-success border-success bg-[#DEF2E6]"
             type="success"
           />
