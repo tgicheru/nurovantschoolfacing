@@ -186,7 +186,10 @@ function Home() {
                   file_url: data?.Location,
                   file_type: "audio",
                   file_name: data?.Key,
-                  lecture_name: data?.Key,
+                  lecture_name: `${new Date()
+                    .toLocaleTimeString([], { hour12: false })
+                    .split(":")
+                    .join("_")}--recording-${blob.size}`,
                   upload_type: "audio upload",
                 });
                 // Handle success, update UI, etc.

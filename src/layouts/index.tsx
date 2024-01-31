@@ -5,10 +5,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import authAtom from "../atoms/auth/auth.atom";
 import AuthLayout from "./Auth";
 import MainLayout from "./Main";
+import PublicLayout from "./public";
 
 const Layouts = {
   auth: AuthLayout,
   main: MainLayout,
+  public: PublicLayout,
 };
 
 type Props = {
@@ -22,7 +24,8 @@ const Layout = ({ children }: Props) => {
   // Layout Rendering
   const getLayout = () => {
     if (/^\/auth(?=\/|$)/i.test(pathname)) return "auth";
-    return "main";
+    if (/^\/main(?=\/|$)/i.test(pathname)) return "main";
+    return "public";
   };
 
   const Container = Layouts[getLayout()];
@@ -35,13 +38,14 @@ const Layout = ({ children }: Props) => {
 
   // redirect to login page if current is not login page and user not authorized
   useEffect(() => {
-    if (isMainLayout && !isLoggedIn) {
-      message.info({
-        content: "Welcome! please authenticate to proceed.",
-        key: "updatable",
-      });
-      navigate("/auth");
-    }
+    // if (isMainLayout && !isLoggedIn) {
+    //   message.info({
+    //     content: "Welcome! please authenticate to proceed.",
+    //     key: "updatable",
+    //   });
+    //   navigate("/auth");
+    // }
+    navigate("/maintenance");
   }, [isLoggedIn, isMainLayout, navigate]);
   return (
     <Fragment>
