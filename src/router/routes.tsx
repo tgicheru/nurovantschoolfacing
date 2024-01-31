@@ -11,7 +11,7 @@ const Logout = lazy(() => import("../pages/auth/logout"));
 const InfoPage = lazy(() => import("../pages/main/info"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// const TeacherAuth = lazy(() => import("../pages/teacher/auth"));
+const UnderMaintenance = lazy(() => import("../pages/public/underMaintenance"));
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
@@ -30,11 +30,11 @@ export const routes = [
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // {
-  //   path: "/teacher",
-  //   label: "Teacher",
-  //   component: <TeacherAuth />,
-  // },
+  {
+    path: "/maintenance",
+    label: "Under Maintenance",
+    component: <UnderMaintenance />,
+  },
 
   // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
@@ -72,5 +72,4 @@ export const routes = [
     label: "Phone Register",
     component: <PhoneRegister />,
   },
-  
 ];

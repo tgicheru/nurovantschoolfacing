@@ -28,7 +28,6 @@ function AuthPage() {
           email: user.email,
           name: user.displayName,
           sign_up_type: "google",
-          phone_id: null,
         } as unknown as void);
         // IdP data available using getAdditionalUserInfo(result)
         // ...
