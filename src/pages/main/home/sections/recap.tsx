@@ -27,13 +27,13 @@ const RecapSection = () => {
       title: "Summary",
       extra: "bullet_points",
       key: "mini_reflections",
-      label: "Mini Reflection",
+      label: "Mini Recaps",
       description: "Tailored for speedy understanding, it pinpoints essential details instantly.",
     },
     {
       title: "Overall",
       key: "reflections",
-      label: "Overall Reflection",
+      label: "Overall Recaps",
       description: "Uncover a comprehensive understanding of your content.",
     },
   ], [])
@@ -42,9 +42,9 @@ const RecapSection = () => {
   const handleCopy = () => {
     message.success("Copied to clipboard");
     navigator.clipboard.writeText(`
-      Mini Reflection: ${getRecapData?.data?.mini_reflections},
+      Mini Recaps: ${getRecapData?.data?.mini_reflections},
       Key Points: ${getRecapData?.data?.bullet_points?.join(", ")}.
-      Overall Reflection ${getRecapData?.data?.reflections}.
+      Overall Recaps ${getRecapData?.data?.reflections}.
     `);
   };
 
