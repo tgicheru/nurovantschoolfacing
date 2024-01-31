@@ -85,7 +85,8 @@ function RegisterPage() {
           >
             By Clicking on this box, you agree to our{" "}
             <Link
-              to="/page/terms-&-conditions"
+              to="https://www.nurovant.com/termofservice.html"
+              target="_blank"
               className="font-semibold underline"
             >
               Terms & Condition

@@ -2,8 +2,12 @@ import AppleIcon from "../../assets/Apple.svg";
 import GoogleIcon from "../../assets/Google.svg";
 import { CustomButton } from "../../components";
 import { Link } from "react-router-dom";
-import { auth, provider } from "../../firebaseAuth/config";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, provider, appleProvider } from "../../firebaseAuth/config";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  OAuthProvider,
+} from "firebase/auth";
 import { useGoogleRegister } from "../../hooks/auth/authentications";
 import AuthContainer from "../../components/AuthContainer";
 import { useRecoilState } from "recoil";
@@ -37,6 +41,43 @@ function AuthPage() {
         const email = error.customData.email;
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  };
+
+  const handleAppleLogin = () => {
+    signInWithPopup(auth, appleProvider)
+      .then((result) => {
+        // The signed-in user info.
+        const user = result.user;
+        // console.log(user);
+
+        // Apple credential
+        const credential = OAuthProvider.credentialFromResult(result);
+        console.log(credential);
+        const accessToken = credential?.accessToken;
+        const idToken = credential?.idToken;
+
+        // console.log(user);
+        mutate({
+          email: user.email,
+          name: user.displayName,
+          sign_up_type: "apple",
+        } as unknown as void);
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The credential that was used.
+        const credential = OAuthProvider.credentialFromError(error);
+        console.log(error);
+
         // ...
       });
   };
@@ -94,7 +135,12 @@ function AuthPage() {
 
         {/* Other login options */}
         <div className="flex w-full items-center justify-center flex-row gap-[32px]">
-          {/* <img src={AppleIcon} alt="apple-icon" className="cursor-pointer" /> */}
+          <img
+            src={AppleIcon}
+            alt="apple-icon"
+            className="cursor-pointer"
+            onClick={() => handleAppleLogin()}
+          />
           <img
             src={GoogleIcon}
             alt="google-icon"
