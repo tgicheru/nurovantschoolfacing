@@ -694,7 +694,7 @@ function Home() {
         data: getAllFlashcardData?.data,
         label: (
           <div className="flex items-center gap-3">
-            <p>Flash cards</p>
+            <p>Flashcards</p>
             <Tag className="!bg-lit !border-0">
               {getAllFlashcardData?.data?.length}
             </Tag>
@@ -963,10 +963,10 @@ function Home() {
           key: "flashcards",
           component: (
             <Form layout="vertical" onFinish={handleCreateFlashcard}>
-              <Form.Item label="Name of Flash cards" name="flashcard_title">
+              <Form.Item label="Name of Flashcards" name="flashcard_title">
                 <Input
                   className="!rounded-xl"
-                  placeholder="Enter flash cards name"
+                  placeholder="Enter flashcards name"
                   size="large"
                 />
               </Form.Item>
