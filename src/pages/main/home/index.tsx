@@ -151,28 +151,16 @@ function Home() {
     s3.upload(
       uploadParams,
       (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-        if (err) {
-          console.error("Error uploading file", err);
-          onLoadClose();
-        } else {
-          console.log("File uploaded successfully", data);
-
-          postLectAction({
-            file_url: data?.Location,
-            file_type: "audio",
-            file_name: data?.Key,
-            lecture_name: `${new Date()
-              .toLocaleTimeString([], { hour12: false })
-              .split(":")
-              .join("_")}--recording-${blob.size}`,
-            upload_type: "audio upload",
-          });
-          // Handle success, update UI, etc.
-        }
+        setLoading(false);
+        setIsRunning(false);
+        setIsRecording(false);
+        if (err) return message.error("Error uploading file")   
+        handleAction("lecture", "record")
+        setUpldData(data)
+        onCreOpen()
+        onClose()
       }
     );
-    setIsRunning(false);
-    setIsRecording(false);
   };
 
   const startHandle = () => {
@@ -932,22 +920,25 @@ function Home() {
   const handleCreateLecture = (value: any) => {
     const payload = {
       ...value,
-      upload_type: "audio upload",
+      upload_type: "upload",
       file_url: upldData?.Location,
     }
-    if (upldFile?.file?.type === "application/pdf") {
-      postLectAction({
-        ...payload,
-        file_type: "pdf",
-        file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-      });
-    } else {
-      postLectAction({
-        ...payload,
-        file_type: "audio",
-        file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
-      });
-    }
+    if (isEqual(paramId, "record")) return postLectAction({
+      ...payload,
+      file_type: "audio",
+      upload_type: "record",
+      file_name: upldData?.Key,
+    })
+    if (upldFile?.file?.type === "application/pdf") return postLectAction({
+      ...payload,
+      file_type: "pdf",
+      file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+    })
+    postLectAction({
+      ...payload,
+      file_type: "audio",
+      file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
+    })
   };
 
   const handleCreateQuiz = (value: any) => {
@@ -1460,8 +1451,8 @@ function Home() {
             <Button
               // disabled={!upldFile?.file}
               onClick={isRecording ? stopHandle : startHandle}
-              loading={postLectLoad}
               className="bg-primary !w-full md:!w-[70%]"
+              loading={postLectLoad}
               type="primary"
               size="large"
               shape="round"
