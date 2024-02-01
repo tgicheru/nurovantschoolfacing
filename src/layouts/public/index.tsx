@@ -7,7 +7,7 @@ type Props = {
 };
 const PublicLayout = ({ children }: Props) => {
   return (
-    <div className="w-full h-screen bg-white py-[2.5rem] overflow-hidden">
+    <div className="w-full h-screen bg-white py-[2.5rem] overflow-y-auto">
       <div className="flex items-center justify-center w-full">
         <Image
           alt="logo"

@@ -12,6 +12,9 @@ const InfoPage = lazy(() => import("../pages/main/info"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const UnderMaintenance = lazy(() => import("../pages/public/underMaintenance"));
+const TermsAndCondition = lazy(
+  () => import("../pages/public/termsAndConditions")
+);
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
@@ -31,9 +34,14 @@ export const routes = [
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
-    path: "/maintenance",
+    path: "/public/maintenance",
     label: "Under Maintenance",
     component: <UnderMaintenance />,
+  },
+  {
+    path: "/public/terms",
+    label: "Terms of Service",
+    component: <TermsAndCondition />,
   },
 
   // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

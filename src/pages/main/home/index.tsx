@@ -17,7 +17,7 @@ import { GoTrash } from "react-icons/go";
 import { TbCards } from "react-icons/tb";
 import { PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
-import { LuUploadCloud } from "react-icons/lu";
+import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
 import VideoRecordIcon from "../../../assets/icons/videorecordicon";
 import CustomPagination from "../../../components/CustomPagination";
@@ -64,6 +64,7 @@ import {
 } from "../../../hooks/discuss/discuss";
 import DiscussSection from "./sections/discuss";
 import { ImSpinner } from "react-icons/im";
+import { ReactMic } from "react-mic";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -111,6 +112,86 @@ function Home() {
   );
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = React.useState(false);
+  const [voice, setVoice] = React.useState(false);
+  const [recordBlobLink, setRecordBlobLink] = React.useState<null | boolean>(
+    null
+  );
+
+  const onStop = async (recordedBlob: any) => {
+    console.log("recordedBlob is: ", recordedBlob);
+    setRecordBlobLink(recordedBlob.blobURL);
+    // Convert blob URL to blob data
+    const blob = await fetch(recordedBlob.blobURL).then((res) => res.blob());
+    console.log("blob", blob);
+
+    AWS.config.update({
+      accessKeyId: awsConfig.accessKeyId,
+      secretAccessKey: awsConfig.secretAccessKey,
+      region: awsConfig.region,
+    });
+
+    // Specify the bucket and key (object key) for the upload
+    const uploadParams = {
+      Bucket: "nurovant-prod-content/source_content",
+      Key: `${new Date()
+        .toLocaleTimeString([], { hour12: false })
+        .split(":")
+        .join("_")}--recording${blob.size}.wav`, // You can customize the key based on your requirement
+      Body: blob,
+      ContentType: blob.type,
+    };
+
+    const s3 = new AWS.S3();
+
+    // Upload the file
+    // Upload the file
+    s3.upload(
+      uploadParams,
+      (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
+        if (err) {
+          console.error("Error uploading file", err);
+          onLoadClose();
+        } else {
+          console.log("File uploaded successfully", data);
+
+          postLectAction({
+            file_url: data?.Location,
+            file_type: "audio",
+            file_name: data?.Key,
+            lecture_name: `${new Date()
+              .toLocaleTimeString([], { hour12: false })
+              .split(":")
+              .join("_")}--recording-${blob.size}`,
+            upload_type: "audio upload",
+          });
+          // Handle success, update UI, etc.
+        }
+      }
+    );
+    setIsRunning(false);
+    setIsRecording(false);
+  };
+
+  const startHandle = () => {
+    setElapsedTime(0);
+    setIsRunning(true);
+    setIsRecording(true);
+    setVoice(true);
+  };
+  const stopHandle = () => {
+    setIsRunning(false);
+    setIsRecording(false);
+    setVoice(false);
+  };
+
+  const clearHandle = () => {
+    setIsRunning(false);
+    setIsRecording(false);
+    setVoice(false);
+    setRecordBlobLink(false);
+    setElapsedTime(0);
+  };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -124,7 +205,8 @@ function Home() {
     const realTime = Number(selectedOption) * 60;
 
     if (selectedOption !== 0 && elapsedTime === realTime) {
-      handleStopRecording();
+      // handleStopRecording();
+      stopHandle();
     }
 
     return () => clearInterval(timer);
@@ -1394,27 +1476,51 @@ function Home() {
                 } mins`}</Button>
               ))}
             </div> */}
-            <div className="w-full flex items-center justify-center gap-1">
-              <select value={selectedOption} onChange={handleSelectChange}>
-                <option value={0} disabled>
-                  Select an option
-                </option>
-                {options}
-              </select>
+            {isRecording === false && (
+              <div className="w-full flex items-center justify-center gap-1">
+                <select value={selectedOption} onChange={handleSelectChange}>
+                  <option value={0} disabled>
+                    Select an option
+                  </option>
+                  {options}
+                </select>
 
-              <span className="text-[14px] leading-[20px]">Mins</span>
-            </div>
+                <span className="text-[14px] leading-[20px]">Mins</span>
+              </div>
+            )}
+
+            <ReactMic
+              record={voice}
+              className="sound-wave w-full "
+              onStop={onStop}
+              strokeColor="#000000"
+              // backgroundColor="#FF4081"
+            />
 
             {isRecording && (
-              <div className="w-full flex items-center justify-center">
-                <p className="text-[14px] leading-[20px] text-center">
-                  Recorded Time: {formatTime(elapsedTime)}
-                </p>
+              <div className="w-full flex flex-col gap-4 md:gap-[32px] items-center justify-center">
+                <div className="flex items-center justify-center flex-col gap-3">
+                  <span className="text-[50px] leading-[50px] font-bold">
+                    {formatTime(elapsedTime)}
+                  </span>
+                  {selectedOption > 0 && (
+                    <div className="flex items-center gap-1 font-medium text-[12px] leading-[18px]">
+                      <span className="text-[#b3b3b3] flex items-center gap-1">
+                        <LuAlarmClock size={20} color="#4970FC" />
+                        <span>Timer:</span>
+                      </span>
+                      <span className="text-[#7b7e8c]">
+                        {selectedOption} mins
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
             <Button
               // disabled={!upldFile?.file}
-              onClick={isRecording ? handleStopRecording : handleStartRecording}
+              onClick={isRecording ? stopHandle : startHandle}
+              loading={postLectLoad}
               className="bg-primary !w-full md:!w-[70%]"
               type="primary"
               size="large"
