@@ -31,7 +31,7 @@ export const routes = [
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
-    path: "/maintenance",
+    path: "/public/maintenance",
     label: "Under Maintenance",
     component: <UnderMaintenance />,
   },
