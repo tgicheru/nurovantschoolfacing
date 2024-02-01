@@ -920,7 +920,6 @@ function Home() {
     usePostDiscuss(discussSuccessAction);
 
   const handleCreateLecture = (value: any) => {
-    console.log(upldFile)
     const payload = {
       ...value,
       upload_type: "upload",
