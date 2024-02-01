@@ -1106,7 +1106,7 @@ function Home() {
                 size="large"
                 shape="round"
               >
-                Save FlashCards
+                Save Flashcards
               </Button>
             </Form>
           ),
