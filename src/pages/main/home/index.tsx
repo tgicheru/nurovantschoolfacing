@@ -91,15 +91,13 @@ function Home() {
   const onInvOpen = () => setIsInvite(true);
   const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
+  const onClose = () => setIsOpen(false);
   const inviteType = param.get("type");
   const onCreOpen = () => {
     setIsCreate(true);
     onGenClose();
   };
-  const onClose = () => {
-    handleUpldFileClr();
-    setIsOpen(false);
-  };
+
   const activeAction = param.get("action");
   const onOpen = () => setIsOpen(true);
   const paramId = param.get("id");
@@ -830,6 +828,7 @@ function Home() {
   );
 
   const successAction = () => {
+    handleUpldFileClr();
     setLoading(false);
     onClose();
     onRecClose();
@@ -926,19 +925,17 @@ function Home() {
       upload_type: "upload",
       file_name: upldData?.Key,
       file_url: upldData?.Location,
-    };
-    if (isEqual(paramId, "record"))
-      return postLectAction({
-        ...payload,
-        file_type: "audio",
-        upload_type: "record",
-      });
-    if (upldFile?.file?.type === "application/pdf")
-      return postLectAction({
-        ...payload,
-        file_type: "pdf",
-        // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-      });
+    }
+    if (isEqual(paramId, "record")) return postLectAction({
+      ...payload,
+      file_type: "audio",
+      upload_type: "record",
+    })
+    if (upldFile?.file?.type?.includes("pdf")) return postLectAction({
+      ...payload,
+      file_type: "pdf",
+      // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+    })
     postLectAction({
       ...payload,
       file_type: "audio",
@@ -1295,6 +1292,7 @@ function Home() {
               className="w-full md:w-auto !p-0 !m-0"
             />
             <CustomPagination
+              hidden
               total={75}
               pageSize={limit}
               sizeChanger
