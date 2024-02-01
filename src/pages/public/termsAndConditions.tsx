@@ -6,6 +6,18 @@ function TermsAndCondition() {
       header: "1. Acceptance of Terms",
       text: "By accessing or using our App, you agree to these Terms and our Privacy Policy. If you do not agree to these Terms, do not access or use our App.",
     },
+    {
+      header: "2. Changes to Terms",
+      text: "We may revise these Terms from time to time. We will notify you of any material changes via the App or other means. By continuing to use our App after any changes become effective, you agree to be bound by the revised Terms.",
+    },
+    {
+      header: "3. Eligibility",
+      text: "The App is intended for use by educational institutions and their authorized representatives. By using our App, you represent that you have the authority to agree to these Terms on behalf of your institution.    ",
+    },
+    {
+      header: "4. Account Creation ",
+      text: "To use certain features of our App, you must create an account on behalf of your institution. You agree to provide accurate and complete information and are responsible for all activity on your account. Keep your account password secure and do not share it with others.        ",
+    },
   ];
   return (
     <div className="w-full h-full">
