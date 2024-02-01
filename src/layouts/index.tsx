@@ -25,7 +25,8 @@ const Layout = ({ children }: Props) => {
   const getLayout = () => {
     if (/^\/auth(?=\/|$)/i.test(pathname)) return "auth";
     if (/^\/main(?=\/|$)/i.test(pathname)) return "main";
-    return "public";
+    if (/^\/public(?=\/|$)/i.test(pathname)) return "public";
+    return "main";
   };
 
   const Container = Layouts[getLayout()];
@@ -38,14 +39,14 @@ const Layout = ({ children }: Props) => {
 
   // redirect to login page if current is not login page and user not authorized
   useEffect(() => {
-    // if (isMainLayout && !isLoggedIn) {
-    //   message.info({
-    //     content: "Welcome! please authenticate to proceed.",
-    //     key: "updatable",
-    //   });
-    //   navigate("/auth");
-    // }
-    navigate("/maintenance");
+    if (isMainLayout && !isLoggedIn) {
+      message.info({
+        content: "Welcome! please authenticate to proceed.",
+        key: "updatable",
+      });
+      navigate("/auth");
+    }
+    // navigate("/public/maintenance");
   }, [isLoggedIn, isMainLayout, navigate]);
   return (
     <Fragment>
