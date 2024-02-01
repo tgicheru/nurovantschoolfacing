@@ -1,11 +1,12 @@
 import React from "react";
 
 function TermsAndCondition() {
-  //   const data = [
-  //     {
-  //       ,
-  //     },
-  //   ];
+  const data = [
+    {
+      header: "1. Acceptance of Terms",
+      text: "By accessing or using our App, you agree to these Terms and our Privacy Policy. If you do not agree to these Terms, do not access or use our App.",
+    },
+  ];
   return (
     <div className="w-full h-full">
       <div className="w-full h-full flex flex-col items-center justify-center text-black px-5 sm:px-10 md:px-14 space-y-10 max-w-[1024px] mx-auto bg-white overflow-y-auto">
