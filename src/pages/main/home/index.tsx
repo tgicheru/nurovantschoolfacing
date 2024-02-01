@@ -157,6 +157,7 @@ function Home() {
         if (err) return message.error("Error uploading file")   
         handleAction("lecture", "record")
         setUpldData(data)
+        onRecClose()
         onCreOpen()
         onClose()
       }
