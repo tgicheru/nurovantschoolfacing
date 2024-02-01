@@ -922,23 +922,23 @@ function Home() {
     const payload = {
       ...value,
       upload_type: "upload",
+      file_name: upldData?.Key,
       file_url: upldData?.Location,
     }
     if (isEqual(paramId, "record")) return postLectAction({
       ...payload,
       file_type: "audio",
       upload_type: "record",
-      file_name: upldData?.Key,
     })
     if (upldFile?.file?.type === "application/pdf") return postLectAction({
       ...payload,
       file_type: "pdf",
-      file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+      // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
     })
     postLectAction({
       ...payload,
       file_type: "audio",
-      file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
+      // file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
     })
   };
 
