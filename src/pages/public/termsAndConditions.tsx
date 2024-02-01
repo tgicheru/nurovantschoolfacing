@@ -51,11 +51,7 @@ function TermsAndCondition() {
         </h1>
         <div className="text-[16px] leading-[24px] lg:text-[24px] lg:leading-[36px] font-normal font-montserrat text-center">
           <p>
-            Below is a revised version of the Terms and Conditions for the
-            Nurovant AI web application, tailored specifically for a
-            school-facing web app where teachers record their classes to create
-            study aids. This version includes a clause about not selling user
-            data, emphasizing privacy and data protection.
+          
           </p>
         </div>
       </div>

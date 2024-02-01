@@ -85,7 +85,7 @@ function RegisterPage() {
           >
             By Clicking on this box, you agree to our{" "}
             <Link
-              to="https://www.nurovant.com/termofservice.html"
+              to="https://school.nurovant.com/public/terms"
               target="_blank"
               className="font-semibold underline"
             >

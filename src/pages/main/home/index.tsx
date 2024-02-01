@@ -11,6 +11,7 @@ import {
   Tag,
   Upload,
   UploadProps,
+  message,
 } from "antd";
 import { FaPlus } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
@@ -104,6 +105,7 @@ function Home() {
   const paramId = param.get("id");
 
   const [loading, setLoading] = useState(false);
+  const [upldData, setUpldData] = useState<any>({});
 
   // Live recording section
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -149,28 +151,16 @@ function Home() {
     s3.upload(
       uploadParams,
       (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-        if (err) {
-          console.error("Error uploading file", err);
-          onLoadClose();
-        } else {
-          console.log("File uploaded successfully", data);
-
-          postLectAction({
-            file_url: data?.Location,
-            file_type: "audio",
-            file_name: data?.Key,
-            lecture_name: `${new Date()
-              .toLocaleTimeString([], { hour12: false })
-              .split(":")
-              .join("_")}--recording-${blob.size}`,
-            upload_type: "audio upload",
-          });
-          // Handle success, update UI, etc.
-        }
+        setLoading(false);
+        setIsRunning(false);
+        setIsRecording(false);
+        if (err) return message.error("Error uploading file")   
+        handleAction("lecture", "record")
+        setUpldData(data)
+        onCreOpen()
+        onClose()
       }
     );
-    setIsRunning(false);
-    setIsRecording(false);
   };
 
   const startHandle = () => {
@@ -840,6 +830,7 @@ function Home() {
     setLoading(false);
     onClose();
     onRecClose();
+    onCreClose();
     handleRefetch();
     onLoadClose();
     setModal({
@@ -926,6 +917,30 @@ function Home() {
   const { mutate: postDiscussAction, isLoading: postDiscussLoad } =
     usePostDiscuss(discussSuccessAction);
 
+  const handleCreateLecture = (value: any) => {
+    const payload = {
+      ...value,
+      upload_type: "upload",
+      file_url: upldData?.Location,
+    }
+    if (isEqual(paramId, "record")) return postLectAction({
+      ...payload,
+      file_type: "audio",
+      upload_type: "record",
+      file_name: upldData?.Key,
+    })
+    if (upldFile?.file?.type === "application/pdf") return postLectAction({
+      ...payload,
+      file_type: "pdf",
+      file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+    })
+    postLectAction({
+      ...payload,
+      file_type: "audio",
+      file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
+    })
+  };
+
   const handleCreateQuiz = (value: any) => {
     const lecture = getLectData?.lectures?.find((d: any) =>
       isEqual(d?._id, paramId)
@@ -1002,6 +1017,30 @@ function Home() {
   const CreateContent = useMemo(
     () =>
       [
+        {
+          key: "lecture",
+          component: (
+            <Form onFinish={handleCreateLecture} layout="vertical">
+              <Form.Item label="Name of Lecture" name="lecture_name">
+                <Input
+                  className="!rounded-xl"
+                  placeholder="Enter lecture name"
+                  size="large"
+                />
+              </Form.Item>
+              <Button
+                className="bg-primary !w-full"
+                loading={isActionLoad}
+                htmlType="submit"
+                type="primary"
+                size="large"
+                shape="round"
+              >
+                Save Lecture
+              </Button>
+            </Form>
+          ),
+        },
         {
           key: "quiz",
           component: (
@@ -1184,21 +1223,6 @@ function Home() {
       secretAccessKey: awsConfig.secretAccessKey,
       region: awsConfig.region,
     });
-    // var audioBlob: Blob | null | undefined = null || undefined;
-
-    // if (upldFile.file) {
-    //   const reader = new FileReader();
-
-    //   reader.onload = (e: any) => {
-    //     var blob = new Blob([e?.target?.result], {
-    //       type: upldFile.file.type,
-    //     });
-    //     audioBlob = blob;
-    //     // setBlob(blob);
-    //   };
-
-    //   reader.readAsArrayBuffer(upldFile.file);
-    // }
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
@@ -1211,110 +1235,17 @@ function Home() {
       ContentType: upldFile.file.type,
     };
 
-    // Upload the file
-    // if (upldFile?.file?.type === "application/pdf") {
-    //   const params = {
-    //     Bucket: "nurovant-prod-content/source_content",
-    //     Key: `${new Date()
-    //       .toLocaleTimeString([], { hour12: false })
-    //       .split(":")
-    //       .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
-    //   };
-    //   try {
-    //     // Initiate the multipart upload
-    //     const uploadData = await s3.createMultipartUpload(params).promise();
-
-    //     // Set the part size (5 MB in this example)
-    //     const partSize = 5 * 1024 * 1024;
-
-    //     // Calculate the number of parts
-    //     const numParts = Math.ceil(upldFile?.file.size / partSize);
-
-    //     // Upload each part
-    //     const uploadPromises = [];
-    //     for (let i = 0; i < numParts; i++) {
-    //       const start = i * partSize;
-    //       const end = Math.min(start + partSize, upldFile?.file.size);
-
-    //       const part = await s3
-    //         .uploadPart({
-    //           Bucket: "nurovant-prod-content/source_content",
-    //           Key: `${new Date()
-    //             .toLocaleTimeString([], { hour12: false })
-    //             .split(":")
-    //             .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
-    //           PartNumber: i + 1,
-    //           UploadId: uploadData.UploadId!,
-    //           Body: upldFile?.file.slice(start, end),
-    //         })
-    //         .promise();
-
-    //       uploadPromises.push({ PartNumber: i + 1, ETag: part.ETag });
-    //     }
-
-    //     // Complete the multipart upload
-    //     const finalUp = await s3
-    //       .completeMultipartUpload({
-    //         Bucket: "nurovant-prod-content/source_content",
-    //         Key: `${new Date()
-    //           .toLocaleTimeString([], { hour12: false })
-    //           .split(":")
-    //           .join("_")}--${removeSpacesFromPdfName(upldFile.file.name)}`,
-    //         UploadId: uploadData.UploadId!,
-    //         MultipartUpload: {
-    //           Parts: uploadPromises,
-    //         },
-    //       })
-    //       .promise();
-
-    //     console.log("finalUpload: ", finalUp);
-
-    //     postLectAction({
-    //       file_url: finalUp?.Location,
-    //       file_type: "pdf",
-    //       file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-    //       lecture_name: finalUp?.Key,
-    //       upload_type: "audio upload",
-    //     });
-    //   } catch (error) {
-    //     console.error("Error uploading file:", error);
-    //   }
-    // } else {
     s3.upload(
       uploadParams,
       (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-        if (err) {
-          console.error("Error uploading file", err);
-        } else {
-          console.log("File uploaded successfully", data);
-
-          if (upldFile?.file?.type === "application/pdf") {
-            postLectAction({
-              file_url: data?.Location,
-              file_type: "pdf",
-              file_name: `${user?._id}-uploadPdf-${moment().format(
-                "DD-MM-YYYY"
-              )}`,
-              lecture_name: data?.Key,
-              upload_type: "audio upload",
-            });
-          } else {
-            postLectAction({
-              file_url: data?.Location,
-              file_type: "audio",
-              file_name: `${user?._id}-uploadAudio-${moment().format(
-                "DD-MM-YYYY"
-              )}`,
-              lecture_name: data?.Key,
-              upload_type: "audio upload",
-            });
-          }
-
-          // Handle success, update UI, etc.
-        }
+        setLoading(false)
+        if (err) return message.error("Error uploading file")   
+        handleAction("lecture", "id")
+        setUpldData(data)
+        onCreOpen()
+        onClose()
       }
     );
-    // }
   };
 
   if (SectionContent) return SectionContent;
@@ -1520,8 +1451,8 @@ function Home() {
             <Button
               // disabled={!upldFile?.file}
               onClick={isRecording ? stopHandle : startHandle}
-              loading={postLectLoad}
               className="bg-primary !w-full md:!w-[70%]"
+              loading={postLectLoad}
               type="primary"
               size="large"
               shape="round"
