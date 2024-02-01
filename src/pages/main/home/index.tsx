@@ -121,6 +121,7 @@ function Home() {
   );
 
   const onStop = async (recordedBlob: any) => {
+    onLoadOpen();
     console.log("recordedBlob is: ", recordedBlob);
     setRecordBlobLink(recordedBlob.blobURL);
     // Convert blob URL to blob data
@@ -154,12 +155,13 @@ function Home() {
         setLoading(false);
         setIsRunning(false);
         setIsRecording(false);
-        if (err) return message.error("Error uploading file")   
-        handleAction("lecture", "record")
-        setUpldData(data)
-        onRecClose()
-        onCreOpen()
-        onClose()
+        if (err) return message.error("Error uploading file");
+        onLoadClose();
+        handleAction("lecture", "record");
+        setUpldData(data);
+        onRecClose();
+        onCreOpen();
+        onClose();
       }
     );
   };
@@ -924,22 +926,26 @@ function Home() {
       upload_type: "upload",
       file_name: upldData?.Key,
       file_url: upldData?.Location,
-    }
-    if (isEqual(paramId, "record")) return postLectAction({
-      ...payload,
-      file_type: "audio",
-      upload_type: "record",
-    })
-    if (upldFile?.file?.type === "application/pdf") return postLectAction({
-      ...payload,
-      file_type: "pdf",
-      // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-    })
+    };
+    if (isEqual(paramId, "record"))
+      return postLectAction({
+        ...payload,
+        file_type: "audio",
+        upload_type: "record",
+      });
+    if (upldFile?.file?.type === "application/pdf")
+      return postLectAction({
+        ...payload,
+        file_type: "pdf",
+        // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+      });
     postLectAction({
       ...payload,
       file_type: "audio",
       // file_name: `${user?._id}-uploadAudio-${moment().format("DD-MM-YYYY")}`,
-    })
+    });
+
+    console.log(payload);
   };
 
   const handleCreateQuiz = (value: any) => {
@@ -1203,6 +1209,7 @@ function Home() {
   // const [blob, setBlob] = useState<Blob>();
   const handleUpload = async () => {
     setLoading(true);
+    onLoadOpen();
     console.log(upldFile);
     if (!upldFile) {
       console.error("No file selected");
@@ -1239,12 +1246,14 @@ function Home() {
     s3.upload(
       uploadParams,
       (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
-        setLoading(false)
-        if (err) return message.error("Error uploading file")   
-        handleAction("lecture", "id")
-        setUpldData(data)
-        onCreOpen()
-        onClose()
+        setLoading(false);
+        console.log(data);
+        if (err) return message.error("Error uploading file");
+        handleAction("lecture", "id");
+        setUpldData(data);
+        onLoadClose();
+        onCreOpen();
+        onClose();
       }
     );
   };
@@ -1277,7 +1286,7 @@ function Home() {
           hidden={!getLectData?.lectures?.length}
           className="w-full space-y-5"
         >
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10 ">
             <Tabs
               activeKey={activeTab}
               defaultActiveKey={activeTab}
@@ -1294,7 +1303,7 @@ function Home() {
               onChange={setPage}
             />
           </div>
-          <div>
+          <div className="pb-[50px] md:pb-0">
             <CustomTable data={data} column={column} pagination={false} />
           </div>
         </div>
