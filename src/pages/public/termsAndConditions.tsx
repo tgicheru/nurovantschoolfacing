@@ -18,6 +18,30 @@ function TermsAndCondition() {
       header: "4. Account Creation ",
       text: "To use certain features of our App, you must create an account on behalf of your institution. You agree to provide accurate and complete information and are responsible for all activity on your account. Keep your account password secure and do not share it with others.        ",
     },
+    {
+      header: "5. Use of App",
+      text: "Subject to your compliance with these Terms, Nurovant grants you a limited, non-exclusive, non-transferable, non-sublicensable license to access and use the App for educational purposes on behalf of your institution. You agree to use the App only in accordance with these Terms and for lawful educational purposes.",
+    },
+    {
+      header: "6. Your Content ",
+      text: "You retain ownership of content submitted, uploaded, or made available in the App ('Your Content'). You grant Nurovant a license to use Your Content as necessary to provide the App services. You represent that you have the right to submit Your Content and that it complies with these Terms.",
+    },
+    {
+      header: "7. Data Privacy Assurance",
+      text: "We are committed to protecting the privacy of all users. Nurovant will not sell, rent, or lease user data to third parties. All data will be kept private and secure, in compliance with applicable data protection laws and our Privacy Policy.",
+    },
+    {
+      header: "8. Intellectual Property Rights ",
+      text: "Recordings and related content remain the intellectual property of the respective educators and/or institutions. Users acknowledge they do not own the content of these recordings.",
+    },
+    {
+      header: "9. Right to Delete Content  ",
+      text: "Educators and institutions have the right to request the deletion of their content from our platform.",
+    },
+    {
+      header: "10. Legal Disclaimer ",
+      text: "Nurovant is not liable for unauthorized use of the App that infringes intellectual property rights or violates policies. Users are responsible for complying with applicable laws and regulations.",
+    },
   ];
   return (
     <div className="w-full h-full">
@@ -36,7 +60,7 @@ function TermsAndCondition() {
         </div>
       </div>
 
-      <div className="w-full h-full max-w-[1024px] mx-auto px-4 md:px-0 flex flex-col items-center gap-4">
+      <div className="w-full max-w-[1024px] mx-auto px-4 md:px-0 flex flex-col items-center gap-4 mb-11">
         <h2 className="text-[28px] leading-[36px] lg:text-[40px] lg:leading-[52px] tracking-[-0.36px] font-bold text-center">
           Nurovant AI Web Application Terms of Service
         </h2>
@@ -63,6 +87,51 @@ function TermsAndCondition() {
             </span>
           </div>
         ))}
+
+        <div className="mt-6 flex flex-col items-start gap-4 w-full">
+          <h3 className="text-[20px] leading-[32px] lg:text-[28px] lg:leading-[44px] tracking-[-0.36px] font-bold text-center">
+            11. Contact Us
+          </h3>
+          <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
+            For questions about these Terms, please contact us at{" "}
+            <a
+              href="mailto:support@nurovant.com"
+              className="no-underline text-primary font-medium"
+            >
+              support@nurovant.com.
+            </a>
+          </span>
+        </div>
+
+        <div className="mt-6 flex flex-col items-start gap-4">
+          <h3 className="text-[20px] leading-[32px] lg:text-[28px] lg:leading-[44px] tracking-[-0.36px] font-bold text-center">
+            Disclaimers and Limitation of Liability
+          </h3>
+          <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
+            The App and its content are provided "as is." To the maximum extent
+            permitted by law, Nurovant disclaims all warranties. We will not be
+            liable for any damages related to the use of the App.
+          </span>
+        </div>
+
+        <div className="mt-6 flex flex-col items-start gap-4">
+          <h3 className="text-[20px] leading-[32px] lg:text-[28px] lg:leading-[44px] tracking-[-0.36px] font-bold text-center">
+            Governing Law
+          </h3>
+          <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
+            These Terms are governed by the laws of the State of Texas. Any
+            dispute will be subject to the exclusive jurisdiction of state and
+            federal courts in Dallas, Texas.
+          </span>
+        </div>
+
+        <div className="mt-6 flex flex-col items-start gap-4 mb-7">
+          <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
+            This specifically addresses the school-facing aspect of the web app,
+            the commitment to not selling user data, and tailors other sections
+            to better fit the web-based educational context.
+          </span>
+        </div>
       </div>
     </div>
   );
