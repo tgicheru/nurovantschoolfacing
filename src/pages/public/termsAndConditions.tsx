@@ -41,16 +41,16 @@ function TermsAndCondition() {
           </p>
         </div>
 
-        <div className="mt-6 flex flex-col items-start gap-4">
-          <h3 className="text-[20px] leading-[32px] lg:text-[28px] lg:leading-[44px] tracking-[-0.36px] font-bold text-center">
-            1. Acceptance of Terms
-          </h3>
-          <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
-            By accessing or using our App, you agree to these Terms and our
-            Privacy Policy. If you do not agree to these Terms, do not access or
-            use our App.
-          </span>
-        </div>
+        {data.map((item, index) => (
+          <div className="mt-6 flex flex-col items-start gap-4" key={index}>
+            <h3 className="text-[20px] leading-[32px] lg:text-[28px] lg:leading-[44px] tracking-[-0.36px] font-bold text-center">
+              {item.header}
+            </h3>
+            <span className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[28px] font-normal font-montserrat text-left">
+              {item.text}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
