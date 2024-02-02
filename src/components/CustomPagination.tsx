@@ -8,6 +8,7 @@ type Props = {
   current: number,
   onChange?: any,
   pageSize: number,
+  hidden?: boolean,
   sizeChanger?: boolean,
   defaultCurrent?: number,
   defaultPageSize?: number,
@@ -15,6 +16,7 @@ type Props = {
 function CustomPagination({
   size,
   total,
+  hidden,
   current,
   onChange,
   pageSize,
@@ -23,7 +25,7 @@ function CustomPagination({
   defaultPageSize,
 }: Props) {
   return (
-    <div className='w-full md:w-auto'>
+    <div hidden={hidden} className='w-full md:w-auto'>
       <Pagination
         responsive
         size={size}
