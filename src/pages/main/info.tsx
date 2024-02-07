@@ -60,8 +60,7 @@ function AuthPage() {
                         selected === index ? "text-primary" : "text-[#838382]"
                       } font-medium text-[14px] lg:text-[16px]`}
                     >
-                      {item?.includes("-") ? item.split("-").join(" ") : item}{" "}
-                      {index === 0 ? "year" : "years"}
+                      {item} {index === 0 ? "year" : "years"}
                     </span>
                   </div>
                 ))}
