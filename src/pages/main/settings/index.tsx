@@ -172,6 +172,7 @@ function SettingsPage() {
         ),
       },
       {
+        notActive: isNoEditMail,
         key: <p className="text-base font-medium text-[#646462]">Password</p>,
         data: (
           <Button
@@ -233,8 +234,8 @@ function SettingsPage() {
           </Button>
         ),
       },
-    ],
-    [user, isEdit, getSubsLoad, setProfileLoad]
+    ].filter(d => !d?.notActive),
+    [user, isEdit, getSubsLoad, setProfileLoad, isNoEditMail]
   );
 
   const subscriptions = useMemo(
