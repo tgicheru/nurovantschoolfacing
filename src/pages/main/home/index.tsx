@@ -16,7 +16,7 @@ import {
 import { FaPlus } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import { TbCards } from "react-icons/tb";
-import { PiRepeatFill } from "react-icons/pi";
+import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
@@ -1389,6 +1389,7 @@ function Home() {
             >
               Create Lecture
             </Button>
+            <p className="text-sm font-medium text-[#838382]">Note: Each generation costs 2 credits</p>
           </div>
         </Modal>
 
@@ -1528,6 +1529,13 @@ function Home() {
             >
               Generate
             </Button>
+            <div className="flex justify-center items-center gap-2">
+              <p className="text-sm font-medium text-[#838382]">Available Credit</p>
+              <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
+                <PiCoins />
+                <span>{user?.info?.current_credit}</span>
+              </p>
+            </div>
           </div>
         </Modal>
 

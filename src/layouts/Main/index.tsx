@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
 import { Button } from "antd";
 import { LuLogOut } from "react-icons/lu";
+import { useGetProfile, useGetUserSub } from "../../hooks/profile/profile";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -19,6 +20,12 @@ const MainLayout = ({ children }: Props) => {
   const { user } = useRecoilValue(authAtom);
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
+
+  // get user profile 
+  useGetProfile()
+
+  // get user subscription 
+  // useGetUserSub()
 
   const handleLogout = () => navigate("/auth/logout");
   return (

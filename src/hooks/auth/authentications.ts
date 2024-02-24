@@ -232,7 +232,7 @@ export function useUpdateInformation() {
   const authData = useRecoilState(authAtom);
 
   return useMutation(
-    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
         notification.success({

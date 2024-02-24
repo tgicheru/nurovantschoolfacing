@@ -12,9 +12,10 @@ import { useGoogleRegister } from "../../hooks/auth/authentications";
 import AuthContainer from "../../components/AuthContainer";
 import { useRecoilState } from "recoil";
 import authAtom from "../../atoms/auth/auth.atom";
+import { Button } from "antd";
 
 function AuthPage() {
-  const { mutate } = useGoogleRegister();
+  const {isLoading,  mutate } = useGoogleRegister();
 
   const handleGoogleLogin = () => {
     signInWithPopup(auth, provider)
@@ -134,17 +135,21 @@ function AuthPage() {
 
         {/* Other login options */}
         <div className="flex w-full items-center justify-center flex-row gap-[32px]">
-          <img
-            src={AppleIcon}
-            alt="apple-icon"
-            className="cursor-pointer"
-            onClick={() => handleAppleLogin()}
+          <Button
+            type="text"
+            size="large"
+            loading={isLoading}
+            onClick={handleAppleLogin}
+            className="!bg-transparent !p-0 !m-0"
+            icon={<img src={AppleIcon} alt="apple-icon" />}
           />
-          <img
-            src={GoogleIcon}
-            alt="google-icon"
-            className="cursor-pointer"
-            onClick={() => handleGoogleLogin()}
+          <Button
+            type="text"
+            size="large"
+            loading={isLoading}
+            onClick={handleGoogleLogin}
+            className="!bg-transparent !p-0 !m-0"
+            icon={<img src={GoogleIcon} alt="google-icon" />}
           />
         </div>
       </div>

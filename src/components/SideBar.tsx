@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import Logo from "./Logo";
-import { LuClipboardList, LuLogOut, LuUser } from "react-icons/lu";
+import { LuLogOut } from "react-icons/lu";
 import { IoPlayBackOutline, IoPlayForwardOutline } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BiHomeAlt2 } from "react-icons/bi";
-import { BsGear } from "react-icons/bs";
 import { Avatar, Button, Divider, Menu } from "antd";
 import { isEqual } from "../context/utils";
 import authAtom from "../atoms/auth/auth.atom";
 import { useRecoilValue } from "recoil";
 import { extractAvatar } from "../constants";
 import { FaPlus } from "react-icons/fa";
+import { BsGear } from "react-icons/bs";
 
 type Props = {
   isOpen: boolean;
@@ -56,11 +56,11 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
           />
         ),
       },
-      // {
-      //   key: "/settings",
-      //   label: "Settings",
-      //   icon: <BsGear className="!text-lg !font-medium" />,
-      // },
+      {
+        key: "/settings",
+        label: "Settings",
+        icon: <BsGear className="!text-lg !font-medium" />,
+      },
     ],
     [isOpen, onClose, onOpen]
   );
@@ -121,7 +121,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
         <Divider />
         <div className={`w-full flex ${isOpen ? "justify-center" : "justify-between"} items-center`}>
           <div className="flex items-center gap-3">
-            <Avatar alt="user" size="large">
+            <Avatar alt="user" size="large" src={user?.info?.profile_img}>
               {(user?.info?.name !== null || user?.info?.name === undefined) &&
                 extractAvatar(user?.info?.name)}
             </Avatar>

@@ -14,10 +14,10 @@ export const AxiosContext = createContext(null);
 export const isTestEnv = host.includes("localhost") || host.includes("surge");
 const isDevEnv =
   !process.env.NODE_ENV || process.env.NODE_ENV === "development" || isTestEnv;
-export const baseURL = isDevEnv
-  ? //  "https://nurovant-production-serve-kaax.codecapsules.co.za/"
-    "https://nurovant-backend-server-irvxegbhla-uc.a.run.app/"
-  : "https://nurovant-backend-server-irvxegbhla-uc.a.run.app/";
+export const baseURL = isDevEnv ? process.env.REACT_APP_API_URL : process.env.REACT_APP_API_URL;
+  // ? //  "https://nurovant-production-serve-kaax.codecapsules.co.za/"
+  //   "https://nurovant-backend-server-irvxegbhla-uc.a.run.app/"
+  // : "https://nurovant-backend-server-irvxegbhla-uc.a.run.app/";
 export default function AxiosContextProvider({ children }: { children: any }) {
   const { isLoggedIn, user } = useRecoilValue(authAtom);
   const axiosInstance = useMemo(() => {
