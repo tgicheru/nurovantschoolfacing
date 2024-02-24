@@ -52,6 +52,18 @@ export const formatCurrency = (value: number, currency?: string) =>
     });
   }
 
+  export const extractAvatar = (name: string) => {
+    const splitName = name?.split(" ");
+    const firstLetter = splitName?.[0]?.charAt(0);
+    const secondLetter = splitName?.[1]?.charAt(0);
+    return `${firstLetter}${secondLetter}`;
+  };
+
+  export function removeSpacesFromPdfName(pdfName: string) {
+    const trimmedName = pdfName.trim();
+    return trimmedName.replace(/[^a-zA-Z0-9.]/g, "");
+  }
+
 export function getBinary(file: File) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

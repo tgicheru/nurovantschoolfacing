@@ -18,6 +18,7 @@ const TermsAndCondition = lazy(
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
+const Settings = lazy(() => import("../pages/main/settings"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -25,6 +26,11 @@ export const routes = [
     path: "/",
     label: "Home",
     component: <Home />,
+  },
+  {
+    path: "/settings",
+    label: "Settings",
+    component: <Settings />,
   },
   {
     path: "/info",
