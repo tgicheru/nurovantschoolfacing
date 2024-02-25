@@ -37,7 +37,7 @@ import SubscribeContent from "./contents/subscribe";
 
 function SettingsPage() {
   const { user } = useRecoilValue(authAtom);
-  const actPlan = (`${user?.info?.current_tier}_${user?.info?.subscription_duration}`);
+  const actPlan = (`${user?.info?.current_tier}_${user?.info?.subscription_duration || user?.info?.duration}`);
   const [subPlan, setSubPlan] = useState(actPlan || "");
   const [actSub, setActSub] = useState("Monthly");
   const subTier = subPlan?.split("_")?.[0];
@@ -538,8 +538,8 @@ function SettingsPage() {
                 })}
               </Radio.Group>
               <Button
-                disabled={!subPlan || isEqual(subPlan, actPlan)}
                 className="w-[80%] !h-[50px] bg-primary"
+                disabled={isEqual(subPlan, actPlan)}
                 loading={subscriptionLoad}
                 onClick={handleSubscribe}
                 type="primary"
