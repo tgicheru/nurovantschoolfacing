@@ -40,7 +40,7 @@ function SettingsPage() {
   const actPlan = (`${user?.info?.current_tier}_${user?.info?.subscription_duration}`);
   const [subPlan, setSubPlan] = useState(actPlan || "");
   const [actSub, setActSub] = useState("Monthly");
-  const subTier = subPlan?.split(",")?.[0];
+  const subTier = subPlan?.split("_")?.[0];
   const actSubLow = actSub?.toLowerCase();
   const actSubLowRep = actSubLow?.replaceAll("ly", "");
   const [isPayOpen, setIsPayOpen] = useState(false);
