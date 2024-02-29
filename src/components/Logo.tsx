@@ -9,7 +9,7 @@ type Props = {
 };
 function Logo({ isIcon }: Props) {
   return (
-    <Link to="/" className="w-full block logo-bg">
+    <Link to="/" className="w-full block logo-b">
       <Image
         alt="logo"
         src={isIcon ? icon : logo}
