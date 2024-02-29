@@ -9,6 +9,7 @@ import {
   Spin,
   Tabs,
   Tag,
+  Tooltip,
   Upload,
   UploadProps,
   message,
@@ -491,42 +492,50 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
-          <Button
-            onClick={() => handleAction("quiz", d?._id)}
-            className="text-primary"
-            icon={<BiTestTube />}
-            disabled={d?.quiz}
-            type="text"
-          >
-            Quiz
-          </Button>
-          <Button
-            onClick={() => handleAction("flashcards", d?._id)}
-            className="text-primary"
-            disabled={d?.flashcards}
-            icon={<TbCards />}
-            type="text"
-          >
-            Flashcards
-          </Button>
-          <Button
-            onClick={() => handleAction("recaps", d?._id)}
-            className="text-primary"
-            icon={<PiRepeatFill />}
-            disabled={d?.recaps}
-            type="text"
-          >
-            Recaps
-          </Button>
-          <Button
-            onClick={() => handleAction("discussion", d?._id)}
-            className="text-primary"
-            icon={<AiOutlineMessage />}
-            disabled={d?.discussions}
-            type="text"
-          >
-            Discuss
-          </Button>
+          <Tooltip title={d?.quiz&&"Quiz already generated"}>
+            <Button
+              onClick={() => handleAction("quiz", d?._id)}
+              className="text-primary"
+              icon={<BiTestTube />}
+              disabled={d?.quiz}
+              type="text"
+            >
+              Quiz
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.flashcards&&"Flashcards already generated"}>
+            <Button
+              onClick={() => handleAction("flashcards", d?._id)}
+              className="text-primary"
+              disabled={d?.flashcards}
+              icon={<TbCards />}
+              type="text"
+            >
+              Flashcards
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.recaps&&"Recaps already generated"}>
+            <Button
+              onClick={() => handleAction("recaps", d?._id)}
+              className="text-primary"
+              icon={<PiRepeatFill />}
+              disabled={d?.recaps}
+              type="text"
+            >
+              Recaps
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.discussions&&"Discussion already generated"}>
+            <Button
+              onClick={() => handleAction("discussion", d?._id)}
+              className="text-primary"
+              icon={<AiOutlineMessage />}
+              disabled={d?.discussions}
+              type="text"
+            >
+              Discuss
+            </Button>
+          </Tooltip>
         </div>
       ),
     },
