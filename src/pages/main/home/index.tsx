@@ -9,6 +9,7 @@ import {
   Spin,
   Tabs,
   Tag,
+  Tooltip,
   Upload,
   UploadProps,
   message,
@@ -16,7 +17,7 @@ import {
 import { FaPlus } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import { TbCards } from "react-icons/tb";
-import { PiRepeatFill } from "react-icons/pi";
+import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
 import { useSearchParams } from "react-router-dom";
@@ -491,42 +492,50 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
-          <Button
-            onClick={() => handleAction("quiz", d?._id)}
-            className="text-primary"
-            icon={<BiTestTube />}
-            disabled={d?.quiz}
-            type="text"
-          >
-            Quiz
-          </Button>
-          <Button
-            onClick={() => handleAction("flashcards", d?._id)}
-            className="text-primary"
-            disabled={d?.flashcards}
-            icon={<TbCards />}
-            type="text"
-          >
-            Flashcards
-          </Button>
-          <Button
-            onClick={() => handleAction("recaps", d?._id)}
-            className="text-primary"
-            icon={<PiRepeatFill />}
-            disabled={d?.recaps}
-            type="text"
-          >
-            Recaps
-          </Button>
-          <Button
-            onClick={() => handleAction("discussion", d?._id)}
-            className="text-primary"
-            icon={<AiOutlineMessage />}
-            disabled={d?.discussions}
-            type="text"
-          >
-            Discuss
-          </Button>
+          <Tooltip title={d?.quiz&&"Quiz already generated"}>
+            <Button
+              onClick={() => handleAction("quiz", d?._id)}
+              className="text-primary"
+              icon={<BiTestTube />}
+              disabled={d?.quiz}
+              type="text"
+            >
+              Quiz
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.flashcards&&"Flashcards already generated"}>
+            <Button
+              onClick={() => handleAction("flashcards", d?._id)}
+              className="text-primary"
+              disabled={d?.flashcards}
+              icon={<TbCards />}
+              type="text"
+            >
+              Flashcards
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.recaps&&"Recaps already generated"}>
+            <Button
+              onClick={() => handleAction("recaps", d?._id)}
+              className="text-primary"
+              icon={<PiRepeatFill />}
+              disabled={d?.recaps}
+              type="text"
+            >
+              Recaps
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.discussions&&"Discussion already generated"}>
+            <Button
+              onClick={() => handleAction("discussion", d?._id)}
+              className="text-primary"
+              icon={<AiOutlineMessage />}
+              disabled={d?.discussions}
+              type="text"
+            >
+              Discuss
+            </Button>
+          </Tooltip>
         </div>
       ),
     },
@@ -1389,6 +1398,7 @@ function Home() {
             >
               Create Lecture
             </Button>
+            <p className="text-sm font-medium text-[#838382]">Note: Each generation costs 2 credits</p>
           </div>
         </Modal>
 
@@ -1528,6 +1538,13 @@ function Home() {
             >
               Generate
             </Button>
+            <div className="flex justify-center items-center gap-2">
+              <p className="text-sm font-medium text-[#838382]">Available Credit</p>
+              <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
+                <PiCoins />
+                <span>{user?.info?.current_credit}</span>
+              </p>
+            </div>
           </div>
         </Modal>
 

@@ -9,6 +9,7 @@ type Props = {
   data?: any,
   column?: any,
   rowKey?: string,
+  noHeader?: boolean,
   loading?: boolean,
   position?: string,
   pagination?: any,
@@ -20,6 +21,7 @@ function CustomTable({
   rowKey,
   loading,
   position,
+  noHeader,
   pagination,
   rowSelection,
 }: Props) {
@@ -85,6 +87,7 @@ function CustomTable({
         key={rowKey}
         rowKey={rowKey}
         loading={loading}
+        showHeader={!noHeader}
         rowSelection={rowSelection}
         dataSource={data || altData}
         columns={column || altColumn}
