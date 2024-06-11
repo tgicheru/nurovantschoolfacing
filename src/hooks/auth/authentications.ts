@@ -9,7 +9,7 @@ import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useEmailLogin() {
-  const url = "/api/teachers/signin_email";
+  const url = "/api_backend/teachers/signin_email";
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const axios = useContext(AxiosContext);
@@ -45,7 +45,7 @@ export function useEmailLogin() {
 
 export function useEmailRegister() {
   const navigate = useNavigate();
-  const url = "/api/teachers/send_email_otp";
+  const url = "/api_backend/teachers/send_email_otp";
   const axios = useContext(AxiosContext);
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
@@ -77,7 +77,7 @@ export function useEmailRegister() {
 
 export function usePhoneRegister() {
   // const navigate = useNavigate();
-  const url = "/api/auth/mobile_otp";
+  const url = "/api_backend/auth/mobile_otp";
   const axios = useContext(AxiosContext);
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
@@ -109,7 +109,7 @@ export function usePhoneRegister() {
 }
 
 export function useVerify(successAction?: any) {
-  const url = "/api/teachers/verify_otp";
+  const url = "/api_backend/teachers/verify_otp";
   const axios = useContext(AxiosContext);
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
@@ -190,7 +190,7 @@ export function usePassword(url: string) {
 
 export function useGoogleRegister() {
   const navigate = useNavigate();
-  const url = "/api/teachers/auth";
+  const url = "/api_backend/teachers/auth";
   const axios = useContext(AxiosContext);
   const setAuth = useSetRecoilState(authAtom);
   const authData = useRecoilState(authAtom);
@@ -226,13 +226,14 @@ export function useGoogleRegister() {
 
 export function useUpdateInformation() {
   const navigate = useNavigate();
-  const url = "/api/teachers/gen_information";
+  const url = "/api_backend/teachers/gen_information";
   const axios = useContext(AxiosContext);
   const setAuth = useSetRecoilState(authAtom);
   const authData = useRecoilState(authAtom);
 
   return useMutation(
-    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
         notification.success({

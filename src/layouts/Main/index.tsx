@@ -21,10 +21,10 @@ const MainLayout = ({ children }: Props) => {
   const onClose = () => setIsOpen(false);
   const onOpen = () => setIsOpen(true);
 
-  // get user profile 
-  useGetProfile()
+  // get user profile
+  useGetProfile();
 
-  // get user subscription 
+  // get user subscription
   // useGetUserSub()
 
   const handleLogout = () => navigate("/auth/logout");
@@ -44,25 +44,19 @@ const MainLayout = ({ children }: Props) => {
           />
         </div>
         {/* sidebar component can come in here  */}
-        <div
+        {/* <div
           className={`w-0 ${isOpen ? "md:!w-[5%]" : "md:!w-[20%]"} md:h-full ${
             pathname === "/info" && "hidden"
           }`}
         >
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-        </div>
+        </div> */}
 
-        <div
-          className={`w-full h-full ${
-            isOpen ? "md:!w-[95%]" : pathname === "/info" ? "" : "md:!w-[80%]"
-          } ${pathname === "/info" ? "" : "pt-2"}`}
-        >
+        <div className={`w-full h-full ${pathname === "/info" ? "" : "pt-2"}`}>
           {/* main layout pages children  */}
           <div
             className={`w-full h-full bg-white ${
-              pathname === "/info"
-                ? ""
-                : "rounded-t-3xl md:rounded-t-none md:!rounded-l-3xl overflow-y-auto p-5 md:p-0"
+              pathname === "/info" ? "" : "overflow-y-auto p-5 md:p-0"
             }`}
           >
             {children}

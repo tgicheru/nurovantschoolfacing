@@ -22,6 +22,7 @@ module.exports = {
       },
       backgroundImage: {
         pattern: "url('/src/assets/auth-bg.png')",
+        homeBg: "url('/src/assets/Background.png')",
       },
     },
   },

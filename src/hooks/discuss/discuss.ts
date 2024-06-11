@@ -1,15 +1,21 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+} from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-
 export function useGetAllDiscuss(params?: any) {
-  const url = "/api/discussion/";
+  const url = "/api_backend/discussion/";
   const axios = useContext(AxiosContext);
-  return useQuery(["get:all_discussion"], () => getRequest(axios as unknown as AxiosInstance, url, params), {
+  return useQuery(
+    ["get:all_discussion"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -23,10 +29,17 @@ export function useGetAllDiscuss(params?: any) {
   );
 }
 
-export function useGetDiscuss(id: string, successAction?: any, errorAction?: any) {
-  const url = "/api/discussion/";
+export function useGetDiscuss(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/discussion/";
   const axios = useContext(AxiosContext);
-  return useQuery(["get:single_discussion", id], () => getRequest(axios as unknown as AxiosInstance, url+id), {
+  return useQuery(
+    ["get:single_discussion", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: () => successAction?.(),
       onError: (error: any) => {
         errorAction?.();
@@ -39,14 +52,17 @@ export function useGetDiscuss(id: string, successAction?: any, errorAction?: any
             : "something went wrong please check internet connection.",
         });
       },
-    },
+    }
   );
 }
 
 export function usePostDiscuss(successAction?: any, errorAction?: any) {
-  const url = "/api/discussion/create";
+  const url = "/api_backend/discussion/create";
   const axios = useContext(AxiosContext);
-  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload), {
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -63,16 +79,23 @@ export function usePostDiscuss(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );
 }
 
 export function usePostDiscussChat(successAction?: any, id?: string) {
-  const url = "/api/discussion/chat/";
+  const url = "/api_backend/discussion/chat/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url+(id || payload?.id), payload), {
+  return useMutation(
+    async (payload: any) =>
+      postRequest(
+        axios as unknown as AxiosInstance,
+        url + (id || payload?.id),
+        payload
+      ),
+    {
       onSuccess: (response: any) => successAction?.(),
       onError: (error: any) =>
         notification.error({
@@ -88,9 +111,12 @@ export function usePostDiscussChat(successAction?: any, id?: string) {
 }
 
 export function useDeleteDiscuss(successAction?: any, errorAction?: any) {
-  const url = "/api/discussion/";
+  const url = "/api_backend/discussion/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -107,7 +133,7 @@ export function useDeleteDiscuss(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );

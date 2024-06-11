@@ -1,16 +1,22 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+} from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-
 export function useGetLectures(params?: any) {
-  const url = `/api/lectures/`;
-  // const url = `/api/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const url = `/api_backend/lectures/`;
+  // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
-  return useQuery(["get:all_lectures"], () => getRequest(axios as unknown as AxiosInstance, url, params), {
+  return useQuery(
+    ["get:all_lectures"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -25,9 +31,12 @@ export function useGetLectures(params?: any) {
 }
 
 export function usePostLecture(successAction?: any) {
-  const url = "/api/lectures/create_teacher_lecture";
+  const url = "/api_backend/lectures/create_teacher_lecture";
   const axios = useContext(AxiosContext);
-  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload), {
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -49,9 +58,12 @@ export function usePostLecture(successAction?: any) {
 }
 
 export function useDeleteLecture(successAction?: any, errorAction?: any) {
-  const url = "/api/lectures/";
+  const url = "/api_backend/lectures/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -68,7 +80,7 @@ export function useDeleteLecture(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );

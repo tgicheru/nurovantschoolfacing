@@ -1,12 +1,16 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+} from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useGetRecap(id: string) {
-  const url = "/api/recaps/";
+  const url = "/api_backend/recaps/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_recap"],
@@ -26,7 +30,7 @@ export function useGetRecap(id: string) {
 }
 
 export function usePostRecaps(successAction?: any) {
-  const url = "/api/recaps/create";
+  const url = "/api_backend/recaps/create";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -53,7 +57,7 @@ export function usePostRecaps(successAction?: any) {
 }
 
 export function useGetAllRecaps(params?: any) {
-  const url = "/api/recaps/";
+  const url = "/api_backend/recaps/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:all_recaps"],
@@ -74,9 +78,12 @@ export function useGetAllRecaps(params?: any) {
 }
 
 export function useDeleteRecap(successAction?: any, errorAction?: any) {
-  const url = "/api/recaps/";
+  const url = "/api_backend/recaps/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -93,7 +100,7 @@ export function useDeleteRecap(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );
