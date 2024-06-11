@@ -1,12 +1,16 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+} from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useGetAllFlashcards(params?: any) {
-  const url = "/api/flashcards/";
+  const url = "/api_backend/flashcards/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:all_flashcards"],
@@ -26,7 +30,7 @@ export function useGetAllFlashcards(params?: any) {
 }
 
 export function useGetFlashcard(id: string) {
-  const url = "/api/flashcards/";
+  const url = "/api_backend/flashcards/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_flashcard"],
@@ -46,7 +50,7 @@ export function useGetFlashcard(id: string) {
 }
 
 export function usePostFlashcards(successAction?: any) {
-  const url = "/api/flashcards/create";
+  const url = "/api_backend/flashcards/create";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -73,9 +77,12 @@ export function usePostFlashcards(successAction?: any) {
 }
 
 export function useDeleteFlashcard(successAction?: any, errorAction?: any) {
-  const url = "/api/flashcards/";
+  const url = "/api_backend/flashcards/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -92,7 +99,7 @@ export function useDeleteFlashcard(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );

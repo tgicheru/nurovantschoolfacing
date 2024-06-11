@@ -26,6 +26,7 @@ export const AllNationsCode = [
 
 export const extractAvatar = (name: string) => {
   const splitName = name?.split(" ");
+  if (splitName.length === 1) return splitName[0].charAt(0).toUpperCase();
   const firstLetter = splitName?.[0]?.charAt(0);
   const secondLetter = splitName?.[1]?.charAt(0);
   return `${firstLetter}${secondLetter}`;

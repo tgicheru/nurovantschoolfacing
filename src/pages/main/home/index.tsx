@@ -2,9 +2,11 @@
 import moment from "moment";
 import React, { useMemo, useState, useEffect } from "react";
 import {
+  Avatar,
   Button,
   Form,
   Input,
+  Menu,
   Modal,
   Spin,
   Tabs,
@@ -20,7 +22,7 @@ import { TbCards } from "react-icons/tb";
 import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import VideoRecordIcon from "../../../assets/icons/videorecordicon";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
@@ -67,11 +69,16 @@ import {
 import DiscussSection from "./sections/discuss";
 import { ImSpinner } from "react-icons/im";
 import { ReactMic } from "react-mic";
+import Logo from "../../../assets/newLogo.svg";
+import { extractAvatar } from "../../../constants";
+import { FaChevronDown } from "react-icons/fa6";
 
 function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [param, setParam] = useSearchParams();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(param.get("tab") || "lecture");
   const [isGenerate, setIsGenerate] = useState(false);
   const [upldFile, setUpldFile] = useState<any>({});
@@ -492,7 +499,7 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
-          <Tooltip title={d?.quiz&&"Quiz already generated"}>
+          <Tooltip title={d?.quiz && "Quiz already generated"}>
             <Button
               onClick={() => handleAction("quiz", d?._id)}
               className="text-primary"
@@ -503,7 +510,7 @@ function Home() {
               Quiz
             </Button>
           </Tooltip>
-          <Tooltip title={d?.flashcards&&"Flashcards already generated"}>
+          <Tooltip title={d?.flashcards && "Flashcards already generated"}>
             <Button
               onClick={() => handleAction("flashcards", d?._id)}
               className="text-primary"
@@ -514,7 +521,7 @@ function Home() {
               Flashcards
             </Button>
           </Tooltip>
-          <Tooltip title={d?.recaps&&"Recaps already generated"}>
+          <Tooltip title={d?.recaps && "Recaps already generated"}>
             <Button
               onClick={() => handleAction("recaps", d?._id)}
               className="text-primary"
@@ -525,7 +532,7 @@ function Home() {
               Recaps
             </Button>
           </Tooltip>
-          <Tooltip title={d?.discussions&&"Discussion already generated"}>
+          <Tooltip title={d?.discussions && "Discussion already generated"}>
             <Button
               onClick={() => handleAction("discussion", d?._id)}
               className="text-primary"
@@ -934,17 +941,19 @@ function Home() {
       upload_type: "upload",
       file_name: upldData?.Key,
       file_url: upldData?.Location,
-    }
-    if (isEqual(paramId, "record")) return postLectAction({
-      ...payload,
-      file_type: "audio",
-      upload_type: "record",
-    })
-    if (upldFile?.file?.type?.includes("pdf")) return postLectAction({
-      ...payload,
-      file_type: "pdf",
-      // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-    })
+    };
+    if (isEqual(paramId, "record"))
+      return postLectAction({
+        ...payload,
+        file_type: "audio",
+        upload_type: "record",
+      });
+    if (upldFile?.file?.type?.includes("pdf"))
+      return postLectAction({
+        ...payload,
+        file_type: "pdf",
+        // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+      });
     postLectAction({
       ...payload,
       file_type: "audio",
@@ -1264,19 +1273,79 @@ function Home() {
     );
   };
 
+  const items = [
+    {
+      key: "/",
+      label: "Home",
+      icon: "",
+    },
+    // {
+    //   key: "/speech-rate",
+    //   label: "Speech Rate",
+    //   icon: "",
+    // },
+  ];
+
+  const handleMenu = ({ key }: any) => {
+    return navigate(key);
+  };
+
   if (SectionContent) return SectionContent;
   return (
     <Spin spinning={isFetchLoad}>
-      <div className="w-full h-full md:py-5 space-y-5">
-        <div className="flex justify-end md:justify-between items-center px-5 md:px-10">
-          <div className="hidden md:block">
-            <p className="text-3xl font-bold text-secondary">
-              Hello {user?.info?.name}
-            </p>
-            <p className="text-base font-normal text-gray">
-              Welcome to your dashboard
-            </p>
+      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 bg-homeBg bg-center bg-no-repeat">
+        <div className="md:px-10 bg-white">
+          <div className="flex justify-end md:justify-between items-center md:py-5">
+            <img src={Logo} alt="logo" className="hidden lg:block" />
+
+            <div className="hidden md:block">
+              <div className="flex items-center gap-3">
+                <Avatar alt="user" size="large" src={user?.info?.profile_img}>
+                  {extractAvatar(
+                    user?.info?.name || user?.info?.email || "USER"
+                  )}
+                </Avatar>
+                <div>
+                  <p className="text-[14px] leading-[20px] font-semibold text-secondary">
+                    {user?.info?.name}
+                  </p>
+                  <p className="text-[14px] leading-[20px] font-normal text-gray">
+                    {user?.info?.email}
+                  </p>
+                </div>
+
+                <FaChevronDown className="text-[14px] leading-[20px] " />
+              </div>
+            </div>
           </div>
+          <div className="items-center flex-row gap-4 flex overflow-x-auto">
+            {/* <Menu
+              style={{
+                border: 0,
+                background: "transparent",
+                height: "100%",
+                color: "#646462",
+                fontSize: "14px",
+                fontWeight: "600",
+              }}
+              defaultSelectedKeys={[pathname]}
+              defaultOpenKeys={[pathname]}
+              onClick={handleMenu}
+              key="main-menu"
+              mode="horizontal"
+              items={items}
+            /> */}
+            {items.map((item) => (
+              <div
+                key={item.label}
+                className="px-4 py-2 rounded-t-lg bg-primary text-white"
+              >
+                <span className="text-[14px] leading-[20px]">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             onClick={onOpen}
             className="bg-primary !rounded-2xl"
@@ -1290,9 +1359,9 @@ function Home() {
 
         <div
           hidden={!getLectData?.lectures?.length}
-          className="w-full space-y-5"
+          className="w-full space-y-5 md:px-10 bg-white"
         >
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10 ">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3">
             <Tabs
               activeKey={activeTab}
               defaultActiveKey={activeTab}
@@ -1398,7 +1467,9 @@ function Home() {
             >
               Create Lecture
             </Button>
-            <p className="text-sm font-medium text-[#838382]">Note: Each generation costs 2 credits</p>
+            <p className="text-sm font-medium text-[#838382]">
+              Note: Each generation costs 2 credits
+            </p>
           </div>
         </Modal>
 
@@ -1539,7 +1610,9 @@ function Home() {
               Generate
             </Button>
             <div className="flex justify-center items-center gap-2">
-              <p className="text-sm font-medium text-[#838382]">Available Credit</p>
+              <p className="text-sm font-medium text-[#838382]">
+                Available Credit
+              </p>
               <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
                 <PiCoins />
                 <span>{user?.info?.current_credit}</span>
