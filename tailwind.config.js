@@ -11,8 +11,8 @@ module.exports = {
       },
       colors: {
         secondary: "#101828",
+        primary: "#4970FC",
         success: "#58BE80",
-        primary: "#4970fc",
         silver: "#A2A2A1",
         light: "#f9f9f9",
         dark: "#1b1b1b",
@@ -23,6 +23,7 @@ module.exports = {
       backgroundImage: {
         pattern: "url('/src/assets/auth-bg.png')",
         homeBg: "url('/src/assets/Background.png')",
+        authBg: "url('/src/assets/authBg.png')",
       },
     },
   },

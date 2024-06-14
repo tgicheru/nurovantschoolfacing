@@ -43,6 +43,34 @@ export function useEmailLogin() {
   );
 }
 
+export function useOnboarding(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/auth/register_email";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response)
+      },
+      onError: (error: any) => {
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        })
+        errorAction?.(error)
+      },
+    }
+  );
+}
+
 export function useEmailRegister() {
   const navigate = useNavigate();
   const url = "/api_backend/teachers/send_email_otp";
