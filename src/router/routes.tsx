@@ -19,6 +19,7 @@ const TermsAndCondition = lazy(
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
 const Settings = lazy(() => import("../pages/main/settings"));
+const ProofReader = lazy(() => import("../pages/main/proofreader"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -36,6 +37,11 @@ export const routes = [
     path: "/info",
     label: "Info page",
     component: <InfoPage />,
+  },
+  {
+    path: "/public/proofreader",
+    label: "Proof reader page",
+    component: <ProofReader />,
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
