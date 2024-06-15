@@ -9,7 +9,7 @@ const Login = lazy(() => import("../pages/auth/login"));
 const Verify = lazy(() => import("../pages/auth/verify"));
 const Logout = lazy(() => import("../pages/auth/logout"));
 const Record = lazy(() => import("../pages/auth/record"));
-const InfoPage = lazy(() => import("../pages/main/info"));
+const AuthInfo = lazy(() => import("../pages/auth/info"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const UnderMaintenance = lazy(() => import("../pages/public/underMaintenance"));
@@ -33,16 +33,6 @@ export const routes = [
     path: "/settings",
     label: "Settings",
     component: <Settings />,
-  },
-  {
-    path: "/info",
-    label: "Info page",
-    component: <InfoPage />,
-  },
-  {
-    path: "/public/proofreader",
-    label: "Proof reader page",
-    component: <ProofReader />,
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -97,5 +87,10 @@ export const routes = [
     path: "/auth/record",
     label: "Record Page",
     component: <Record />,
+  },
+  {
+    path: "/auth/info",
+    label: "Info Page",
+    component: <AuthInfo />,
   },
 ];
