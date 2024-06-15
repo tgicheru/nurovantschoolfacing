@@ -77,7 +77,7 @@ function SideBar({ isOpen, onOpen, onClose }: Props) {
   const MenuContent = () => (
     <div
       className={`"w-full h-full flex flex-col justify-between items-center ${!isOpen && "px-3"} py-10 ${
-        pathname === "/info" && "hidden"
+        pathname === "/auth/info" && "hidden"
       }`}
     >
       <div className="w-full flex flex-col justify-center items-center gap-10">

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import AuthContainer from "../../components/AuthContainer";
+import { onboardingAtom } from "../../atoms/other/other.atom";
 import { useSearchParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { isEqual } from "../../context/utils";
 import DetailsSection from "./sections/details";
 import GradeSection from "./sections/grade";
 import SubjectSection from "./sections/subject";
-import { useRecoilState } from "recoil";
-import { onboardingAtom } from "../../atoms/other/other.atom";
 import InformationSection from "./sections/info";
 import RecordingSection from "./sections/recording";
 

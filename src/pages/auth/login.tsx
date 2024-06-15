@@ -13,6 +13,7 @@ function LoginPage() {
 
   const handleGoogleLogin = () => signInWithPopup(auth, provider)
     .then((res) => mutate({
+        role: "teacher",
         sign_up_type: "google",
         email: res?.user?.email,
         name: res?.user?.displayName,
@@ -21,9 +22,10 @@ function LoginPage() {
 
   const handleAppleLogin = () => signInWithPopup(auth, appleProvider)
     .then((res) => mutate({
+        role: "teacher",
+        sign_up_type: "apple",
         email: res?.user?.email,
         name: res?.user?.displayName,
-        sign_up_type: "apple",
       } as unknown as void))
     .catch((err) => notification.error({message: "Error!", description: err?.message}));
   return (
