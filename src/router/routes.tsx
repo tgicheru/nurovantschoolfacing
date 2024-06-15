@@ -20,6 +20,7 @@ const TermsAndCondition = lazy(
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
 const Settings = lazy(() => import("../pages/main/settings"));
+const ProofReader = lazy(() => import("../pages/main/proofreader"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -89,7 +90,7 @@ export const routes = [
   },
   {
     path: "/auth/info",
-    label: "Info page",
+    label: "Info Page",
     component: <AuthInfo />,
   },
 ];
