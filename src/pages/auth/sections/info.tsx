@@ -46,7 +46,7 @@ function InformationSection({
         {info?.map(({key, label, options, value}) => (
           <div key={key} className="w-full space-y-3 !text-start">
             <p className="text-lg font-semibold text-[#646462]">{label}</p>
-            <div className="flex items-center gap-4">
+            <div className="w-full md:flex items-center space-y-2 md:space-y-0 gap-4">
               {options?.map(([idx, val]) => {
                 const isChecked = isEqual(value, val)
                 const handleOption = () => handleSelect(key, val)

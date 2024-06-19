@@ -20,7 +20,7 @@ function GradeSection({
     <div className='flex flex-col justify-center items-center text-center gap-3'>
       <p className='text-2xl font-semibold text-[#1B1B1B]'>What Grade do you teach?</p>
       <p className='text-sm font-normal text-[#1B1B1B]'>You can select more than one</p>
-      <div className='w-full grid grid-cols-2 gap-5'>
+      <div className='w-full grid md:grid-cols-2 gap-5'>
         {grades?.map(({grade, key}) => {
           const isSelect = selectedGrade?.includes(key)
           const includeData = [...(selectedGrade || []), key]
