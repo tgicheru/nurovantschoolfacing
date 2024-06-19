@@ -42,7 +42,7 @@ function InformationSection({
       <p className='text-2xl font-semibold text-[#1B1B1B]'>General Information</p>
       <p className='text-sm font-normal text-[#1B1B1B]'>Answer only a few questions and we’ll adapt  the platform to you needs</p>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         {info?.map(({key, label, options, value}) => (
           <div key={key} className="w-full space-y-3 !text-start">
             <p className="text-lg font-semibold text-[#646462]">{label}</p>

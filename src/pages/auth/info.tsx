@@ -37,34 +37,19 @@ function AuthPage() {
 
   const isNewUser = useMemo(() => !info?.some(d => d?.value), [info])
   useMemo(() => setInfo(info?.map(d => ({...d, value: user?.info?.[d?.key] || d?.value}))), [user])
-
   const handleSelect = (key: string, val: string) => setInfo(info?.map(d => ({...d, value: isEqual(d?.key, key) ? val : d?.value})))
-
-  const handleSubmit = () => {
-    const payload = Object.fromEntries(info?.map(d => ([d?.index, d?.value]))) 
-    mutate(payload);
-  };
-
-  const HeaderText = ({ text }: { text: string }) => (
-    <h3 className="text-[16px] leading-[24px] lg:text-[20px] lg:leading-[42px] tracking-[-0.4px] font-semibold text-[#646462]">
-      {text}
-    </h3>
-  );
+  const handleSubmit = () => mutate(Object.fromEntries(info?.map(d => ([d?.index, d?.value]))));
   return (
     <AuthContainer>
-      <div className="w-full h-screen font-montserrat flex items-center justify-center py-6 lg:py-0">
-        <div className="flex flex-col items-start w-full px-4 lg:px-[48px] text-[#1b1b1b] gap-5 lg:gap-[40px]">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-[28px] lg:leading-[48px] tracking-[-0.56px] font-bold">
-              General Information
-            </h1>
-            <span className="">Answer only a few questions and we’ll adapt  the platform to you needs</span>
-          </div>
+      <div className="w-full md:w-[90%] rounded-lg p-5 md:p-10 bg-white">
+        <div className='flex flex-col justify-center items-center text-center gap-3'>
+          <p className='text-2xl font-semibold text-[#1B1B1B]'>General Information</p>
+          <p className='text-sm font-normal text-[#1B1B1B]'>Answer only a few questions and we’ll adapt  the platform to you needs</p>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {info?.map(({key, label, options, value}) => (
-              <div key={key} className="flex flex-col gap-2 lg:gap-0">
-                <HeaderText text={label} />
+              <div key={key} className="w-full space-y-3 !text-start">
+                <p className="text-lg font-semibold text-[#646462]">{label}</p>
                 <div className="flex items-center gap-4">
                   {options?.map(([idx, val]) => {
                     const isChecked = isEqual(value, val)
@@ -85,14 +70,7 @@ function AuthPage() {
             ))}
           </div>
 
-          <Button
-            size="large"
-            type="primary"
-            shape="round"
-            loading={isLoading}
-            onClick={handleSubmit}
-            className="w-full md:w-[50%] bg-primary !h-[60px]"
-          >{isNewUser ? "Get Started" : "Continue"}</Button>
+          <Button onClick={handleSubmit} loading={isLoading} className="bg-primary !h-[50px] my-5" size="large" block type="primary" shape="round">{isNewUser ? "Get Started" : "Continue"}</Button>
         </div>
       </div>
     </AuthContainer>

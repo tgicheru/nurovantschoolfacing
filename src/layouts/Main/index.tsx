@@ -16,10 +16,7 @@ type Props = {
 const MainLayout = ({ children }: Props) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [isOpen, setIsOpen] = useRecoilState(menuAtom);
   const { user } = useRecoilValue(authAtom);
-  const onClose = () => setIsOpen(false);
-  const onOpen = () => setIsOpen(true);
 
   // get user profile
   useGetProfile();
@@ -46,17 +43,17 @@ const MainLayout = ({ children }: Props) => {
         {/* sidebar component can come in here  */}
         {/* <div
           className={`w-0 ${isOpen ? "md:!w-[5%]" : "md:!w-[20%]"} md:h-full ${
-            pathname === "/info" && "hidden"
+            pathname === "/auth/info" && "hidden"
           }`}
         >
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
         </div> */}
 
-        <div className={`w-full h-full ${pathname === "/info" ? "" : "pt-2"}`}>
+        <div className={`w-full h-full ${pathname === "/auth/info" ? "" : "pt-2"}`}>
           {/* main layout pages children  */}
           <div
             className={`w-full h-full bg-white ${
-              pathname === "/info" ? "" : "overflow-y-auto p-5 md:p-0"
+              pathname === "/auth/info" ? "" : "overflow-y-auto p-5 md:p-0"
             }`}
           >
             {children}

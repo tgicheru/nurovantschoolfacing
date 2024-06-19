@@ -1,6 +1,6 @@
 import React from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { Button, Divider, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
+import { useSearchParams } from "react-router-dom";
 import { useEmailLogin } from "../../hooks/auth/authentications";
 
 function LoginPage() {

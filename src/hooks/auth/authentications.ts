@@ -1,5 +1,5 @@
 import { notification } from "antd";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
 import { useMutation, useQueryClient } from "react-query";
@@ -13,10 +13,8 @@ export function useEmailLogin() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const axios = useContext(AxiosContext);
-  const setAuth = useSetRecoilState(authAtom);
-  const authData = useRecoilValue(authAtom);
+  const [authData, setAuth] = useRecoilState(authAtom);
 
-  // return useMutation((payload) => postRequest(axios, url, payload), {
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
     {
@@ -25,20 +23,18 @@ export function useEmailLogin() {
           message: "Success!",
           description: response?.message || "welcome back.",
         });
-        queryClient.invalidateQueries("get:user_profile");
-        console.log(response);
         setAuth({ ...authData, isLoggedIn: true, user: response?.data });
+        queryClient.invalidateQueries("get:user_profile");
         navigate("/");
       },
-      onError: (error: any) =>
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        }),
+      onError: (error: any) => notification.error({
+        message: "Error!",
+        description: error?.message
+          ? Object.entries(error?.errors || { key: [error?.message] })
+              ?.map(([, value]) => (value as any)?.join(", "))
+              ?.join(", ")
+          : "something went wrong please check internet connection.",
+      }),
     }
   );
 }
@@ -216,28 +212,24 @@ export function usePassword(url: string) {
   );
 }
 
-export function useGoogleRegister() {
+export function useOAuthRegister() {
   const navigate = useNavigate();
-  const url = "/api_backend/teachers/auth";
+  const url = "/api_backend/auth/register_socials";
   const axios = useContext(AxiosContext);
-  const setAuth = useSetRecoilState(authAtom);
-  const authData = useRecoilState(authAtom);
+  const [authData, setAuth] = useRecoilState(authAtom);
 
   return useMutation(
     (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
     {
-      onSuccess: (response: any) => {
-        const message = response?.message?.split(" ");
+      onSuccess: (response: any) => { 
         notification.success({
           message: "Success!",
           description: response?.message || "action successful.",
         });
-
-        // console.log(response);
         setAuth({ ...authData[0], isLoggedIn: true, user: response?.data });
-
         if (authData[0]?.onBoarded) navigate(`/`);
-        navigate(`/info`);
+        navigate(`/auth/info`);
+        console.log(authData, response)
       },
       onError: (error: any) =>
         notification.error({
@@ -256,8 +248,7 @@ export function useUpdateInformation() {
   const navigate = useNavigate();
   const url = "/api_backend/teachers/gen_information";
   const axios = useContext(AxiosContext);
-  const setAuth = useSetRecoilState(authAtom);
-  const authData = useRecoilState(authAtom);
+  const [authData, setAuth] = useRecoilState(authAtom);
 
   return useMutation(
     (payload: any) =>

@@ -4,20 +4,21 @@ import GoogleIcon from "../../../assets/Google.svg";
 import { Link } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider, appleProvider } from "../../../firebaseAuth/config";
-import { useGoogleRegister } from "../../../hooks/auth/authentications";
+import { useOAuthRegister } from "../../../hooks/auth/authentications";
 import { Button, Divider, Form, Input, notification } from 'antd'
 
 function DetailsSection({
   payload,
   handleNext,
 }:{ payload?: any; handleNext: any }) {
-  const {isLoading,  mutate } = useGoogleRegister();
   const [form] = Form.useForm()
+  const {isLoading,  mutate } = useOAuthRegister();
 
   useMemo(() => form.setFieldsValue(payload), [form, payload])
 
   const handleGoogleLogin = () => signInWithPopup(auth, provider)
     .then((res) => mutate({
+        role: "teacher",
         sign_up_type: "google",
         email: res?.user?.email,
         name: res?.user?.displayName,
@@ -26,9 +27,10 @@ function DetailsSection({
 
   const handleAppleLogin = () => signInWithPopup(auth, appleProvider)
     .then((res) => mutate({
+        role: "teacher",
+        sign_up_type: "apple",
         email: res?.user?.email,
         name: res?.user?.displayName,
-        sign_up_type: "apple",
       } as unknown as void))
     .catch((err) => notification.error({message: "Error!", description: err?.message}));
   return (
