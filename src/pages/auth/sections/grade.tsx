@@ -6,7 +6,7 @@ function GradeSection({
   payload,
   handleNext,
 }:{ payload?: any; handleNext: any }) {
-  const [selectedGrade, setSelectedGrade] = useState(payload?.teaching_grade || "")
+  const [selectedGrade, setSelectedGrade] = useState([...(payload?.teaching_grade || [])])
 
   const grades = [
     { key: "elementary_school", grade: "grade 1-5" },
@@ -22,8 +22,10 @@ function GradeSection({
       <p className='text-sm font-normal text-[#1B1B1B]'>You can select more than one</p>
       <div className='w-full grid grid-cols-2 gap-5'>
         {grades?.map(({grade, key}) => {
-          const isSelect = isEqual(key, selectedGrade)
-          const handleSelect = () => setSelectedGrade(key)
+          const isSelect = selectedGrade?.includes(key)
+          const includeData = [...(selectedGrade || []), key]
+          const excludeData = selectedGrade?.filter(d => !isEqual(d, key))
+          const handleSelect = () => setSelectedGrade(isSelect ? excludeData : includeData)
           return (
             <div onClick={handleSelect} className={`border ${isSelect ? "border-primary text-primary" : "border-[#E0E0E0] text-[#414141]"} hover:border-primary hover:text-primary rounded-2xl p-5 space-y-2 cursor-pointer`}>
             <p className='text-base font-semibold capitalize'>{key?.replaceAll("_", " ")}</p>

@@ -14,7 +14,7 @@ import authAtom from "../../atoms/auth/auth.atom";
 import { AxiosInstance } from "axios";
 
 export function useGetProfile() {
-  const url = "/api_backend/teachers/teacher_details";
+  const url = "/api_backend/user/";
   const navigate = useNavigate();
   const location = useLocation();
   const [auth, setAuth] = useRecoilState(authAtom);
@@ -40,6 +40,37 @@ export function useGetProfile() {
           sessionStorage.setItem("fallback", JSON.stringify(location));
           navigate("/auth");
         }
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+      retry: 2,
+    }
+  );
+}
+
+export function useGetProfileInfo(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/teachers/profile/";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const axios = useContext(AxiosContext);
+
+  return useQuery(
+    ["get:user_profile_info"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
+    {
+      onSuccess: (response) => successAction?.(response),
+      onError: (error: any) => {
+        if (error?.message?.includes("authenticated") || error?.message?.includes("Only teachers are required to perform this action!")) {
+          sessionStorage.setItem("fallback", JSON.stringify(location));
+          navigate("/auth");
+        }
+        errorAction?.(error)
         notification.error({
           message: "Error!",
           description: error?.message
@@ -96,7 +127,7 @@ export function useGetSubs() {
   );
 }
 
-export function useSetProfile(successAction?: any) {
+export function useSetProfile(successAction?: any, errorAction?: any) {
   const url = "/api_backend/teachers/update_profile/";
   const axios = useContext(AxiosContext);
   const queryClient = useQueryClient();
@@ -111,9 +142,10 @@ export function useSetProfile(successAction?: any) {
           message: "Success!",
           description: response?.message || "profile set successfully.",
         });
+        queryClient.invalidateQueries("get:user_profile_info");
         queryClient.invalidateQueries("get:user_profile");
       },
-      onError: (error: any) =>
+      onError: (error: any) => {
         notification.error({
           message: "Error!",
           description: error?.message
@@ -121,7 +153,9 @@ export function useSetProfile(successAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        });
+        errorAction?.(error);
+      },
     }
   );
 }
@@ -197,6 +231,7 @@ export function usePostVerifySub(successAction?: any) {
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        queryClient.invalidateQueries("get:user_profile_info");
         queryClient.invalidateQueries("get:user_profile");
       },
       onError: (error: any) =>
