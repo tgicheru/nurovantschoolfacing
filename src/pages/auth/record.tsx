@@ -58,7 +58,7 @@ function RecordPage() {
   const handleSubmit = () => handleMutate(payload)
   const isLoading = (postLoad || uplLoad || putLoad)
   return (
-    <div className='w-full h-full flex flex-col justify-center items-center text-center gap-5'>
+    <div className='w-full h-full p-5 flex flex-col justify-center items-center text-center gap-5'>
       <Image src={recordIcon} alt='record icon' preview={false} />
       <p className='text-sm font-normal text-[#1B1B1B]'>Repeat the sentence into your microphone</p>
       <p className='text-2xl font-bold text-[#0F1632]'>"The quick brown fox jumps over the lazy dog."</p>
@@ -70,7 +70,7 @@ function RecordPage() {
         mimeType="audio/wav"
         strokeColor="#4970fc"
         backgroundColor='transparent'
-        className="w-[40vw] md:!w-[30vw] !min-h-[100px]"
+        className="w-[70vw] md:!w-[30vw] !min-h-[100px]"
       />
       <div className='flex items-center gap-5'>
         <Button onClick={onPause} loading={isLoading} hidden={!isRecord} icon={isPause ? <FaPlay /> : <FaPause />} className="bg-primary" size="large" type="primary" shape="circle" />

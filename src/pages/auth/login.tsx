@@ -32,7 +32,7 @@ function LoginPage() {
   return (
     <AuthContainer>
       <div className="w-full md:w-[90%] rounded-lg p-5 md:p-10 bg-white space-y-5">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-3">
           <div className="">
             <p className="text-2xl font-semibold text-[#1B1B1B]">Hey there!</p>
             <p className="text-sm font-normal text-[#1B1B1B]">Capturing knowledge one step at a time</p>
