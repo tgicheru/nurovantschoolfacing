@@ -27,7 +27,7 @@ function InformationSection({
       index: "communication",
       key: "communication_method",
       label: "How do you prefer to communicate? ",
-      options: [["Email", "email"], ["Message", "message"], ["Video Call", "video_call"]],
+      options: [["Email", "email"], ["Message", "message"], ["Video Call", "video_call"], ["Voice Call", "voice_call"]],
     },
   ])
 

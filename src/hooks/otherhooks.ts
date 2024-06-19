@@ -3,7 +3,6 @@ import Stripe from "stripe";
 import { message, notification } from "antd";
 import { useMutation } from "react-query";
 import { awsConfig } from "../aws/awsConfig";
-import { removeSpacesFromPdfName } from "../context/utils";
 
 export const fileTypes = (key: string, idx?: number) => {
   const ext = key?.split("/")?.[idx || 1];
@@ -46,7 +45,7 @@ export function useAWSUpload(
           Key: `${new Date()
             .toLocaleTimeString([], { hour12: false })
             .split(":")
-            .join("_")}--${removeSpacesFromPdfName(payload.name)}`, // You can customize the key based on your requirement
+            .join("_")}--${(payload?.name || " ")?.replaceAll(" ", "")}`, // You can customize the key based on your requirement
           Bucket: buckets?.[(type || "content") as keyof typeof buckets],
           Body: fileBlob as unknown as Body,
           ContentType: payload?.type,

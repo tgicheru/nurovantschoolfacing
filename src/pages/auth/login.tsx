@@ -4,12 +4,13 @@ import AppleIcon from "../../assets/Apple.svg";
 import GoogleIcon from "../../assets/Google.svg";
 import AuthContainer from '../../components/AuthContainer'
 import { Button, Divider, Form, Input, notification } from 'antd'
-import { useEmailLogin } from '../../hooks/auth/authentications';
+import { useEmailLogin, useOAuthRegister } from '../../hooks/auth/authentications';
 import { signInWithPopup } from 'firebase/auth';
 import { appleProvider, auth, provider } from '../../firebaseAuth/config';
 
 function LoginPage() {
-  const { mutate, isLoading } = useEmailLogin();
+  const { mutate, isLoading } = useOAuthRegister();
+  const { mutate: loginAction, isLoading: loginLoad } = useEmailLogin();
 
   const handleGoogleLogin = () => signInWithPopup(auth, provider)
     .then((res) => mutate({
@@ -39,14 +40,14 @@ function LoginPage() {
           <Link className="block text-base font-medium text-primary" to="/auth">Create a new account</Link>
         </div>
 
-        <Form onFinish={mutate} layout="vertical">
+        <Form onFinish={loginAction} layout="vertical">
           <Form.Item label="Email" name="email">
             <Input placeholder="Enter full name" size="large" required />
           </Form.Item>
           <Form.Item label="  Password" name="password">
             <Input.Password placeholder="Enter password" size="large" required />
           </Form.Item>
-          <Button loading={isLoading} className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Log in</Button>
+          <Button loading={loginLoad} className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Log in</Button>
         </Form>
 
         <Divider className="text-sm font-normal">Or sign in with</Divider>

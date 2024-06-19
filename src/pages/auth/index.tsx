@@ -26,18 +26,12 @@ function AuthPage() {
     setActiveIndex(nextIndex)
   }
 
-  const goBack = () => {
-    setParam({section: "details"})
-    setActive("details")
-    setActiveIndex(0)
-  }
-
   const sections = [
     {key: "details", component: <DetailsSection payload={payload} handleNext={handleSection} />},
     {key: "grade", component: <GradeSection payload={payload} handleNext={handleSection} />},
     {key: "subject", component: <SubjectSection payload={payload} handleNext={handleSection} />},
     {key: "info", component: <InformationSection payload={payload} handleNext={handleSection} />},
-    {key: "recording", component: <RecordingSection payload={payload} handleBack={goBack} />, noBg: true},
+    {key: "recording", component: <RecordingSection />, noBg: true},
   ]
 
   const CurrentSection = sections?.find(({key}) => isEqual(key, active))
