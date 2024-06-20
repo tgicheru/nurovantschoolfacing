@@ -21,7 +21,7 @@ import authAtom from "../../../atoms/auth/auth.atom";
 import { extractAvatar, isEqual } from "../../../context/utils";
 import CustomTable from "../../../components/CustomTable";
 import { FaCheckCircle } from "react-icons/fa";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   useChangePassword,
   useGetSubs,

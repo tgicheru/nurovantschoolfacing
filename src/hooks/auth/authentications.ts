@@ -3,13 +3,14 @@ import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
 import { useMutation, useQueryClient } from "react-query";
-import { postRequest } from "../../context/requestTypes";
+import { postRequest, putRequest } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useEmailLogin() {
-  const url = "/api_backend/teachers/signin_email";
+  // "/api_backend/teachers/signin_email"
+  const url = "/api_backend/auth/login_email";
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const axios = useContext(AxiosContext);
@@ -24,6 +25,7 @@ export function useEmailLogin() {
           description: response?.message || "welcome back.",
         });
         setAuth({ ...authData, isLoggedIn: true, user: response?.data });
+        queryClient.invalidateQueries("get:user_profile_info");
         queryClient.invalidateQueries("get:user_profile");
         navigate("/");
       },
@@ -43,7 +45,35 @@ export function useOnboarding(successAction?: any, errorAction?: any) {
   const url = "/api_backend/auth/register_email";
   const axios = useContext(AxiosContext);
   return useMutation(
-    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response)
+      },
+      onError: (error: any) => {
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        })
+        errorAction?.(error)
+      },
+    }
+  );
+}
+
+export function useOnboardRecord(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/teachers/update_profile/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    (payload: any) => putRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
         notification.success({
@@ -227,9 +257,8 @@ export function useOAuthRegister() {
           description: response?.message || "action successful.",
         });
         setAuth({ ...authData[0], isLoggedIn: true, user: response?.data });
-        if (authData[0]?.onBoarded) navigate(`/`);
-        navigate(`/auth/info`);
-        console.log(authData, response)
+        if (authData[0]?.onBoarded) navigate("/");
+        navigate("/auth/info");
       },
       onError: (error: any) =>
         notification.error({
