@@ -61,7 +61,7 @@ export const formatCurrency = (value: number, currency?: string) =>
 
   export function removeSpacesFromPdfName(pdfName: string) {
     const trimmedName = pdfName?.trim();
-    return trimmedName.replace(/[^a-zA-Z0-9.]/g, "");
+    return trimmedName?.replace(/[^a-zA-Z0-9.]/g, "");
   }
 
 export function getBinary(file: File) {
