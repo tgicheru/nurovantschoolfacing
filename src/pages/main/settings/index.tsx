@@ -300,7 +300,7 @@ function SettingsPage() {
 
   const subscriptionLoad = (postPayLoad || postSubLoad || postVerifySubLoad);
   return (
-    <div className="w-full h-screen md:py-5 px-5 md:px-10 space-y-5">
+    <div className="w-full h-screen md:py-5 px-5 md:px-10 space-y-5 bg-white">
       <div className="flex justify-end md:justify-between items-center">
         <p className="hidden md:block text-3xl font-bold text-secondary">
           Account Settings
