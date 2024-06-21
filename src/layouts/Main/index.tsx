@@ -11,12 +11,15 @@ import { HiOutlineBell } from "react-icons/hi";
 import { ModalContainer } from "../../components/ModalContainer";
 import { useLocation, useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
-import { Avatar, Button } from "antd";
+import { Avatar, Button, Dropdown } from "antd";
 import { LuLogOut, LuMenu } from "react-icons/lu";
 import { useGetProfile, useGetUserSub } from "../../hooks/profile/profile";
 import Logo from "../../assets/newLogo.svg";
 import { extractAvatar } from "../../constants";
 import { FaChevronDown } from "react-icons/fa";
+import { GoGear } from "react-icons/go";
+import { FiLogOut } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -71,12 +74,20 @@ const MainLayout = ({ children }: Props) => {
     },
   ];
 
-  const handleMenu = ({ key }: any) => {
-    return navigate(key);
-  };
+  const menu = [
+    {
+      key: "/settings",
+      icon: <GoGear className="!text-base" />,
+      label: <Link to="/settings">Settings</Link>,
+    },
+    {
+      key: "/auth/logout",
+      icon: <FiLogOut className="!text-base" />,
+      label: <Link to="/auth/logout">Logout</Link>,
+    },
+  ];
 
-  // get user subscription
-  // useGetUserSub()
+  const handleMenu = (key: any) => navigate(key);
 
   const activeLink = (item: { key: string; label: string; icon: string }) => {
     return pathname === item.key || pathname.startsWith(item.key + "/");
@@ -112,25 +123,27 @@ const MainLayout = ({ children }: Props) => {
           <div className="flex justify-end md:justify-between items-center md:py-5">
             <img src={Logo} alt="logo" className="hidden lg:block" />
 
-            <div className="hidden md:block">
-              <div className="flex items-center gap-3">
-                <Avatar alt="user" size="large" src={user?.info?.profile_img}>
-                  {extractAvatar(
-                    user?.info?.name || user?.info?.email || "USER"
-                  )}
-                </Avatar>
-                <div>
-                  <p className="text-[14px] leading-[20px] font-semibold text-secondary">
-                    {user?.info?.name}
-                  </p>
-                  <p className="text-[14px] leading-[20px] font-normal text-gray">
-                    {user?.info?.email}
-                  </p>
-                </div>
+            <Dropdown menu={{ items: menu }} trigger={["click"]}>
+              <div className="hidden md:block">
+                <div className="flex items-center gap-3">
+                  <Avatar alt="user" size="large" src={user?.info?.profile_img}>
+                    {extractAvatar(
+                      user?.info?.name || user?.info?.email || "USER"
+                    )}
+                  </Avatar>
+                  <div>
+                    <p className="text-[14px] leading-[20px] font-semibold text-secondary">
+                      {user?.info?.name}
+                    </p>
+                    <p className="text-[14px] leading-[20px] font-normal text-gray">
+                      {user?.info?.email}
+                    </p>
+                  </div>
 
-                <FaChevronDown className="text-[14px] leading-[20px] " />
+                  <FaChevronDown className="text-[14px] leading-[20px] cursor-pointer" />
+                </div>
               </div>
-            </div>
+            </Dropdown>
           </div>
           <div className="items-center flex-row gap-4 flex overflow-x-auto">
             {items.map((item) => (
@@ -142,7 +155,7 @@ const MainLayout = ({ children }: Props) => {
                     ? "bg-primary text-white"
                     : "text-[#414141] bg-[#F5F5F5]"
                 }`}
-                onClick={() => handleMenu({ key: item.key })}
+                onClick={() => handleMenu(item.key)}
               >
                 <span className="text-[14px] leading-[20px] whitespace-nowrap">
                   {item.label}
