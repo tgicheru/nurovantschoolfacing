@@ -24,7 +24,8 @@ function RecordPage() {
   const navigate = useNavigate()
 
   const handleSuccess = () => {
-    navigate("/auth/login")
+    if(!isLoggedIn) navigate("/auth/login")
+    if(isLoggedIn) navigate("/")
     handleReset()
   }
   const handleError = (res: any) => {
