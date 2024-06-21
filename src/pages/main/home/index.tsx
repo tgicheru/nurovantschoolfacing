@@ -36,7 +36,6 @@ import FlashcardSection from "./sections/flashcard";
 import modalAtom from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
-import { awsConfig } from "../../../aws/awsConfig";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
 import {
@@ -135,9 +134,9 @@ function Home() {
     console.log("blob", blob);
 
     AWS.config.update({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Specify the bucket and key (object key) for the upload
@@ -232,9 +231,9 @@ function Home() {
           console.log(blob, blob.size);
           // Configure AWS with your credentials
           AWS.config.update({
-            accessKeyId: awsConfig.accessKeyId,
-            secretAccessKey: awsConfig.secretAccessKey,
-            region: awsConfig.region,
+            accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+            secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+            region: process.env["REACT_APP_AWS_REGION"],
           });
 
           // Specify the bucket and key (object key) for the upload
@@ -1234,17 +1233,17 @@ function Home() {
 
     // Configure AWS with your credentials
     AWS.config.update({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Create an S3 service object
     // Initialize AWS S3
     const s3 = new AWS.S3({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Specify the bucket and key (object key) for the upload
@@ -1273,78 +1272,10 @@ function Home() {
     );
   };
 
-  const items = [
-    {
-      key: "/",
-      label: "Home",
-      icon: "",
-    },
-    // {
-    //   key: "/speech-rate",
-    //   label: "Speech Rate",
-    //   icon: "",
-    // },
-  ];
-
-  const handleMenu = ({ key }: any) => {
-    return navigate(key);
-  };
-
   if (SectionContent) return SectionContent;
   return (
     <Spin spinning={isFetchLoad}>
-      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 bg-homeBg bg-center bg-no-repeat">
-        <div className="md:px-10 bg-white">
-          <div className="flex justify-end md:justify-between items-center md:py-5">
-            <img src={Logo} alt="logo" className="hidden lg:block" />
-
-            <div className="hidden md:block">
-              <div className="flex items-center gap-3">
-                <Avatar alt="user" size="large" src={user?.info?.profile_img}>
-                  {extractAvatar(
-                    user?.info?.name || user?.info?.email || "USER"
-                  )}
-                </Avatar>
-                <div>
-                  <p className="text-[14px] leading-[20px] font-semibold text-secondary">
-                    {user?.info?.name}
-                  </p>
-                  <p className="text-[14px] leading-[20px] font-normal text-gray">
-                    {user?.info?.email}
-                  </p>
-                </div>
-
-                <FaChevronDown className="text-[14px] leading-[20px] " />
-              </div>
-            </div>
-          </div>
-          <div className="items-center flex-row gap-4 flex overflow-x-auto">
-            {/* <Menu
-              style={{
-                border: 0,
-                background: "transparent",
-                height: "100%",
-                color: "#646462",
-                fontSize: "14px",
-                fontWeight: "600",
-              }}
-              defaultSelectedKeys={[pathname]}
-              defaultOpenKeys={[pathname]}
-              onClick={handleMenu}
-              key="main-menu"
-              mode="horizontal"
-              items={items}
-            /> */}
-            {items.map((item) => (
-              <div
-                key={item.label}
-                className="px-4 py-2 rounded-t-lg bg-primary text-white"
-              >
-                <span className="text-[14px] leading-[20px]">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
         <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             onClick={onOpen}
@@ -1359,7 +1290,7 @@ function Home() {
 
         <div
           hidden={!getLectData?.lectures?.length}
-          className="w-full space-y-5 md:px-10 bg-white"
+          className="w-full space-y-5 px-4 md:px-10 bg-white"
         >
           <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3">
             <Tabs
@@ -1385,7 +1316,7 @@ function Home() {
         </div>
 
         <div hidden={Boolean(getLectData?.lectures?.length)}>
-          <div className="w-full h-full flex flex-col justify-center items-center">
+          <div className="h-full flex flex-col justify-center items-center bg-white rounded-[16px] pb-7 mx-4 md:mx-8 ">
             <VideoRecordIcon bg="#4970FC" color="#fff" />
             <p className="text-[40px] font-semibold text-secondary mb-5">
               Lectures

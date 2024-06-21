@@ -21,6 +21,9 @@ const TermsAndCondition = lazy(
 const Home = lazy(() => import("../pages/main/home"));
 const Settings = lazy(() => import("../pages/main/settings"));
 const ProofReader = lazy(() => import("../pages/main/proofreader"));
+const SpeechRate = lazy(() => import("../pages/main/speechrate"));
+const QuestionBank = lazy(() => import("../pages/main/questionbank"));
+const GPTZero = lazy(() => import("../pages/main/gptzero"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -33,6 +36,26 @@ export const routes = [
     path: "/settings",
     label: "Settings",
     component: <Settings />,
+  },
+  {
+    path: "/proofreader",
+    label: "Proof Reader",
+    component: <ProofReader />,
+  },
+  {
+    path: "/speech-rate",
+    label: "Speech Rate",
+    component: <SpeechRate />,
+  },
+  {
+    path: "/question-bank",
+    label: "Question Bank",
+    component: <QuestionBank />,
+  },
+  {
+    path: "/gpt-zero",
+    label: "GPT Zero",
+    component: <GPTZero />,
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

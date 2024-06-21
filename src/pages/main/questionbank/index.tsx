@@ -6,7 +6,7 @@ import { FiUploadCloud } from "react-icons/fi";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 import { useAWSUpload } from "../../../hooks/otherhooks";
 
-function ProofReaderPage() {
+function QuestionBankPage() {
   const { width } = useWindowSize();
   const [open, setOpen] = useState(false);
   const [upldFile, setUpldFile] = useState<any>({});
@@ -181,4 +181,4 @@ function ProofReaderPage() {
   );
 }
 
-export default ProofReaderPage;
+export default QuestionBankPage;
