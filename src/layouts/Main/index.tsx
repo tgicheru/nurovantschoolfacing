@@ -1,5 +1,10 @@
 import { useRecoilState, useRecoilValue } from "recoil";
-import React, { ReactComponentElement, useRef, useEffect } from "react";
+import React, {
+  ReactComponentElement,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 import SideBar from "../../components/SideBar";
 import menuAtom from "../../atoms/menu/menu.atom";
 import { HiOutlineBell } from "react-icons/hi";
@@ -7,7 +12,7 @@ import { ModalContainer } from "../../components/ModalContainer";
 import { useLocation, useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
 import { Avatar, Button } from "antd";
-import { LuLogOut } from "react-icons/lu";
+import { LuLogOut, LuMenu } from "react-icons/lu";
 import { useGetProfile, useGetUserSub } from "../../hooks/profile/profile";
 import Logo from "../../assets/newLogo.svg";
 import { extractAvatar } from "../../constants";
@@ -18,6 +23,12 @@ type Props = {
 };
 const MainLayout = ({ children }: Props) => {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useRecoilState(menuAtom);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const onMenuClose = () => setIsMenuOpen(false);
+  const onMenuOpen = () => setIsMenuOpen(true);
+  const onClose = () => setIsOpen(false);
+  const onOpen = () => setIsOpen(true);
   const { pathname } = useLocation();
   const { user } = useRecoilValue(authAtom);
 
@@ -80,21 +91,23 @@ const MainLayout = ({ children }: Props) => {
             <p className="text-xl font-bold">{`Hello ${user?.info?.name}`}</p>
             <p className="text-sm font-normal">welcome to your dashboard</p>
           </div>
-          <Button
+          {/* <Button
             onClick={handleLogout}
             className="text-primary !p-0 !m-0"
             type="text"
             icon={<LuLogOut className="!text-lg !font-medium" />}
+          /> */}
+          <Button
+            icon={<LuMenu className="!text-2xl !font-medium !bg-transparent" />}
+            className="text-[#101828] !p-0 !m-0"
+            onClick={onMenuOpen}
+            type="text"
           />
         </div>
         {/* sidebar component can come in here  */}
-        {/* <div
-          className={`w-0 ${isOpen ? "md:!w-[5%]" : "md:!w-[20%]"} md:h-full ${
-            pathname === "/auth/info" && "hidden"
-          }`}
-        >
+        <div className={`w-0 ${isOpen ? "md:!w-[5%]" : "hidden"}`}>
           <SideBar isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-        </div> */}
+        </div>
         <div className="md:px-10 bg-white">
           <div className="flex justify-end md:justify-between items-center md:py-5">
             <img src={Logo} alt="logo" className="hidden lg:block" />
