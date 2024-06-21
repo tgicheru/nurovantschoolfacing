@@ -5,6 +5,7 @@ import { LuInbox } from "react-icons/lu";
 import { FiUploadCloud } from "react-icons/fi";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 import { useAWSUpload } from "../../../hooks/otherhooks";
+import { UploadedDocuments } from "../../../components/proofreader/UploadedDocuments";
 
 function ProofReaderPage() {
   const { width } = useWindowSize();
@@ -78,46 +79,48 @@ function ProofReaderPage() {
   const handleUpldFileClr = () => setUpldFile({});
 
   return (
-    <div className="md:mx-10 py-6 my-6 px-8 rounded-[8px] flex items-center justify-center relative bg-white h-screen md:h-[429px] font-montserrat">
-      <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
-        Streamline Lesson Planning with Automated Question Generation
-      </h1>
-      <div className="flex flex-col gap-3 items-center justify-center">
-        <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
-          Your generated questions would appear here
-        </p>
-        <CustomButton
-          text="Upload Document"
-          type="button"
-          onClick={() => {
-            showDrawer();
-          }}
-        />
-      </div>
-
-      <Drawer
-        placement="right"
-        closable={false}
-        onClose={onClose}
-        open={open}
-        width={isMobile ? "80%" : "40%"}
-      >
-        <h2 className="text-[20px] leading-[30px] font-semibold tracking-[2%] font-montserrat">
-          Track your Questions with Ease
-        </h2>
-        <p className="text-[16px] leading-[24px] font-montserrat mb-4 text-[#414141]">
-          Organise and monitor classroom questions for effective teaching.
-        </p>
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-[14px] leading-[23px] text-[#646462] font-medium font-montserrat">
-            Upload Material
+    <div className="md:px-10 my-6 flex flex-col lg:flex-row gap-6 w-full">
+      <UploadedDocuments />
+      <div className="flex-1 py-6 px-8 rounded-[8px] flex items-center justify-center relative bg-white h-[300px] md:h-[80vh] font-montserrat">
+        {/* <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
+          Streamline Lesson Planning with Automated Question Generation
+        </h1> */}
+        <div className="flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
+          <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
+            Your generated questions would appear here
           </p>
-          <Upload.Dragger {...uploadProps}>
-            <p className="ant-upload-drag-icon">
-              <FiUploadCloud className="text-[#414141] text-5xl mx-auto" />
-            </p>
+          <CustomButton
+            text="Upload Document"
+            type="button"
+            onClick={() => {
+              showDrawer();
+            }}
+          />
+        </div>
 
-            {/* <p className="ant-upload-hint">
+        <Drawer
+          placement="right"
+          closable={false}
+          onClose={onClose}
+          open={open}
+          width={isMobile ? "80%" : "40%"}
+        >
+          <h2 className="text-[20px] leading-[30px] font-semibold tracking-[2%] font-montserrat mb-1">
+            Perfect Your Writing
+          </h2>
+          <p className="text-[16px] leading-[24px] font-montserrat mb-4 text-[#414141]">
+            Ensure Precision, Correctness, and Clear Communication
+          </p>
+          <div className="flex flex-col items-start gap-3">
+            <p className="text-[14px] leading-[23px] text-[#646462] font-medium font-montserrat">
+              Upload Material
+            </p>
+            <Upload.Dragger {...uploadProps}>
+              <p className="ant-upload-drag-icon">
+                <FiUploadCloud className="text-[#414141] text-5xl mx-auto" />
+              </p>
+
+              {/* <p className="ant-upload-hint">
                           {upldFile?.file ? (
                             <Button
                               className="!bg-white !text-primary !font-bold !w-[60%] !h-[50px] !rounded-3xl"
@@ -130,53 +133,54 @@ function ProofReaderPage() {
                             "MP3, M4A, WAV, PDF"
                           )}
                         </p> */}
-            <p className="ant-upload-text text-[#303030] font-montserrat">
-              {upldFile?.file ? (
-                "Your file has been uploaded"
-              ) : (
-                <div className="flex flex-col gap-1 items-center justify-center">
-                  <span className="text-[12px] leading-[20px] font-medium">
-                    Upload the document containing your source material.
-                  </span>
-                  <span className="text-[#81868C] text-[12px] leading-[18px]">
-                    File size no more than 10MB
-                  </span>
-                </div>
-              )}
-            </p>
-            <p className="ant-upload-hint !text-white/50">
-              {upldFile?.file ? (
-                <Button
-                  onClick={handleUpldFileClr}
-                  type="text"
-                  className="!bg-white !font-bold !w-[60%] !h-[50px] !rounded-3xl"
-                  danger
-                  size="large"
-                >
-                  Delete
-                </Button>
-              ) : (
-                "File size no more than 10MB"
-              )}
-            </p>
-          </Upload.Dragger>
+              <p className="ant-upload-text text-[#303030] font-montserrat">
+                {upldFile?.file ? (
+                  "Your file has been uploaded"
+                ) : (
+                  <div className="flex flex-col gap-1 items-center justify-center">
+                    <span className="text-[12px] leading-[20px] font-medium">
+                      Upload the document containing your source material.
+                    </span>
+                    <span className="text-[#81868C] text-[12px] leading-[18px]">
+                      File size no more than 10MB
+                    </span>
+                  </div>
+                )}
+              </p>
+              <p className="ant-upload-hint !text-white/50">
+                {upldFile?.file ? (
+                  <Button
+                    onClick={handleUpldFileClr}
+                    type="text"
+                    className="!bg-white !font-bold !w-[60%] !h-[50px] !rounded-3xl"
+                    danger
+                    size="large"
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  "File size no more than 10MB"
+                )}
+              </p>
+            </Upload.Dragger>
 
-          <Button
-            className="bg-primary !h-[50px]"
-            disabled={!upldFile?.file}
-            onClick={() => {
-              setIsLoading(true);
-              uploadFileAction(upldFile?.file);
-            }}
-            type="primary"
-            size="large"
-            shape="round"
-            block
-          >
-            Create
-          </Button>
-        </div>
-      </Drawer>
+            <Button
+              className="bg-primary !h-[50px]"
+              disabled={!upldFile?.file}
+              onClick={() => {
+                setIsLoading(true);
+                uploadFileAction(upldFile?.file);
+              }}
+              type="primary"
+              size="large"
+              shape="round"
+              block
+            >
+              Create
+            </Button>
+          </div>
+        </Drawer>
+      </div>
     </div>
   );
 }
