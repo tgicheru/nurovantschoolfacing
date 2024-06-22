@@ -10,6 +10,7 @@ import {
   useGetProofReader,
   usePostProofReader,
 } from "../../../hooks/proofreader/proofreader";
+import moment from "moment";
 
 function ProofReaderPage() {
   const { width } = useWindowSize();
@@ -124,47 +125,61 @@ function ProofReaderPage() {
           {/* <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
           Streamline Lesson Planning with Automated Question Generation
         </h1> */}
-          {getProofReaderData?.data.length === 0 ? (
-            <div className="w-full md:w-[75%] min-h-[80vh] bg-white px-5 rounded-lg grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]">
-              <div className="md:col-span-2 p-5 md:py-10">
-                <h5></h5>
-              </div>
-              <div className="text-center p-5 md:py-10 space-y-3">
-                <p className="text-[48px] font-bold text-[#414141]">%</p>
-                <p className="text-sm font-medium text-[#676767]">
-                  of text likely to be AI generated
-                </p>
-                <ol className="!list-disc space-y-3">
-                  {[
-                    "burstiness",
-                    "label",
-                    "perplexity",
-                    "perplexity_per_line",
-                  ]?.map((d) => (
-                    <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
-                      <span>{d?.replaceAll("_", " ")}</span>
-                      <span>
-                        {/* {Number(selected?.[d] || 0)?.toFixed(2) || "--"} % */}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+          {/* {getProofReaderData?.data.length === 0 ? ( */}
+
+          <div className="w-full md:w-[75%] min-h-[80vh] bg-white px-5 rounded-lg grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]">
+            <div className="md:col-span-2 p-5 md:py-10">
+              {isSelected ? (
+                <div className="space-y-2">
+                  <p className="text-xl font-semibold text-[#414141]">
+                    {selected?.title}
+                  </p>
+                  <p className="text-xs font-normal text-[#414141]">
+                    Created at{" "}
+                    <b>{moment(selected?.createdAt).format("LLLL")}</b>
+                  </p>
+                  <p
+                    className="text-sm font-medium text-[#414141] my-5"
+                    dangerouslySetInnerHTML={{ __html: selected?.text }}
+                  />
+                </div>
+              ) : (
+                <div className="h-full flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
+                  <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
+                    Your generated questions would appear here
+                  </p>
+                  <CustomButton
+                    text="Upload Document"
+                    type="button"
+                    onClick={() => {
+                      showDrawer();
+                    }}
+                  />
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
-              <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
-                Your generated questions would appear here
+            <div className="text-center p-5 md:py-10 space-y-3">
+              <p className="text-[48px] font-bold text-[#414141]">%</p>
+              <p className="text-sm font-medium text-[#676767]">
+                of text likely to be AI generated
               </p>
-              <CustomButton
-                text="Upload Document"
-                type="button"
-                onClick={() => {
-                  showDrawer();
-                }}
-              />
+              <ol className="!list-disc space-y-3">
+                {[
+                  "burstiness",
+                  "label",
+                  "perplexity",
+                  "perplexity_per_line",
+                ]?.map((d) => (
+                  <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
+                    <span>{d?.replaceAll("_", " ")}</span>
+                    <span>
+                      {/* {Number(selected?.[d] || 0)?.toFixed(2) || "--"} % */}
+                    </span>
+                  </li>
+                ))}
+              </ol>
             </div>
-          )}
+          </div>
 
           <Drawer
             placement="right"
