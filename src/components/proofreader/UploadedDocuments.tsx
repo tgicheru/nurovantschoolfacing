@@ -1,7 +1,12 @@
 import React from "react";
+import { BsJournalText } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu";
 
-export const UploadedDocuments = () => {
+interface IUploadedProps {
+  data: any;
+}
+
+export const UploadedDocuments = ({ data }: IUploadedProps) => {
   return (
     <div className="bg-white px-4 py-8 flex flex-col gap-[22px] rounded-[8px] w-full lg:w-[317px] h-fit">
       <h2 className="text-[#414141] font-semibold text-[18px] leading-[27px]">
@@ -15,6 +20,21 @@ export const UploadedDocuments = () => {
             placeholder="Search your files here"
             className="outline-none focus:ring-0 bg-inherit text-[14px] leading-[20px]"
           />
+        </div>
+
+        <div hidden={data?.length} className="space-y-2">
+          {data?.data?.map((d: any) => {
+            // const handleSelect = () => setSelected(d);
+            return (
+              <div
+                // onClick={handleSelect}
+                className="w-full flex items-center gap-2 whitespace-nowrap truncate cursor-pointer"
+              >
+                <BsJournalText className="!text-sm !font-medium !text-[#676767]" />
+                <p className="text-sm font-medium text-[#676767]">{d?.title}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
