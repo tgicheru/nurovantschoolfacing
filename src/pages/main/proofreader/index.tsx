@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../../components";
 import { Button, Drawer, Spin, Upload, UploadProps } from "antd";
 import { LuInbox } from "react-icons/lu";
@@ -19,6 +19,13 @@ function ProofReaderPage() {
   const [isMobile, setIsMobile] = useState<null | boolean>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
+  const [selected, setSelected] = useState<any>({});
+
+  const [query, setQuery] = useState({
+    search: "",
+  });
+
+  const isSelected = Object.values(selected)?.some((d) => d);
 
   useEffect(() => {
     if (width) {
@@ -78,7 +85,7 @@ function ProofReaderPage() {
       setIsLoading(false);
       postProofReaderAction({
         title,
-        file: res?.Location,
+        file_url: res?.Location,
       });
       onClose();
     },
@@ -96,16 +103,54 @@ function ProofReaderPage() {
 
   const handleUpldFileClr = () => setUpldFile({});
 
+  const getData = useMemo(() => {
+    const data = getProofReaderData?.data || [];
+    if (!query) return getProofReaderData?.data || [];
+    return data?.filter((d: any) =>
+      d?.title?.toLowerCase()?.includes(query?.search?.toLowerCase())
+    );
+  }, [getProofReaderData, query]);
+
   return (
     <Spin spinning={getProofReaderLoad || postProofReaderLoad}>
       <div className="md:px-10 my-6 flex flex-col lg:flex-row gap-6 w-full">
-        <UploadedDocuments data={getProofReaderData} />
+        <UploadedDocuments
+          data={getProofReaderData}
+          getData={getData}
+          setQuery={setQuery}
+          setSelected={setSelected}
+        />
         <div className="flex-1 py-6 px-8 rounded-[8px] flex items-center justify-center relative bg-white h-[300px] md:h-[80vh] font-montserrat">
           {/* <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
           Streamline Lesson Planning with Automated Question Generation
         </h1> */}
-          {getProofReaderData?.data.length > 0 ? (
-            <div className="w-full md:w-[75%] min-h-[80vh] bg-white px-5 rounded-lg grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]"></div>
+          {getProofReaderData?.data.length === 0 ? (
+            <div className="w-full md:w-[75%] min-h-[80vh] bg-white px-5 rounded-lg grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]">
+              <div className="md:col-span-2 p-5 md:py-10">
+                <h5></h5>
+              </div>
+              <div className="text-center p-5 md:py-10 space-y-3">
+                <p className="text-[48px] font-bold text-[#414141]">%</p>
+                <p className="text-sm font-medium text-[#676767]">
+                  of text likely to be AI generated
+                </p>
+                <ol className="!list-disc space-y-3">
+                  {[
+                    "burstiness",
+                    "label",
+                    "perplexity",
+                    "perplexity_per_line",
+                  ]?.map((d) => (
+                    <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
+                      <span>{d?.replaceAll("_", " ")}</span>
+                      <span>
+                        {/* {Number(selected?.[d] || 0)?.toFixed(2) || "--"} % */}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
           ) : (
             <div className="flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
               <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
