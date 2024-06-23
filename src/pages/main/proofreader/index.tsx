@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../../components";
-import { Button, Drawer, Spin, Upload, UploadProps } from "antd";
+import { Button, Drawer, Modal, Spin, Upload, UploadProps } from "antd";
 import { LuInbox } from "react-icons/lu";
 import { FiUploadCloud } from "react-icons/fi";
 import { useWindowSize } from "../../../hooks/useWindowSize";
@@ -73,7 +73,7 @@ function ProofReaderPage() {
 
   const {
     data: getProofReaderData,
-    refetch: getProofReaderFetch,
+    refetch: getProofReaderRefetch,
     isFetching: getProofReaderLoad,
   } = useGetProofReader();
 
@@ -83,12 +83,7 @@ function ProofReaderPage() {
   const { mutate: uploadFileAction } = useAWSUpload(
     (res: any) => {
       setUpldFileData(res);
-      setIsLoading(false);
-      postProofReaderAction({
-        title,
-        file_url: res?.Location,
-      });
-      onClose();
+      handleProofReaderCreate(res);
     },
     () => setIsLoading(false),
     "content"
@@ -103,6 +98,15 @@ function ProofReaderPage() {
   };
 
   const handleUpldFileClr = () => setUpldFile({});
+  const handleProofReaderCreate = (res: any) => {
+    onClose();
+    setIsLoading(true);
+    postProofReaderAction({
+      title,
+      file_url: res?.Location,
+    });
+    setIsLoading(false);
+  };
 
   const getData = useMemo(() => {
     const data = getProofReaderData?.data || [];
@@ -112,8 +116,10 @@ function ProofReaderPage() {
     );
   }, [getProofReaderData, query]);
 
+  console.log("getData", getData);
+
   return (
-    <Spin spinning={getProofReaderLoad || postProofReaderLoad}>
+    <Spin spinning={getProofReaderLoad}>
       <div className="md:px-10 my-6 flex flex-col lg:flex-row gap-6 w-full">
         <UploadedDocuments
           data={getProofReaderData}
@@ -127,21 +133,27 @@ function ProofReaderPage() {
         </h1> */}
           {/* {getProofReaderData?.data.length === 0 ? ( */}
 
-          <div className="w-full md:w-[75%] min-h-[80vh] bg-white px-5 rounded-lg grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]">
-            <div className="md:col-span-2 p-5 md:py-10">
+          <div className="w-full h-full min-h-[80vh] bg-white grid grid-cols-1 md:grid-cols-3 md:divide-x divide-[#EFEFEF]">
+            <div className="md:col-span-2 p-5 md:py-10 h-full overflow-y-auto">
               {isSelected ? (
-                <div className="space-y-2">
-                  <p className="text-xl font-semibold text-[#414141]">
-                    {selected?.title}
-                  </p>
-                  <p className="text-xs font-normal text-[#414141]">
-                    Created at{" "}
-                    <b>{moment(selected?.createdAt).format("LLLL")}</b>
-                  </p>
-                  <p
-                    className="text-sm font-medium text-[#414141] my-5"
-                    dangerouslySetInnerHTML={{ __html: selected?.text }}
-                  />
+                <div className="space-y-2 h-full">
+                  <div className="w-full flex flex-col gap-2 pb-4 border-b border-b-[#EFEFEF]">
+                    <h5 className="text-xl font-semibold text-[#414141]">
+                      {selected?.title}
+                    </h5>
+                    <p className="text-xs font-normal text-[#414141]">
+                      Created at{" "}
+                      <b>{moment(selected?.createdAt).format("LLLL")}</b>
+                    </p>
+                  </div>
+                  <div className="w-full overflow-y-auto h-full py-4">
+                    <p
+                      className="text-sm font-medium text-[#414141] m"
+                      // dangerouslySetInnerHTML={{ __html: selected?.text }}
+                    >
+                      {selected?.text}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="h-full flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
@@ -158,7 +170,11 @@ function ProofReaderPage() {
                 </div>
               )}
             </div>
-            <div className="text-center p-5 md:py-10 space-y-3">
+            <div className="p-5 md:py-10 space-y-3 w-full">
+              <h5 className="text-[16px] leading-[24px] font-medium text-[#414141]">
+                Suggestions
+              </h5>
+              <hr />
               <p className="text-[48px] font-bold text-[#414141]">%</p>
               <p className="text-sm font-medium text-[#676767]">
                 of text likely to be AI generated
@@ -274,6 +290,22 @@ function ProofReaderPage() {
               </Button>
             </div>
           </Drawer>
+
+          <Modal
+            open={isLoading}
+            footer={false}
+            onCancel={() => setIsLoading(false)}
+            title="Upload Document"
+          >
+            <div className="py-6 flex flex-col gap-4">
+              <p className="text-[16px] leading-[24px] font-medium text-[#414141]">
+                Proof Reading in Progress ...
+              </p>
+              <div className="w-full flex items-center justify-center">
+                <Spin />
+              </div>
+            </div>
+          </Modal>
         </div>
       </div>
     </Spin>
