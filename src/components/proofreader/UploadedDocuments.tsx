@@ -17,8 +17,9 @@ export const UploadedDocuments = ({
   setSelected,
   setQuery,
 }: IUploadedProps) => {
+  console.log("ggg", getData);
   return (
-    <div className="bg-white px-4 py-8 flex flex-col gap-[22px] rounded-[8px] w-full lg:w-[317px] h-fit">
+    <div className="bg-white px-4 py-8 flex flex-col gap-[22px] rounded-[8px] w-full lg:w-[317px] h-fit font-montserrat">
       <h2 className="text-[#414141] font-semibold text-[18px] leading-[27px]">
         Uploaded Documents
       </h2>
@@ -43,15 +44,15 @@ export const UploadedDocuments = ({
           </Form.Item>
         </Form>
 
-        <div hidden={!data?.length} className="space-y-2">
+        <div hidden={!data?.data?.length} className="space-y-2">
           {getData.map((d: any) => {
             const handleSelect = () => setSelected(d);
             return (
               <div
                 onClick={handleSelect}
-                className="w-full flex items-center gap-2 whitespace-nowrap truncate cursor-pointer"
+                className="w-full p-1 flex items-center gap-2 whitespace-nowrap truncate cursor-pointer"
               >
-                <BsJournalText className="!text-sm !font-medium !text-[#676767]" />
+                <BsJournalText className="!text-[24px] !font-medium !text-[#676767]" />
                 <p className="text-sm font-medium text-[#676767]">{d?.title}</p>
               </div>
             );
