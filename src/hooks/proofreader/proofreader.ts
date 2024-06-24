@@ -58,7 +58,7 @@ export function usePostProofReader(successAction?: any) {
   );
 }
 
-export function useDeleteLecture(successAction?: any, errorAction?: any) {
+export function useDeleteProofReader(successAction?: any, errorAction?: any) {
   const url = "/api_backend/proof_reader/delete/";
   const axios = useContext(AxiosContext);
   return useMutation(
@@ -87,7 +87,7 @@ export function useDeleteLecture(successAction?: any, errorAction?: any) {
   );
 }
 
-export function useEditLecture(
+export function useEditProofReader(
   id: any,
   successAction?: any,
   errorAction?: any
