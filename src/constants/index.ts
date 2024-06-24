@@ -31,3 +31,14 @@ export const extractAvatar = (name: string) => {
   const secondLetter = splitName?.[1]?.charAt(0);
   return `${firstLetter}${secondLetter}`;
 };
+
+export const transformText = (
+  input: string,
+  textToReplace: string,
+  newText: string
+) => {
+  // Create a regular expression using the textToReplace variable
+  const regex = new RegExp(`\\b${textToReplace}\\b`, "gi");
+  // Use the regular expression to replace textToReplace with newText, case insensitive
+  return input.replace(regex, newText);
+};
