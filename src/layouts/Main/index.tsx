@@ -66,6 +66,11 @@ const MainLayout = ({ children }: Props) => {
       icon: "",
     },
     {
+      key: "/question-tracker",
+      label: "Question Tracker",
+      icon: "",
+    },
+    {
       key: "/speech-rate",
       label: "Speech Rate",
       icon: "",

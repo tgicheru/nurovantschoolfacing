@@ -24,6 +24,7 @@ const ProofReader = lazy(() => import("../pages/main/proofreader"));
 const SpeechRate = lazy(() => import("../pages/main/speechrate"));
 const QuestionBank = lazy(() => import("../pages/main/questionbank"));
 const GPTZero = lazy(() => import("../pages/main/gptzero"));
+const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -56,6 +57,11 @@ export const routes = [
     path: "/gpt-zero",
     label: "GPT Zero",
     component: <GPTZero />,
+  },
+  {
+    path: "/question-tracker",
+    label: "Question Tracker",
+    component: <QuestionTracker />,
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
