@@ -10,12 +10,12 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-export function useGetProofReader(params?: any) {
-  const url = `/api_backend/proof_reader/user_readers`;
+export function useGetQuestionTracker(params?: any) {
+  const url = `/api_backend/proof_reader/question_tracker`;
   // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:user_proofreader"],
+    ["get:user_question_tracker"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
       onError: (error: any) =>
@@ -31,8 +31,8 @@ export function useGetProofReader(params?: any) {
   );
 }
 
-export function usePostProofReader(successAction?: any) {
-  const url = "/api_backend/proof_reader/create";
+export function usePostQuestionTracker(successAction?: any) {
+  const url = "/api_backend/proof_reader/question_tracker";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -58,41 +58,44 @@ export function usePostProofReader(successAction?: any) {
   );
 }
 
-export function useDeleteProofReader(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/proof_reader/delete/";
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    async (id: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + id),
-    {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
+// export function useDeleteQuestionTracker(
+//   successAction?: any,
+//   errorAction?: any
+// ) {
+//   const url = "/api_backend/proof_reader/delete/";
+//   const axios = useContext(AxiosContext);
+//   return useMutation(
+//     async (id: any) =>
+//       deleteRequest(axios as unknown as AxiosInstance, url + id),
+//     {
+//       onSuccess: (response: any) => {
+//         successAction?.(response);
+//         notification.success({
+//           message: "Success!",
+//           description: response?.message || "action successful.",
+//         });
+//       },
+//       onError: (error: any) => {
+//         errorAction?.();
+//         notification.error({
+//           message: "Error!",
+//           description: error?.message
+//             ? Object.entries(error?.errors || { key: [error?.message] })
+//                 ?.map(([, value]) => (value as any)?.join(", "))
+//                 ?.join(", ")
+//             : "something went wrong please check internet connection.",
+//         });
+//       },
+//     }
+//   );
+// }
 
-export function useEditProofReader(
+export function useEditQuestionTracker(
   id: any,
   successAction?: any,
   errorAction?: any
 ) {
-  const url = `/api_backend/proof_reader/edit/${id}`;
+  const url = `/api_backend/proof_reader/question_tracker/${id}`;
   const axios = useContext(AxiosContext);
   const queryClient = useQueryClient();
   return useMutation(
@@ -106,7 +109,7 @@ export function useEditProofReader(
           message: "Success!",
           description: response?.message || "profile set successfully.",
         });
-        queryClient.invalidateQueries("get:user_proofreader");
+        queryClient.invalidateQueries("get:user_question_tracker");
       },
       onError: (error: any) => {
         notification.error({

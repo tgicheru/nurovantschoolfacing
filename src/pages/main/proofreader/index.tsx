@@ -1,16 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CustomButton } from "../../../components";
-import { Button, Drawer, Modal, Spin, Upload, UploadProps } from "antd";
+import {
+  Button,
+  Drawer,
+  Form,
+  Input,
+  Modal,
+  Spin,
+  Upload,
+  UploadProps,
+} from "antd";
 import { LuInbox } from "react-icons/lu";
 import { FiUploadCloud } from "react-icons/fi";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 import { useAWSUpload } from "../../../hooks/otherhooks";
 import { UploadedDocuments } from "../../../components/proofreader/UploadedDocuments";
 import {
+  useEditProofReader,
   useGetProofReader,
   usePostProofReader,
 } from "../../../hooks/proofreader/proofreader";
 import moment from "moment";
+import { FaPlus } from "react-icons/fa";
+import { RiArrowDropDownLine, RiArrowUpLine } from "react-icons/ri";
+import { FiArrowRight } from "react-icons/fi";
+import { get } from "http";
+import { transformText } from "../../../constants";
 
 function ProofReaderPage() {
   const { width } = useWindowSize();
@@ -20,7 +35,10 @@ function ProofReaderPage() {
   const [isMobile, setIsMobile] = useState<null | boolean>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
   const [selected, setSelected] = useState<any>({});
+
+  const [openSuggestion, setOpenSuggestion] = useState(0);
 
   const [query, setQuery] = useState({
     search: "",
@@ -38,56 +56,30 @@ function ProofReaderPage() {
     }
   }, [width]);
 
-  const uploadProps: UploadProps = {
-    name: "file",
-    multiple: false,
-    directory: false,
-    method: undefined,
-    className: "!w-full",
-    showUploadList: false,
-    onChange({ file }: { file: Blob | any }) {
-      setUpldFile({
-        file: file?.originFileObj,
-        fileobj: file,
-      });
-      console.log(file);
-
-      if (file?.originFileObj) {
-        const reader = new FileReader();
-
-        reader.onload = (e: any) => {
-          // Create a Blob from the loaded data
-          // if (e.target?.result instanceof ArrayBuffer) {
-          //   const audioBlob = new Blob([e.target.result], { type: file.type });
-          //   setAudioBlob(audioBlob);
-          // }
-          // Do something with the Blob, such as sending it to a server or processing it
-          // console.log(audioBlob);
-        };
-
-        // Read the content of the file as a data URL
-        reader.readAsArrayBuffer(file?.originFileObj);
-      }
-    },
-  };
-
   const {
     data: getProofReaderData,
     refetch: getProofReaderRefetch,
     isFetching: getProofReaderLoad,
+    data: editProofReaderData,
   } = useGetProofReader();
 
   const { mutate: postProofReaderAction, isLoading: postProofReaderLoad } =
-    usePostProofReader();
+    usePostProofReader(() => {
+      getProofReaderRefetch();
+      onClose();
+      setTitle("");
+      setText("");
+      // setSelected({});
+    });
 
-  const { mutate: uploadFileAction } = useAWSUpload(
-    (res: any) => {
-      setUpldFileData(res);
-      handleProofReaderCreate(res);
-    },
-    () => setIsLoading(false),
-    "content"
-  );
+  const { mutate: editProofReaderAction, isLoading: editProofReaderLoad } =
+    useEditProofReader(selected?._id, () => {
+      getProofReaderRefetch();
+      const newSelected = editProofReaderData?.data?.find(
+        (d: any) => d?._id === selected?._id
+      );
+      setSelected(newSelected);
+    });
 
   const showDrawer = () => {
     setOpen(true);
@@ -97,15 +89,21 @@ function ProofReaderPage() {
     setOpen(false);
   };
 
-  const handleUpldFileClr = () => setUpldFile({});
-  const handleProofReaderCreate = (res: any) => {
-    onClose();
+  const handleProofReaderCreate = () => {
+    // onClose();
     setIsLoading(true);
     postProofReaderAction({
       title,
-      file_url: res?.Location,
+      text,
     });
     setIsLoading(false);
+  };
+
+  const handleProofReaderEdit = (textToReplace: string, newText: string) => {
+    editProofReaderAction({
+      title: selected?.title,
+      text: transformText(selected?.text, textToReplace, newText),
+    });
   };
 
   const getData = useMemo(() => {
@@ -116,10 +114,38 @@ function ProofReaderPage() {
     );
   }, [getProofReaderData, query]);
 
-  console.log("getData", getData);
+  // Function to wrap the highlighted word with a span
+  const getHighlightedText = (text: string, highlight: string) => {
+    // Split the text into parts based on the highlight word
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return parts.map((part, index) =>
+      part?.toLowerCase() === highlight?.toLowerCase() ? (
+        <span
+          key={index}
+          // style={{ backgroundColor: "yellow" }}
+          className="bg-[#FF8080] text-[#fff] font-medium px-1 rounded-[16px]"
+        >
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
 
   return (
     <Spin spinning={getProofReaderLoad}>
+      <div className="px-5 md:px-10 flex justify-end items-center">
+        <Button
+          onClick={() => showDrawer()}
+          className="bg-primary !rounded-2xl mt-4"
+          type="primary"
+          size="large"
+          icon={<FaPlus />}
+        >
+          Create
+        </Button>
+      </div>
       <div className="md:px-10 my-6 flex flex-col lg:flex-row gap-6 w-full">
         <UploadedDocuments
           data={getProofReaderData}
@@ -148,17 +174,20 @@ function ProofReaderPage() {
                   </div>
                   <div className="w-full overflow-y-auto h-full py-4">
                     <p
-                      className="text-sm font-medium text-[#414141] m"
+                      className="text-sm font-medium text-[#414141] mb-9"
                       // dangerouslySetInnerHTML={{ __html: selected?.text }}
                     >
-                      {selected?.text}
+                      {getHighlightedText(
+                        selected?.text,
+                        selected?.suggestions[openSuggestion]?.word
+                      )}
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="h-full flex flex-col gap-3 items-center justify-center px-4 lg:px-0">
                   <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
-                    Your generated questions would appear here
+                    Paste or upload text in English to get started
                   </p>
                   <CustomButton
                     text="Upload Document"
@@ -170,30 +199,105 @@ function ProofReaderPage() {
                 </div>
               )}
             </div>
-            <div className="p-5 md:py-10 space-y-3 w-full">
-              <h5 className="text-[16px] leading-[24px] font-medium text-[#414141]">
+            <div className="p-5 md:py-10 md:col-span-1 space-y-3 w-full h-full">
+              <h5 className="text-[16px] leading-[24px] font-medium text-[#414141] pb-3 border-b border-b-[#EFEFEF]">
                 Suggestions
               </h5>
-              <hr />
-              <p className="text-[48px] font-bold text-[#414141]">%</p>
-              <p className="text-sm font-medium text-[#676767]">
-                of text likely to be AI generated
-              </p>
-              <ol className="!list-disc space-y-3">
-                {[
-                  "burstiness",
-                  "label",
-                  "perplexity",
-                  "perplexity_per_line",
-                ]?.map((d) => (
-                  <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
-                    <span>{d?.replaceAll("_", " ")}</span>
-                    <span>
-                      {/* {Number(selected?.[d] || 0)?.toFixed(2) || "--"} % */}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+
+              <div className="w-full space-y-3 h-[450px] overflow-y-auto">
+                {selected?.suggestions
+                  // ?.filter(
+                  //   (suggestion: any) => suggestion.correct_words.trim() !== ""
+                  // )
+                  ?.map((d: any, index: number) => (
+                    <div className="w-full shadow-sm border border-[#f5f5f5] py-4 flex flex-col gap-3 rounded-[8px]">
+                      <div
+                        className={`w-full px-4 flex items-center justify-between ${
+                          openSuggestion === index &&
+                          "pb-2 border-b border-b-[#EFEFEF]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1">
+                          <div className="h-[6px] w-[6px] rounded-full bg-[#ff0000]" />
+                          <p className="text-[14px] leading-[23px] font-medium text-[#414141]">
+                            Correctness
+                          </p>
+                        </div>
+                        <div
+                          onClick={() =>
+                            setOpenSuggestion(
+                              openSuggestion === index ? -1 : index
+                            )
+                          }
+                          className="cursor-pointer"
+                        >
+                          <RiArrowDropDownLine
+                            className={`text-[24px] ${
+                              openSuggestion === index && "rotate-180"
+                            }`}
+                          />
+                        </div>
+                      </div>
+                      {openSuggestion === index && (
+                        <div className="flex flex-col w-full gap-3">
+                          <div className="py-2 px-4 flex flex-row items-center justify-between gap-2">
+                            <div className="px-2 py-1 bg-[#EAEAEA] rounded-[18px] flex items-center justify-center w-full">
+                              <span className="text-[12px] leading-[24px] font-medium text-[#676767]">
+                                {d.word}
+                              </span>
+                            </div>
+
+                            <FiArrowRight className="text-[24px]" />
+
+                            <div className="px-2 py-1 bg-[#DBE2FE] rounded-[18px] flex items-center justify-center w-full">
+                              <span className="text-[12px] leading-[24px] font-medium text-primary">
+                                {d.correct_words}
+                              </span>
+                            </div>
+                          </div>
+
+                          <span className="text-[14px] leading-[20px] px-4">
+                            It appears that a word needs to be corrected
+                          </span>
+
+                          <div className="py-2 px-4 flex flex-row items-center justify-between gap-2">
+                            <Button
+                              className="bg-primary !h-[40px] font-montserrat"
+                              disabled={false}
+                              onClick={() => {
+                                handleProofReaderEdit(
+                                  selected?.suggestions[index]?.word,
+                                  selected?.suggestions[index]?.correct_words
+                                );
+                              }}
+                              type="primary"
+                              size="large"
+                              shape="round"
+                              loading={editProofReaderLoad}
+                              block
+                            >
+                              Accept
+                            </Button>
+
+                            <Button
+                              className="bg-[#F5F5F5] text-[#676767] !h-[40px] hover:!bg-[#F5F5F5]/90 hover:!text-[#676767] font-montserrat"
+                              disabled={false}
+                              onClick={() => {
+                                setOpenSuggestion(-1);
+                              }}
+                              type="primary"
+                              size="large"
+                              shape="round"
+                              block
+                            >
+                              Dismiss
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
 
@@ -218,72 +322,31 @@ function ProofReaderPage() {
                 <input
                   type="text"
                   className="w-full border border-[#cecccc] rounded-[8px] p-3 font-montserrat"
+                  value={title}
                   placeholder="Enter the title of the document"
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
               <p className="text-[14px] leading-[23px] text-[#646462] font-medium font-montserrat">
-                Upload Material
+                Text
               </p>
-              <Upload.Dragger {...uploadProps}>
-                <p className="ant-upload-drag-icon">
-                  <FiUploadCloud className="text-[#414141] text-5xl mx-auto" />
-                </p>
-
-                {/* <p className="ant-upload-hint">
-                          {upldFile?.file ? (
-                            <Button
-                              className="!bg-white !text-primary !font-bold !w-[60%] !h-[50px] !rounded-3xl"
-                              type="primary"
-                              size="large"
-                            >
-                              Upload PDF
-                            </Button>
-                          ) : (
-                            "MP3, M4A, WAV, PDF"
-                          )}
-                        </p> */}
-                <p className="ant-upload-text text-[#303030] font-montserrat">
-                  {upldFile?.file ? (
-                    "Your file has been uploaded"
-                  ) : (
-                    <div className="flex flex-col gap-1 items-center justify-center">
-                      <span className="text-[12px] leading-[20px] font-medium">
-                        Upload the document containing your source material.
-                      </span>
-                      <span className="text-[#81868C] text-[12px] leading-[18px]">
-                        File size no more than 10MB
-                      </span>
-                    </div>
-                  )}
-                </p>
-                <p className="ant-upload-hint !text-white/50">
-                  {upldFile?.file ? (
-                    <Button
-                      onClick={handleUpldFileClr}
-                      type="text"
-                      className="!bg-white !font-bold !w-[60%] !h-[50px] !rounded-3xl"
-                      danger
-                      size="large"
-                    >
-                      Delete
-                    </Button>
-                  ) : (
-                    "File size no more than 10MB"
-                  )}
-                </p>
-              </Upload.Dragger>
+              <textarea
+                className="w-full border border-[#cecccc] rounded-[8px] p-3 h-[160px] font-montserrat"
+                value={text}
+                placeholder="Enter the text to be analyzed"
+                onChange={(e) => setText(e.target.value)}
+              />
 
               <Button
-                className="bg-primary !h-[50px]"
-                disabled={!upldFile?.file}
+                className="bg-primary !h-[50px] font-montserrat"
+                disabled={title.length === 0 || text.length === 0}
                 onClick={() => {
-                  setIsLoading(true);
-                  uploadFileAction(upldFile?.file);
+                  handleProofReaderCreate();
                 }}
                 type="primary"
                 size="large"
                 shape="round"
+                loading={postProofReaderLoad}
                 block
               >
                 Create
