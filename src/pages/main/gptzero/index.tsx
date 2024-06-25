@@ -38,6 +38,8 @@ function GptZeroPage() {
     return data?.filter((d: any) => d?.title?.toLowerCase()?.includes(query?.search?.toLowerCase()))
   }, [getGptsData, query])
 
+  const selectKeys = ["burstiness", "label", "perplexity", "perplexity_per_line"]
+
   return (
     <Spin spinning={getGptsLoad}>
       <div className="w-full p-5 md:px-10 space-y-5">
@@ -84,10 +86,10 @@ function GptZeroPage() {
             </div>
 
             <div className="text-center p-5 md:py-10 space-y-3">
-              <p className="text-[48px] font-bold text-[#414141]">%</p>
+              <p className="text-[48px] font-bold text-[#414141]">{selectKeys?.reduce((a, b) => a + Number(selected?.[b] || 0), 0)?.toFixed(2)}%</p>
               <p className="text-sm font-medium text-[#676767]">of text likely to be AI generated</p>
               <ol className="!list-disc space-y-3">
-                {["burstiness", "label", "perplexity", "perplexity_per_line"]?.map(d => (
+                {selectKeys?.map(d => (
                   <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
                     <span>{d?.replaceAll("_", " ")}</span>
                     <span>{Number(selected?.[d] || 0)?.toFixed(2) || "--"} %</span>
@@ -102,7 +104,7 @@ function GptZeroPage() {
           open={isOpen}
           footer={false}
           onCancel={onClose}
-          title="Upload Document"
+          title="Paste Text Document"
         >
           <Form onFinish={postGptAction} layout="vertical">
             <Form.Item label="Title" name="title">
