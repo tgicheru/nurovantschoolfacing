@@ -1,183 +1,101 @@
-import React, { useEffect, useState } from "react";
-import { CustomButton } from "../../../components";
-import { Button, Drawer, Upload, UploadProps } from "antd";
-import { LuInbox } from "react-icons/lu";
-import { FiUploadCloud } from "react-icons/fi";
-import { useWindowSize } from "../../../hooks/useWindowSize";
-import { useAWSUpload } from "../../../hooks/otherhooks";
+import { Button, Drawer, Form, Input, Select, Spin, UploadProps } from "antd";
+import Dragger from "antd/es/upload/Dragger";
+import React, { useState } from "react";
+import { LuUploadCloud } from "react-icons/lu";
+import { useGetQuestionBanks } from "../../../hooks/questionbank/questionbank";
+import CustomTable from "../../../components/CustomTable";
+import moment from "moment";
 
 function QuestionBankPage() {
-  const { width } = useWindowSize();
-  const [open, setOpen] = useState(false);
-  const [upldFile, setUpldFile] = useState<any>({});
-  const [upldFileData, setUpldFileData] = useState<any>({});
-  const [isMobile, setIsMobile] = useState<null | boolean>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = () => setIsOpen(false)
+  const onOpen = () => setIsOpen(true)
 
-  useEffect(() => {
-    if (width) {
-      if (width < 768) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    }
-  }, [width]);
+  const {
+    data: getQBankData,
+    isFetching: getQBankLoad,
+  } = useGetQuestionBanks()
 
-  const uploadProps: UploadProps = {
-    name: "file",
-    multiple: false,
-    directory: false,
-    method: undefined,
-    className: "!w-full",
-    showUploadList: false,
-    onChange({ file }: { file: Blob | any }) {
-      setUpldFile({
-        file: file?.originFileObj,
-        fileobj: file,
-      });
-      console.log(file);
-
-      if (file?.originFileObj) {
-        const reader = new FileReader();
-
-        reader.onload = (e: any) => {
-          // Create a Blob from the loaded data
-          // if (e.target?.result instanceof ArrayBuffer) {
-          //   const audioBlob = new Blob([e.target.result], { type: file.type });
-          //   setAudioBlob(audioBlob);
-          // }
-          // Do something with the Blob, such as sending it to a server or processing it
-          // console.log(audioBlob);
-        };
-
-        // Read the content of the file as a data URL
-        reader.readAsArrayBuffer(file?.originFileObj);
-      }
+  const columns = [
+    {
+      title: "Name",
+      render: (d: any) => <Button>{}</Button>
     },
-  };
-
-  const { mutate: uploadFileAction } = useAWSUpload(
-    (res: any) => {
-      setUpldFileData(res);
-      setIsLoading(false);
-      onClose();
+    {
+      title: "Variants",
+      datIndex: "variants",
     },
-    () => setIsLoading(false),
-    "content"
-  );
+    {
+      title: "Date Generated",
+      datIndex: "variants",
+      render: (d: any) => moment().format("L")
+    },
+  ]
 
-  const showDrawer = () => {
-    setOpen(true);
-  };
+  const props = (onChange: any) => ({
+    name: 'file',
+    multiple: true,
+    onChange({file}: any) {
+      onChange?.(file)
+    },
+  })
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const handleUpldFileClr = () => setUpldFile({});
-
+  const DropComponent = ({ onChange }:{onChange: any}) => (
+    <Dragger {...props(onChange)}>
+      <p className="ant-upload-drag-icon">
+        <LuUploadCloud className="!text-2xl mx-auto" />
+      </p>
+      <p className="ant-upload-text px-5">Upload the document containing your source material.</p>
+      <p className="ant-upload-hint px-5">File size no more than 10MB</p>
+    </Dragger>
+  )
   return (
-    <div className="md:mx-10 py-6 my-6 px-8 rounded-[8px] flex items-center justify-center relative bg-white h-screen md:h-[429px] font-montserrat">
-      <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
-        Streamline Lesson Planning with Automated Question Generation
-      </h1>
-      <div className="flex flex-col gap-3 items-center justify-center">
-        <p className="text-[14px] leading-[24px] font-medium text-[#1B2124]">
-          Your generated questions would appear here
-        </p>
-        <CustomButton
-          text="Upload Document"
-          type="button"
-          onClick={() => {
-            showDrawer();
-          }}
-        />
-      </div>
-
-      <Drawer
-        placement="right"
-        closable={false}
-        onClose={onClose}
-        open={open}
-        width={isMobile ? "80%" : "40%"}
-      >
-        <h2 className="text-[20px] leading-[30px] font-semibold tracking-[2%] font-montserrat">
-          Track your Questions with Ease
-        </h2>
-        <p className="text-[16px] leading-[24px] font-montserrat mb-4 text-[#414141]">
-          Organise and monitor classroom questions for effective teaching.
-        </p>
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-[14px] leading-[23px] text-[#646462] font-medium font-montserrat">
-            Upload Material
-          </p>
-          <Upload.Dragger {...uploadProps}>
-            <p className="ant-upload-drag-icon">
-              <FiUploadCloud className="text-[#414141] text-5xl mx-auto" />
-            </p>
-
-            {/* <p className="ant-upload-hint">
-                          {upldFile?.file ? (
-                            <Button
-                              className="!bg-white !text-primary !font-bold !w-[60%] !h-[50px] !rounded-3xl"
-                              type="primary"
-                              size="large"
-                            >
-                              Upload PDF
-                            </Button>
-                          ) : (
-                            "MP3, M4A, WAV, PDF"
-                          )}
-                        </p> */}
-            <p className="ant-upload-text text-[#303030] font-montserrat">
-              {upldFile?.file ? (
-                "Your file has been uploaded"
-              ) : (
-                <div className="flex flex-col gap-1 items-center justify-center">
-                  <span className="text-[12px] leading-[20px] font-medium">
-                    Upload the document containing your source material.
-                  </span>
-                  <span className="text-[#81868C] text-[12px] leading-[18px]">
-                    File size no more than 10MB
-                  </span>
-                </div>
-              )}
-            </p>
-            <p className="ant-upload-hint !text-white/50">
-              {upldFile?.file ? (
-                <Button
-                  onClick={handleUpldFileClr}
-                  type="text"
-                  className="!bg-white !font-bold !w-[60%] !h-[50px] !rounded-3xl"
-                  danger
-                  size="large"
-                >
-                  Delete
-                </Button>
-              ) : (
-                "File size no more than 10MB"
-              )}
-            </p>
-          </Upload.Dragger>
-
-          <Button
-            className="bg-primary !h-[50px]"
-            disabled={!upldFile?.file}
-            onClick={() => {
-              setIsLoading(true);
-              uploadFileAction(upldFile?.file);
-            }}
-            type="primary"
-            size="large"
-            shape="round"
-            block
-          >
-            Create
-          </Button>
+    <Spin spinning={getQBankLoad}>
+      <div className="w-full p-5 md:px-10 space-y-5">
+        <div className="flex justify-between items-center">
+          <div />
+          <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
         </div>
-      </Drawer>
-    </div>
+        <div className="w-full p-5 md:p-10 bg-white rounded-lg">
+          <p className="text-lg font-semibold text-[#414141]">Streamline Lesson Planning with Automated Question Generation</p>
+          <div className="min-h-[50vh] flex flex-col justify-center items-center gap-5" hidden={getQBankData?.data?.length}>
+            <p className="text-sm font-medium text-[#1B2124]">Your generated questions would appear here</p>
+            <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
+          </div>
+          <CustomTable
+            column={columns}
+            hidden={!getQBankData?.data?.length}
+          />
+        </div>
+
+        <Drawer
+          open={isOpen}
+          onClose={onClose}
+          title={<div className="">
+            <p className="text-xl font-semibold text-[#414141]">Track Your Questions with Ease</p>
+            <p className="text-base font-normal text-[#414141]">Organise and monitor classroom questions for effective teaching.</p>
+          </div>}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Title">
+              <Input size="large" placeholder="Enter title" />
+            </Form.Item>
+            <Form.Item label="Variants">
+              <Select size="large" placeholder="Select Variants">
+
+              </Select>
+            </Form.Item>
+            <Form.Item label="Upload Source Material">
+              <DropComponent onChange={() => {}} />
+            </Form.Item>
+            <Form.Item label="Upload List of Questions">
+              <DropComponent onChange={() => {}} />
+            </Form.Item>
+            <Button className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
+          </Form>
+        </Drawer>
+      </div>
+    </Spin>
   );
 }
 
