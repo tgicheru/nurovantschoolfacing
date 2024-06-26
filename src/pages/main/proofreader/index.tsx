@@ -74,7 +74,7 @@ function ProofReaderPage() {
 
   const { mutate: editProofReaderAction, isLoading: editProofReaderLoad } =
     useEditProofReader(selected?._id, () => {
-      getProofReaderRefetch();
+      getProofReaderRefetch().then(() => {});
       const newSelected = editProofReaderData?.data?.find(
         (d: any) => d?._id === selected?._id
       );
