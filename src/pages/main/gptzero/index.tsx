@@ -87,8 +87,8 @@ function GptZeroPage() {
 
             <div className="text-center p-5 md:py-10 space-y-3">
               <p className="text-[48px] font-bold text-[#414141]">{selectKeys?.reduce((a, b) => a + Number(selected?.[b] || 0), 0)?.toFixed(2)}%</p>
-              <p className="text-sm font-medium text-[#676767]">of text likely to be AI generated</p>
-              <ol className="!list-disc space-y-3">
+              <p className="text-sm font-medium text-[#676767]">{selected?.message || "of text likely to be AI generated"}</p>
+              <ol hidden className="!list-disc space-y-3">
                 {selectKeys?.map(d => (
                   <li className="!list-disc text-sm font-medium text-[#676767] flex justify-between items-center capitalize">
                     <span>{d?.replaceAll("_", " ")}</span>
