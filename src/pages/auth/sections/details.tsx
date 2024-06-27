@@ -48,7 +48,7 @@ function DetailsSection({
           <Input placeholder="Enter full name" size="large" required />
         </Form.Item>
         <Form.Item label="Email" name="email">
-          <Input placeholder="Enter full name" size="large" required />
+          <Input placeholder="Enter email" size="large" required />
         </Form.Item>
         <Form.Item label="Set Password" name="password">
           <Input.Password placeholder="Enter password" size="large" required />

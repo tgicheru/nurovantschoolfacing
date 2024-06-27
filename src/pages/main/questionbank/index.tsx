@@ -1,18 +1,24 @@
-import { Button, Drawer, Form, Input, Select, Spin, UploadProps } from "antd";
+import { Button, Drawer, Form, Input, Select, Spin } from "antd";
 import Dragger from "antd/es/upload/Dragger";
 import React, { useState } from "react";
 import { LuUploadCloud } from "react-icons/lu";
-import { useGetQuestionBanks } from "../../../hooks/questionbank/questionbank";
+import { useGetQuestionBanks, usePostQuestionBank } from "../../../hooks/questionbank/questionbank";
 import CustomTable from "../../../components/CustomTable";
 import moment from "moment";
+import { useAWSUpload } from "../../../hooks/otherhooks";
 
 function QuestionBankPage() {
+  const [payload, setPayload] = useState<any>({
+    question_source: "https://nurovantfrontend.s3.amazonaws.com/McGraw-Hill-PhysicsDemystified.pdf",
+    user_content: "https://nurovantfrontend.s3.amazonaws.com/test.txt",
+  })
   const [isOpen, setIsOpen] = useState(false)
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
 
   const {
     data: getQBankData,
+    refetch: getQBankFetch,
     isFetching: getQBankLoad,
   } = useGetQuestionBanks()
 
@@ -33,22 +39,27 @@ function QuestionBankPage() {
   ]
 
   const props = (onChange: any) => ({
-    name: 'file',
-    multiple: true,
-    onChange({file}: any) {
-      onChange?.(file)
-    },
+    name: "file",
+    multiple: false,
+    directory: false,
+    method: undefined,
+    // showUploadList: false,
+    onChange: ({ file }: { file: Blob | any }) => onChange(file?.originFileObj),
   })
 
-  const DropComponent = ({ onChange }:{onChange: any}) => (
-    <Dragger {...props(onChange)}>
-      <p className="ant-upload-drag-icon">
-        <LuUploadCloud className="!text-2xl mx-auto" />
-      </p>
-      <p className="ant-upload-text px-5">Upload the document containing your source material.</p>
-      <p className="ant-upload-hint px-5">File size no more than 10MB</p>
-    </Dragger>
-  )
+  const {
+    mutate: postUplAction,
+    isLoading: postUplLoad,
+  } = useAWSUpload((res: any) => setPayload({...payload, [payload?.key]: res?.Location, key: ""}))
+
+  const {
+    mutate: postQBankAction,
+    isLoading: postQBankLoad,
+  } = usePostQuestionBank(getQBankFetch)
+
+  const handleSubmit = (data: any) => postQBankAction({...data, ...payload})
+
+  const actionLoad = (postUplLoad || postQBankLoad)
   return (
     <Spin spinning={getQBankLoad}>
       <div className="w-full p-5 md:px-10 space-y-5">
@@ -64,6 +75,7 @@ function QuestionBankPage() {
           </div>
           <CustomTable
             column={columns}
+            data={getQBankData?.data}
             hidden={!getQBankData?.data?.length}
           />
         </div>
@@ -76,22 +88,37 @@ function QuestionBankPage() {
             <p className="text-base font-normal text-[#414141]">Organise and monitor classroom questions for effective teaching.</p>
           </div>}
         >
-          <Form layout="vertical">
-            <Form.Item label="Title">
+          <Form onFinish={handleSubmit} layout="vertical">
+            <Form.Item name="title" label="Title">
               <Input size="large" placeholder="Enter title" />
             </Form.Item>
-            <Form.Item label="Variants">
+            <Form.Item name="number_of_question" label="Variants">
               <Select size="large" placeholder="Select Variants">
-
+                {Array.from(Array(10).keys()).map(d => {
+                  const variant = ((d + 1) * 10)
+                  return (<Select.Option value={variant}>{variant}</Select.Option>)
+                })}
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <DropComponent onChange={() => {}} />
+              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "user_content"})})}>
+                <p className="ant-upload-drag-icon">
+                  <LuUploadCloud className="!text-2xl mx-auto" />
+                </p>
+                <p className="ant-upload-text px-5">Upload the document containing your source material.</p>
+                <p className="ant-upload-hint px-5">File size no more than 10MB</p>
+              </Dragger>
             </Form.Item>
             <Form.Item label="Upload List of Questions">
-              <DropComponent onChange={() => {}} />
+              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "question_source"})})}>
+                <p className="ant-upload-drag-icon">
+                  <LuUploadCloud className="!text-2xl mx-auto" />
+                </p>
+                <p className="ant-upload-text px-5">Upload the document with your list of questions.</p>
+                <p className="ant-upload-hint px-5">File size no more than 10MB</p>
+              </Dragger>
             </Form.Item>
-            <Button className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
+            <Button loading={actionLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
           </Form>
         </Drawer>
       </div>
