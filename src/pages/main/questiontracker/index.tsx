@@ -103,6 +103,7 @@ function QuestionTrackerPage() {
     getQuestionTrackerRefetch();
     onClose();
     setTitle("");
+    setUpldFile({});
   });
 
   const {

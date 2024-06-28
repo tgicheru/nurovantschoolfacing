@@ -101,6 +101,7 @@ function SpeechRatePage() {
     getQuestionTrackerRefetch();
     onClose();
     setTitle("");
+    setUpldFile({});
   });
 
   const { mutate: uploadFileAction } = useAWSUpload(
