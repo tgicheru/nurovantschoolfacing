@@ -101,6 +101,7 @@ function SpeechRatePage() {
     getQuestionTrackerRefetch();
     onClose();
     setTitle("");
+    setUpldFile({});
   });
 
   const { mutate: uploadFileAction } = useAWSUpload(
@@ -147,7 +148,7 @@ function SpeechRatePage() {
             className="text-primary cursor-pointer font-medium font-montserrat text-[14px] leading-[20px]"
             onClick={() => {
               // handleAction("view", record._id);
-              setSelected(record);
+              if (record.status !== "Pending") setSelected(record);
             }}
           >
             {text}
@@ -165,7 +166,22 @@ function SpeechRatePage() {
         key: "createdAt",
         render: (d: any) => (
           <span className="font-montserrat text-[14px] leading-[20px]">
-            {moment(d).format("L")}
+            {d?.split("T")[0]}
+          </span>
+        ),
+      },
+
+      {
+        title: (
+          <span className="text-[14px] leading-[20px] font-normal text-[#1B2124] font-montserrat">
+            Status
+          </span>
+        ),
+        dataIndex: "status",
+        key: "status",
+        render: (d: any) => (
+          <span className="font-montserrat text-[14px] leading-[20px]">
+            {d}
           </span>
         ),
       },
@@ -203,7 +219,12 @@ function SpeechRatePage() {
               <IoArrowBackSharp className="text-[20px] leading-[20px]" />
             </div>
             <div className="flex flex-col gap-2">
-              <h1 className="text-[20px]  font-semibold text-[#414141]">
+              <h1
+                className="text-[20px]  font-semibold text-[#414141] cursor-pointer"
+                onClick={() => {
+                  setSelected({});
+                }}
+              >
                 {selected.title}
               </h1>
               <p className="text-[14px] leading-[20px] font-medium text-[#1B1B1B]">
@@ -360,7 +381,7 @@ function SpeechRatePage() {
               disabled={!upldFile?.file}
               // disabled={false}
               onClick={() => {
-                // setIsLoading(true);
+                setIsLoading(true);
                 uploadFileAction(upldFile?.file);
                 // postQuestionTrackerAction({
                 //   title,
@@ -368,10 +389,10 @@ function SpeechRatePage() {
                 //     "s3://teacher-storage-bucket/twitter_unreal_stories_mono.wav",
                 // });
               }}
+              loading={isLoading}
               type="primary"
               size="large"
               shape="round"
-              loading={postQuestionTrackerLoad}
               block
             >
               Generate Questions

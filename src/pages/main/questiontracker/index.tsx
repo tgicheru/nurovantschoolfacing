@@ -103,6 +103,7 @@ function QuestionTrackerPage() {
     getQuestionTrackerRefetch();
     onClose();
     setTitle("");
+    setUpldFile({});
   });
 
   const {
@@ -158,7 +159,7 @@ function QuestionTrackerPage() {
             className="text-primary cursor-pointer font-medium font-montserrat text-[14px] leading-[20px]"
             onClick={() => {
               // handleAction("view", record._id);
-              setSelected(record);
+              if (record.status !== "Pending") setSelected(record);
             }}
           >
             {text}
@@ -176,7 +177,22 @@ function QuestionTrackerPage() {
         key: "createdAt",
         render: (d: any) => (
           <span className="font-montserrat text-[14px] leading-[20px]">
-            {moment(d).format("L")}
+            {d?.split("T")[0]}
+          </span>
+        ),
+      },
+
+      {
+        title: (
+          <span className="text-[14px] leading-[20px] font-normal text-[#1B2124] font-montserrat">
+            Status
+          </span>
+        ),
+        dataIndex: "status",
+        key: "status",
+        render: (d: any) => (
+          <span className="font-montserrat text-[14px] leading-[20px]">
+            {d}
           </span>
         ),
       },
@@ -214,7 +230,12 @@ function QuestionTrackerPage() {
               <IoArrowBackSharp className="text-[20px] leading-[20px]" />
             </div>
             <div className="flex flex-col gap-2">
-              <h1 className="text-[20px]  font-semibold text-[#414141]">
+              <h1
+                className="text-[20px]  font-semibold text-[#414141] cursor-pointer"
+                onClick={() => {
+                  setSelected({});
+                }}
+              >
                 {selected.title}
               </h1>
               <p className="text-[14px] leading-[20px] font-medium text-[#1B1B1B]">
@@ -377,7 +398,7 @@ function QuestionTrackerPage() {
               disabled={!upldFile?.file}
               // disabled={false}
               onClick={() => {
-                // setIsLoading(true);
+                setIsLoading(true);
                 uploadFileAction(upldFile?.file);
                 // postQuestionTrackerAction({
                 //   title,
@@ -388,7 +409,7 @@ function QuestionTrackerPage() {
               type="primary"
               size="large"
               shape="round"
-              loading={postQuestionTrackerLoad}
+              loading={isLoading}
               block
             >
               Generate Questions
