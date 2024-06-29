@@ -39,6 +39,8 @@ export const formatCurrency = (value: number, currency?: string) =>
     return mailNameCut.padEnd(mailName.length, "*").concat(mailProvider) || ""
   }
 
+  export const handleObj = (data: any) => Object.fromEntries(Object.entries(data || {})?.filter(([key, val]) => (key && val)));
+
   export const handleCapitalize = (data: string) => {
     return (data||"").charAt(0).toUpperCase() + (data||"").slice(1);
   }
