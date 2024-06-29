@@ -75,7 +75,7 @@ function RecordPage() {
         <Button onClick={onRecStop} loading={isLoading} hidden={!isRecord} icon={<FaStop />} className="bg-primary" size="large" type="primary" shape="circle" />
       </div>
       <div className='flex items-center gap-5'>
-        <Button onClick={onRecStart} loading={isLoading} hidden={isRecord} className="bg-primary" size="large" type="primary" shape="round">Start</Button>
+        <Button onClick={onRecStart} loading={isLoading} hidden={isRecord} className="bg-primary" size="large" type="primary" shape="round">{isRecorded ? "Restart" : "Start"}</Button>
         <Button onClick={handleSubmit} loading={isLoading} hidden={!isRecorded} className="bg-primary" size="large" type="primary" shape="round">Submit</Button>
       </div>
     </div>

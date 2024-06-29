@@ -8,6 +8,7 @@ import moment from "moment";
 import { useAWSUpload } from "../../../hooks/otherhooks";
 import { useSearchParams } from "react-router-dom";
 import DetailsSection from "./sections/details";
+import { handleObj } from "../../../context/utils";
 
 function QuestionBankPage() {
   const [params, setParams] = useSearchParams()
@@ -65,7 +66,7 @@ function QuestionBankPage() {
     isLoading: postQBankLoad,
   } = usePostQuestionBank(getQBankFetch)
 
-  const handleSubmit = (data: any) => postQBankAction({...data, ...payload})
+  const handleSubmit = (data: any) => postQBankAction(handleObj({...data, ...payload}))
 
   const actionLoad = (postUplLoad || postQBankLoad)
 
