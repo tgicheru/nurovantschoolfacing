@@ -177,7 +177,7 @@ function QuestionTrackerPage() {
         key: "createdAt",
         render: (d: any) => (
           <span className="font-montserrat text-[14px] leading-[20px]">
-            {d.split("T")[0]}
+            {d?.split("T")[0]}
           </span>
         ),
       },
