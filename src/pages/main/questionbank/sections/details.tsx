@@ -24,12 +24,17 @@ function DetailsSection() {
     isLoading: getQBankLoad,
   } = useGetQuestionBank(id)
 
+  const handleSuccess = () => {
+    getQBankFetch();
+    handleClear();
+  }
+
   const {
     mutate: putQBankAction,
     isLoading: putQBankLoad,
-  } = usePutQuestionBank(id, getQBankFetch)
+  } = usePutQuestionBank(id, handleSuccess)
 
-  const handleSubmit = () => putQBankAction({...payload, question_bank_id: id})
+  const handleSubmit = () => putQBankAction(payload)
 
   const tabs = useMemo(() => getQBankData?.data?.question_variant?.map((d: any) => ({
     key: d?.variant_number,
@@ -37,11 +42,11 @@ function DetailsSection() {
     children: (<div className='space-y-5'>
       <p className='text-base font-normal text-[#010101]'>{d?.main_question}</p>
       {d?.questions?.map((b: any) => {
-        const isEdit = (isEqual(payload?.variant_number, d?.variant_number) && isEqual(payload?.question_id, b?.id))
+        const isEdit = (isEqual(payload?.variant_number, String(d?.variant_number)) && isEqual(payload?.question_id, String(b?.id)))
         const handleEdit = () => setPayload({
-          variant_number: d?.variant_number,
-          question: b?.question,
-          question_id: b?.id,
+          variant_number: String(d?.variant_number),
+          question: String(b?.question),
+          question_id: String(b?.id),
         })
         return (<div className='flex justify-between items-center gap-5 p-3 border border-[#E6E9ED] rounded-lg'>
           <p hidden={isEdit} className='text-base font-normal text-[#010101]'>{b?.id+1}. {b?.question}</p>
