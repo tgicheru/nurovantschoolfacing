@@ -34,9 +34,9 @@ function RecordPage() {
   }
 
   const {
-    mutateAsync,
+    mutate: uplAction,
     isLoading: uplLoad,
-  } = useAWSUpload()
+  } = useAWSUpload((res: any) => setPayload({...payload, voice_url: res?.Location || payload?.voice_url}))
 
   const {
     mutate: putAction,
@@ -50,10 +50,7 @@ function RecordPage() {
 
   const handleMutate = (data: any) => (isLoggedIn ? putAction(data) : postAction(data))
 
-  const handleStop = async (data: any) => mutateAsync(data?.blob).then((res: any) => {
-    handleMutate({...payload, voice_url: res?.Location || payload?.voice_url})
-    setPayload({...payload, voice_url: res?.Location || payload?.voice_url})
-  })
+  const handleStop = async (data: any) => uplAction(data?.blob)
 
   const isRecorded = Boolean(payload?.voice_url)
   const handleSubmit = () => handleMutate(payload)
