@@ -42,7 +42,7 @@ function AuthPage() {
     {key: "recording", component: <RecordingSection />, noBg: true},
   ]
 
-  const isUpdated = (data?.data?.teaching_grade?.length && data?.data?.teaching_subject?.length)
+  const isUpdated = (data?.data?.teaching_grade?.length && data?.data?.teaching_subject?.length && data?.data?.voice_url)
   const CurrentSection = sections?.find(({key}) => isEqual(key, active))
   const CurrentSectionComponent = CurrentSection?.component
   const isNoBg = CurrentSection?.noBg

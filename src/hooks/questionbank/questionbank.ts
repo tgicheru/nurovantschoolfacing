@@ -84,21 +84,19 @@ export function usePutQuestionBank(
   successAction?: any,
   errorAction?: any
 ) {
-  const url = `/api_backend/proof_reader/question_bank/${id}`;
+  const url = `/api_backend/proof_reader/question_bank/`;
   const axios = useContext(AxiosContext);
-  const queryClient = useQueryClient();
   return useMutation(
     (payload: any) =>
-      putRequest(axios as unknown as AxiosInstance, url, payload),
+      putRequest(axios as unknown as AxiosInstance, url+id, payload),
     {
       onSuccess: (response) => {
         successAction?.();
         notification.success({
           key: "updateable",
           message: "Success!",
-          description: response?.message || "profile set successfully.",
+          description: response?.message || "action successful.",
         });
-        queryClient.invalidateQueries("get:user_proofreader");
       },
       onError: (error: any) => {
         notification.error({
@@ -115,7 +113,7 @@ export function usePutQuestionBank(
   );
 }
 
-export function useDeleteLecture(successAction?: any, errorAction?: any) {
+export function useDeleteQuestionBank(successAction?: any, errorAction?: any) {
   const url = "/api_backend/proof_reader/delete/";
   const axios = useContext(AxiosContext);
   return useMutation(
