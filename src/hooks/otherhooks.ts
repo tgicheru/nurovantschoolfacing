@@ -107,18 +107,15 @@ export function useAWSUpload(
   const reader = new FileReader();
   return useMutation(
     async (payload: any) => {
+      const handleFormat = (value: string) => value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_")
       reader.onload = async (e: any) => {
         // Create a Blob from the loaded data
         const fileBlob = new Blob([e.target.result], { type: payload?.type });
         // Do something with the Blob, such as sending it to a server or processing it
         // Specify the bucket and key (object key) for the upload
+        // You can customize the key based on your requirement
         const uploadParams = {
-          Key: `${new Date()
-            .toLocaleTimeString([], { hour12: false })
-            .split(":")
-            .join("_")}-${user?.info?._id}--${removeSpacesFromPdfName(
-            payload.name
-          )}`, // You can customize the key based on your requirement
+          Key: handleFormat(`${new Date().toISOString()}_${user?.info?._id}_${payload.name}`), 
           Bucket: buckets?.[(type || "content") as keyof typeof buckets],
           Body: fileBlob as unknown as Body,
           ContentType: payload?.type,
