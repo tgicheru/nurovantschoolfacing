@@ -115,7 +115,7 @@ export function useAWSUpload(
         // Specify the bucket and key (object key) for the upload
         // You can customize the key based on your requirement
         const uploadParams = {
-          Key: handleFormat(`${new Date().toISOString()}_${user?.info?._id}_${payload.name}`), 
+          Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id}_${payload.name}`), 
           Bucket: buckets?.[(type || "content") as keyof typeof buckets],
           Body: fileBlob as unknown as Body,
           ContentType: payload?.type,
