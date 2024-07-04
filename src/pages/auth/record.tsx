@@ -50,7 +50,10 @@ function RecordPage() {
 
   const handleMutate = (data: any) => (isLoggedIn ? putAction(data) : postAction(data))
 
-  const handleStop = async (data: any) => uplAction(data?.blob)
+  const handleStop = async (data: any) => {
+    const blob = await fetch(data?.blobURL).then((res) => res?.blob())
+    uplAction(blob)
+  }
 
   const isRecorded = Boolean(payload?.voice_url)
   const handleSubmit = () => handleMutate(payload)
