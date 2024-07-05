@@ -10,11 +10,13 @@ import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 import { onboardingAtom } from '../../atoms/other/other.atom'
 import authAtom from '../../atoms/auth/auth.atom'
 import { useSetProfile } from '../../hooks/profile/profile'
+import { getBase64 } from '../../context/utils'
 
 
 function RecordPage() {
   const [payload, setPayload] = useRecoilState(onboardingAtom)
   const handleReset = useResetRecoilState(onboardingAtom)
+  const [recordBase64, setRecordBase64] = useState("")
   const { isLoggedIn } = useRecoilValue(authAtom)
   const [isRecord, setIsRecord] = useState(false)
   const [isPause, setIsPause] = useState(false)
@@ -36,7 +38,7 @@ function RecordPage() {
   const {
     mutate: uplAction,
     isLoading: uplLoad,
-  } = useAWSUpload((res: any) => setPayload({...payload, voice_url: res?.Location || payload?.voice_url}))
+  } = useAWSUpload((res: any) => {setPayload({...payload, voice_url: res?.Location || payload?.voice_url}); console.log(res)})
 
   const {
     mutate: putAction,
@@ -50,10 +52,13 @@ function RecordPage() {
 
   const handleMutate = (data: any) => (isLoggedIn ? putAction(data) : postAction(data))
 
-  const handleStop = async (data: any) => {
-    const blob = await fetch(data?.blobURL).then((res) => res?.blob())
-    uplAction(blob)
-  }
+  const handleStop = async (data: any) => uplAction(data?.blob)
+  // const handleStop = async (data: any) => {
+  //   const blob = await fetch(data?.blobURL).then((res) => res?.blob())
+  //   // await getBase64(data?.blob).then((res: any) => setRecordBase64(res))
+  //   // console.log(data, blob)
+  //   uplAction(data?.blob)
+  // }
 
   const isRecorded = Boolean(payload?.voice_url)
   const handleSubmit = () => handleMutate(payload)
@@ -73,6 +78,9 @@ function RecordPage() {
         backgroundColor='transparent'
         className="w-[70vw] md:!w-[30vw] !min-h-[100px]"
       />
+      <div hidden={!recordBase64}>
+        <audio src={recordBase64} controls />
+      </div>
       <div className='flex items-center gap-5'>
         <Button onClick={onPause} loading={isLoading} hidden={!isRecord} icon={isPause ? <FaPlay /> : <FaPause />} className="bg-primary" size="large" type="primary" shape="circle" />
         <Button onClick={onRecStop} loading={isLoading} hidden={!isRecord} icon={<FaStop />} className="bg-primary" size="large" type="primary" shape="circle" />
