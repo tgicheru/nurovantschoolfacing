@@ -6,15 +6,21 @@ import { useGetQuestionBanks, usePostQuestionBank } from "../../../hooks/questio
 import CustomTable from "../../../components/CustomTable";
 import moment from "moment";
 import { useAWSUpload } from "../../../hooks/otherhooks";
+import { useSearchParams } from "react-router-dom";
+import DetailsSection from "./sections/details";
+import { handleObj } from "../../../context/utils";
 
 function QuestionBankPage() {
+  const [params, setParams] = useSearchParams()
   const [payload, setPayload] = useState<any>({
-    question_source: "https://nurovantfrontend.s3.amazonaws.com/McGraw-Hill-PhysicsDemystified.pdf",
-    user_content: "https://nurovantfrontend.s3.amazonaws.com/test.txt",
+    // question_source: "https://nurovantfrontend.s3.amazonaws.com/McGraw-Hill-PhysicsDemystified.pdf",
+    // user_content: "https://nurovantfrontend.s3.amazonaws.com/test.txt",
   })
   const [isOpen, setIsOpen] = useState(false)
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
+  const id = params.get("id")
+
 
   const {
     data: getQBankData,
@@ -25,16 +31,19 @@ function QuestionBankPage() {
   const columns = [
     {
       title: "Name",
-      render: (d: any) => <Button>{}</Button>
+      render: (d: any) => {
+        const handleView = () => setParams({id: d?._id})
+        return <Button onClick={handleView} className="text-primary" type="text">{d?.title}</Button>
+      }
     },
     {
       title: "Variants",
-      datIndex: "variants",
+      dataIndex: "number_of_question",
     },
     {
       title: "Date Generated",
-      datIndex: "variants",
-      render: (d: any) => moment().format("L")
+      datIndex: "createdAt",
+      render: (d: any) => moment(d).format("L")
     },
   ]
 
@@ -43,7 +52,7 @@ function QuestionBankPage() {
     multiple: false,
     directory: false,
     method: undefined,
-    // showUploadList: false,
+    showUploadList: false,
     onChange: ({ file }: { file: Blob | any }) => onChange(file?.originFileObj),
   })
 
@@ -57,9 +66,11 @@ function QuestionBankPage() {
     isLoading: postQBankLoad,
   } = usePostQuestionBank(getQBankFetch)
 
-  const handleSubmit = (data: any) => postQBankAction({...data, ...payload})
+  const handleSubmit = (data: any) => postQBankAction(handleObj({...data, ...payload}))
 
   const actionLoad = (postUplLoad || postQBankLoad)
+
+  if(id) return <DetailsSection />
   return (
     <Spin spinning={getQBankLoad}>
       <div className="w-full p-5 md:px-10 space-y-5">
@@ -67,11 +78,13 @@ function QuestionBankPage() {
           <div />
           <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
         </div>
-        <div className="w-full p-5 md:p-10 bg-white rounded-lg">
+        <div className="w-full p-5 md:p-10 bg-white rounded-lg space-y-5">
           <p className="text-lg font-semibold text-[#414141]">Streamline Lesson Planning with Automated Question Generation</p>
-          <div className="min-h-[50vh] flex flex-col justify-center items-center gap-5" hidden={getQBankData?.data?.length}>
-            <p className="text-sm font-medium text-[#1B2124]">Your generated questions would appear here</p>
-            <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
+          <div hidden={getQBankData?.data?.length}>
+            <div className="min-h-[50vh] flex flex-col justify-center items-center gap-5">
+              <p className="text-sm font-medium text-[#1B2124]">Your generated questions would appear here</p>
+              <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
+            </div>
           </div>
           <CustomTable
             column={columns}
@@ -101,21 +114,23 @@ function QuestionBankPage() {
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "user_content"})})}>
-                <p className="ant-upload-drag-icon">
-                  <LuUploadCloud className="!text-2xl mx-auto" />
-                </p>
-                <p className="ant-upload-text px-5">Upload the document containing your source material.</p>
-                <p className="ant-upload-hint px-5">File size no more than 10MB</p>
-              </Dragger>
-            </Form.Item>
-            <Form.Item label="Upload List of Questions">
               <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "question_source"})})}>
                 <p className="ant-upload-drag-icon">
                   <LuUploadCloud className="!text-2xl mx-auto" />
                 </p>
-                <p className="ant-upload-text px-5">Upload the document with your list of questions.</p>
-                <p className="ant-upload-hint px-5">File size no more than 10MB</p>
+                <p hidden={!payload?.question_source} className="ant-upload-text px-5">Document Uploaded.</p>
+                <p hidden={payload?.question_source} className="ant-upload-text px-5">Upload the document containing your source material.</p>
+                <p hidden={payload?.question_source} className="ant-upload-hint px-5">File size no more than 10MB</p>
+              </Dragger>
+            </Form.Item>
+            <Form.Item label="Upload List of Questions">
+              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "user_content"})})}>
+                <p className="ant-upload-drag-icon">
+                  <LuUploadCloud className="!text-2xl mx-auto" />
+                </p>
+                <p hidden={!payload?.user_content} className="ant-upload-text px-5">Document Uploaded.</p>
+                <p hidden={payload?.user_content} className="ant-upload-text px-5">Upload the document with your list of questions.</p>
+                <p hidden={payload?.user_content} className="ant-upload-hint px-5">File size no more than 10MB</p>
               </Dragger>
             </Form.Item>
             <Button loading={actionLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
