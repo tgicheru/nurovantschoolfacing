@@ -110,7 +110,7 @@ export function useAWSUpload(
   return useMutation(
     async (payload: any) => {
       const uploadParams = {
-        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
+        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id || "user"}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
         Bucket: buckets?.[(type || "content") as keyof typeof buckets],
         Body: payload as unknown as Body,
         ContentType: payload?.type,
