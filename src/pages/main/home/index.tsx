@@ -142,7 +142,7 @@ function Home() {
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       // Bucket: "nurovant-prod-content/source_content",
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -240,7 +240,7 @@ function Home() {
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
             // Bucket: "nurovant-prod-content/source_content",
-            Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+            Bucket: "nurovantfrontend",
 
             Key: `${new Date()
               .toLocaleTimeString([], { hour12: false })
@@ -1252,7 +1252,7 @@ function Home() {
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
       // Bucket: "nurovant-prod-content/source_content",
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
