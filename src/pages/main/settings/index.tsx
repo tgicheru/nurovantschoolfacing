@@ -37,7 +37,9 @@ import SubscribeContent from "./contents/subscribe";
 
 function SettingsPage() {
   const { user } = useRecoilValue(authAtom);
-  const actPlan = (`${user?.info?.current_tier}_${user?.info?.subscription_duration || user?.info?.duration}`);
+  const actPlan = `${user?.info?.current_tier}_${
+    user?.info?.subscription_duration || user?.info?.duration
+  }`;
   const [subPlan, setSubPlan] = useState(actPlan || "");
   const [actSub, setActSub] = useState("Monthly");
   const subTier = subPlan?.split("_")?.[0];
@@ -60,7 +62,7 @@ function SettingsPage() {
   const onOpen = () => setIsOpen(true);
   const [form] = Form.useForm();
 
-  const isNoEditMail = ["google", "apple"]?.includes(user?.info?.sign_up_type)
+  const isNoEditMail = ["google", "apple"]?.includes(user?.info?.sign_up_type);
 
   const { data: getSubsData, isFetching: getSubsLoad } = useGetSubs();
 
@@ -110,131 +112,143 @@ function SettingsPage() {
   };
 
   const details = useMemo(
-    () => [
-      {
-        key: <p className="text-base font-medium text-[#646462]">Name</p>,
-        data: isEdit ? (
-          <Form.Item name="name" className="!m-0 !p-0">
-            <Input placeholder="Enter your full name" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.name || "NIL"
-        ),
-      },
-      {
-        key: <p className="text-base font-medium text-[#646462]">Email</p>,
-        data: (isEdit && !isNoEditMail) ? (
-          <Form.Item name="email" className="!m-0 !p-0">
-            <Input placeholder="Enter your email" type="email" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.email || "NIL"
-        ),
-      },
-      {
-        key: <p className="text-base font-medium text-[#646462]">Phone</p>,
-        data: isEdit ? (
-          <Form.Item name="mobile_number" className="!m-0 !p-0">
-            <Input placeholder="Enter your mobile number" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.mobile_number || "NIL"
-        ),
-      },
-      {
-        key: <p className="text-base font-medium text-[#646462]">Country</p>,
-        data: isEdit ? (
-          <Form.Item name="country" className="!m-0 !p-0">
-            <Input placeholder="Enter your country" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.country || "NIL"
-        ),
-      },
-      {
-        key: <p className="text-base font-medium text-[#646462]">Institution</p>,
-        data: isEdit ? (
-          <Form.Item name="institution" className="!m-0 !p-0">
-            <Input placeholder="Enter your institution" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.institution || "NIL"
-        ),
-      },
-      {
-        key: <p className="text-base font-medium text-[#646462]">Course Taught</p>,
-        data: isEdit ? (
-          <Form.Item name="course_taught" className="!m-0 !p-0">
-            <Input placeholder="Enter your course taught" size="large" />
-          </Form.Item>
-        ) : (
-          user?.info?.course_taught || "NIL"
-        ),
-      },
-      {
-        notActive: isNoEditMail,
-        key: <p className="text-base font-medium text-[#646462]">Password</p>,
-        data: (
-          <Button
-            onClick={onPWOpen}
-            className="text-primary text-sm font-medium !p-0 !m-0 !bg-transparent"
-            type="text"
-          >
-            Change
-          </Button>
-        ),
-      },
-      {
-        key: (
-          <p className="text-base font-medium text-[#646462]">Subscription</p>
-        ),
-        data: (
-          <div className="flex items-center">
-            <p className="capitalize">{user?.info?.current_tier}</p>
+    () =>
+      [
+        {
+          key: <p className="text-base font-medium text-[#646462]">Name</p>,
+          data: isEdit ? (
+            <Form.Item name="name" className="!m-0 !p-0">
+              <Input placeholder="Enter your full name" size="large" />
+            </Form.Item>
+          ) : (
+            user?.info?.name || "NIL"
+          ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">Email</p>,
+          data:
+            isEdit && !isNoEditMail ? (
+              <Form.Item name="email" className="!m-0 !p-0">
+                <Input
+                  placeholder="Enter your email"
+                  type="email"
+                  size="large"
+                />
+              </Form.Item>
+            ) : (
+              user?.info?.email || "NIL"
+            ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">Phone</p>,
+          data: isEdit ? (
+            <Form.Item name="mobile_number" className="!m-0 !p-0">
+              <Input placeholder="Enter your mobile number" size="large" />
+            </Form.Item>
+          ) : (
+            user?.info?.mobile_number || "NIL"
+          ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">Country</p>,
+          data: isEdit ? (
+            <Form.Item name="country" className="!m-0 !p-0">
+              <Input placeholder="Enter your country" size="large" />
+            </Form.Item>
+          ) : (
+            user?.info?.country || "NIL"
+          ),
+        },
+        {
+          key: (
+            <p className="text-base font-medium text-[#646462]">Institution</p>
+          ),
+          data: isEdit ? (
+            <Form.Item name="institution" className="!m-0 !p-0">
+              <Input placeholder="Enter your institution" size="large" />
+            </Form.Item>
+          ) : (
+            user?.info?.institution || "NIL"
+          ),
+        },
+        {
+          key: (
+            <p className="text-base font-medium text-[#646462]">
+              Course Taught
+            </p>
+          ),
+          data: isEdit ? (
+            <Form.Item name="course_taught" className="!m-0 !p-0">
+              <Input placeholder="Enter your course taught" size="large" />
+            </Form.Item>
+          ) : (
+            user?.info?.course_taught || "NIL"
+          ),
+        },
+        {
+          notActive: isNoEditMail,
+          key: <p className="text-base font-medium text-[#646462]">Password</p>,
+          data: (
             <Button
-              loading={getSubsLoad}
-              onClick={onSubOpen}
-              className="text-primary text-sm font-medium !bg-transparent"
+              onClick={onPWOpen}
+              className="text-primary text-sm font-medium !p-0 !m-0 !bg-transparent"
               type="text"
             >
-              View Plans
+              Change
             </Button>
-          </div>
-        ),
-      },
-      {
-        data: isEdit ? (
-          <div className="flex items-center gap-5">
+          ),
+        },
+        {
+          key: (
+            <p className="text-base font-medium text-[#646462]">Subscription</p>
+          ),
+          data: (
+            <div className="flex items-center">
+              <p className="capitalize">{user?.info?.current_tier}</p>
+              <Button
+                loading={getSubsLoad}
+                onClick={onSubOpen}
+                className="text-primary text-sm font-medium !bg-transparent"
+                type="text"
+              >
+                View Plans
+              </Button>
+            </div>
+          ),
+        },
+        {
+          data: isEdit ? (
+            <div className="flex items-center gap-5">
+              <Button
+                onClick={onEdClose}
+                className="text-primary"
+                type="default"
+                icon={<AiFillCloseCircle />}
+              >
+                Close
+              </Button>
+              <Button
+                htmlType="submit"
+                loading={setProfileLoad}
+                className="bg-primary"
+                type="primary"
+                icon={<FiSave />}
+              >
+                Save update
+              </Button>
+            </div>
+          ) : (
             <Button
-              onClick={onEdClose}
+              onClick={onEdOpen}
               className="text-primary"
               type="default"
-              icon={<AiFillCloseCircle />}
+              icon={<MdEdit />}
             >
-              Close
+              Edit details
             </Button>
-            <Button
-              htmlType="submit"
-              loading={setProfileLoad}
-              className="bg-primary"
-              type="primary"
-              icon={<FiSave />}
-            >
-              Save update
-            </Button>
-          </div>
-        ) : (
-          <Button
-            onClick={onEdOpen}
-            className="text-primary"
-            type="default"
-            icon={<MdEdit />}
-          >
-            Edit details
-          </Button>
-        ),
-      },
-    ].filter(d => !d?.notActive),
+          ),
+        },
+      ].filter((d) => !d?.notActive),
     [user, isEdit, getSubsLoad, setProfileLoad, isNoEditMail]
   );
 
@@ -298,7 +312,7 @@ function SettingsPage() {
     onPayClose();
   };
 
-  const subscriptionLoad = (postPayLoad || postSubLoad || postVerifySubLoad);
+  const subscriptionLoad = postPayLoad || postSubLoad || postVerifySubLoad;
   return (
     <div className="w-full h-screen md:py-5 px-5 md:px-10 space-y-5 bg-white">
       <div className="flex justify-end md:justify-between items-center">
@@ -319,7 +333,7 @@ function SettingsPage() {
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <Avatar size={70} src={user?.info?.profile_img}>
-            {extractAvatar(user?.info?.name || "USER")}
+            {extractAvatar(user?.info?.name || user?.info?.email || "USER")}
           </Avatar>
           <Upload {...uploadProps}>
             <Button loading={setProfileLoad}>Change photo</Button>
@@ -343,7 +357,7 @@ function SettingsPage() {
         <div>
           <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
             <PiCoins />
-            <span>{user?.info?.current_credit}</span>
+            <span>{user?.current_credit}</span>
           </p>
           <p className="text-sm font-medium text-[#838382]">Total credits</p>
         </div>

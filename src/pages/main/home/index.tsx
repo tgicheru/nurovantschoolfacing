@@ -1277,6 +1277,7 @@ function Home() {
   };
 
   if (SectionContent) return SectionContent;
+  console.log(user);
   return (
     <Spin spinning={isFetchLoad}>
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
@@ -1550,7 +1551,7 @@ function Home() {
               </p>
               <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
                 <PiCoins />
-                <span>{user?.info?.current_credit}</span>
+                <span>{user?.current_credit}</span>
               </p>
             </div>
           </div>
