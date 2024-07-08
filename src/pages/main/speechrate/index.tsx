@@ -205,7 +205,7 @@ function SpeechRatePage() {
         className={`md:mx-10 py-6 my-6 px-8 rounded-[8px] flex items-center justify-center flex-col relative bg-white h-screen md:h-fit font-montserrat `}
       >
         {!isSelected ? (
-          <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
+          <h1 className="text-[18px] leading-[27px] font-semibold md:absolute top-6 left-8">
             Elevate Your Teaching with Effortless Speech Rating
           </h1>
         ) : (

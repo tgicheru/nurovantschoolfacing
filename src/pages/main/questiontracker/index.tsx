@@ -213,10 +213,10 @@ function QuestionTrackerPage() {
         </Button>
       </div>
       <div
-        className={`md:mx-10 py-6 my-6 px-8 rounded-[8px] flex items-center justify-center flex-col relative bg-white h-screen md:h-fit font-montserrat `}
+        className={`md:mx-10 py-12 md:py-6 my-6 px-4 md:px-8 rounded-[8px] flex items-center justify-center flex-col relative bg-white h-screen md:h-fit font-montserrat  overflow-y-scroll`}
       >
         {!isSelected ? (
-          <h1 className="text-[18px] leading-[27px] font-semibold absolute top-6 left-8">
+          <h1 className="text-[18px] leading-[27px] font-semibold md:absolute top-6 left-8">
             Elevate Your Teaching with Effortless Question Tracking
           </h1>
         ) : (
@@ -263,12 +263,12 @@ function QuestionTrackerPage() {
         </div>
 
         <div
-          className={`pb-[50px] md:py-[50px] w-full h-full ${
+          className={`pb-[50px] pt-4 md:py-[50px] w-full h-full ${
             getQuestionTrackerData?.data?.length ? "" : "hidden"
           }`}
         >
           {isSelected ? (
-            <div className="flex flex-col w-full gap-4 max-w-[849px]">
+            <div className="flex flex-col w-full gap-4 max-w-[849px] pb-6">
               {selected?.questions?.map((question: any, i: number) => (
                 <div className="w-full rounded-[8px] border-[1.5px] border-[#E6E9ED] flex flex-row items-start justify-between p-4">
                   <div className="flex flex-row gap-1 max-w-[70%]">
@@ -290,7 +290,6 @@ function QuestionTrackerPage() {
                         </h3>
                       )}
                     </div>
-                    <div></div>
                   </div>
 
                   <div
