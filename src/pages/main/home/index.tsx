@@ -2,13 +2,16 @@
 import moment from "moment";
 import React, { useMemo, useState, useEffect } from "react";
 import {
+  Avatar,
   Button,
   Form,
   Input,
+  Menu,
   Modal,
   Spin,
   Tabs,
   Tag,
+  Tooltip,
   Upload,
   UploadProps,
   message,
@@ -16,10 +19,10 @@ import {
 import { FaPlus } from "react-icons/fa6";
 import { GoTrash } from "react-icons/go";
 import { TbCards } from "react-icons/tb";
-import { PiRepeatFill } from "react-icons/pi";
+import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import VideoRecordIcon from "../../../assets/icons/videorecordicon";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
@@ -33,7 +36,6 @@ import FlashcardSection from "./sections/flashcard";
 import modalAtom from "../../../atoms/modal/modal.atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
-import { awsConfig } from "../../../aws/awsConfig";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
 import {
@@ -66,11 +68,16 @@ import {
 import DiscussSection from "./sections/discuss";
 import { ImSpinner } from "react-icons/im";
 import { ReactMic } from "react-mic";
+import Logo from "../../../assets/newLogo.svg";
+import { extractAvatar } from "../../../constants";
+import { FaChevronDown } from "react-icons/fa6";
 
 function Home() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [param, setParam] = useSearchParams();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(param.get("tab") || "lecture");
   const [isGenerate, setIsGenerate] = useState(false);
   const [upldFile, setUpldFile] = useState<any>({});
@@ -127,14 +134,14 @@ function Home() {
     console.log("blob", blob);
 
     AWS.config.update({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: "nurovant-prod-content/source_content",
+      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -224,14 +231,14 @@ function Home() {
           console.log(blob, blob.size);
           // Configure AWS with your credentials
           AWS.config.update({
-            accessKeyId: awsConfig.accessKeyId,
-            secretAccessKey: awsConfig.secretAccessKey,
-            region: awsConfig.region,
+            accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+            secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+            region: process.env["REACT_APP_AWS_REGION"],
           });
 
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
-            Bucket: "nurovant-prod-content/source_content",
+            Bucket: process.env["REACT_APP_S3_BUCKET"]!,
             Key: `${new Date()
               .toLocaleTimeString([], { hour12: false })
               .split(":")
@@ -491,42 +498,50 @@ function Home() {
       dataIndex: "",
       render: (d) => (
         <div className="flex items-center gap-3">
-          <Button
-            onClick={() => handleAction("quiz", d?._id)}
-            className="text-primary"
-            icon={<BiTestTube />}
-            disabled={d?.quiz}
-            type="text"
-          >
-            Quiz
-          </Button>
-          <Button
-            onClick={() => handleAction("flashcards", d?._id)}
-            className="text-primary"
-            disabled={d?.flashcards}
-            icon={<TbCards />}
-            type="text"
-          >
-            Flashcards
-          </Button>
-          <Button
-            onClick={() => handleAction("recaps", d?._id)}
-            className="text-primary"
-            icon={<PiRepeatFill />}
-            disabled={d?.recaps}
-            type="text"
-          >
-            Recaps
-          </Button>
-          <Button
-            onClick={() => handleAction("discussion", d?._id)}
-            className="text-primary"
-            icon={<AiOutlineMessage />}
-            disabled={d?.discussions}
-            type="text"
-          >
-            Discuss
-          </Button>
+          <Tooltip title={d?.quiz && "Quiz already generated"}>
+            <Button
+              onClick={() => handleAction("quiz", d?._id)}
+              className="text-primary"
+              icon={<BiTestTube />}
+              disabled={d?.quiz}
+              type="text"
+            >
+              Quiz
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.flashcards && "Flashcards already generated"}>
+            <Button
+              onClick={() => handleAction("flashcards", d?._id)}
+              className="text-primary"
+              disabled={d?.flashcards}
+              icon={<TbCards />}
+              type="text"
+            >
+              Flashcards
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.recaps && "Recaps already generated"}>
+            <Button
+              onClick={() => handleAction("recaps", d?._id)}
+              className="text-primary"
+              icon={<PiRepeatFill />}
+              disabled={d?.recaps}
+              type="text"
+            >
+              Recaps
+            </Button>
+          </Tooltip>
+          <Tooltip title={d?.discussions && "Discussion already generated"}>
+            <Button
+              onClick={() => handleAction("discussion", d?._id)}
+              className="text-primary"
+              icon={<AiOutlineMessage />}
+              disabled={d?.discussions}
+              type="text"
+            >
+              Discuss
+            </Button>
+          </Tooltip>
         </div>
       ),
     },
@@ -925,17 +940,19 @@ function Home() {
       upload_type: "upload",
       file_name: upldData?.Key,
       file_url: upldData?.Location,
-    }
-    if (isEqual(paramId, "record")) return postLectAction({
-      ...payload,
-      file_type: "audio",
-      upload_type: "record",
-    })
-    if (upldFile?.file?.type?.includes("pdf")) return postLectAction({
-      ...payload,
-      file_type: "pdf",
-      // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
-    })
+    };
+    if (isEqual(paramId, "record"))
+      return postLectAction({
+        ...payload,
+        file_type: "audio",
+        upload_type: "record",
+      });
+    if (upldFile?.file?.type?.includes("pdf"))
+      return postLectAction({
+        ...payload,
+        file_type: "pdf",
+        // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
+      });
     postLectAction({
       ...payload,
       file_type: "audio",
@@ -1216,22 +1233,22 @@ function Home() {
 
     // Configure AWS with your credentials
     AWS.config.update({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Create an S3 service object
     // Initialize AWS S3
     const s3 = new AWS.S3({
-      accessKeyId: awsConfig.accessKeyId,
-      secretAccessKey: awsConfig.secretAccessKey,
-      region: awsConfig.region,
+      accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
+      secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
+      region: process.env["REACT_APP_AWS_REGION"],
     });
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: "nurovant-prod-content/source_content",
+      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -1256,18 +1273,11 @@ function Home() {
   };
 
   if (SectionContent) return SectionContent;
+  console.log(user);
   return (
     <Spin spinning={isFetchLoad}>
-      <div className="w-full h-full md:py-5 space-y-5">
-        <div className="flex justify-end md:justify-between items-center px-5 md:px-10">
-          <div className="hidden md:block">
-            <p className="text-3xl font-bold text-secondary">
-              Hello {user?.info?.name}
-            </p>
-            <p className="text-base font-normal text-gray">
-              Welcome to your dashboard
-            </p>
-          </div>
+      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
+        <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             onClick={onOpen}
             className="bg-primary !rounded-2xl"
@@ -1281,9 +1291,9 @@ function Home() {
 
         <div
           hidden={!getLectData?.lectures?.length}
-          className="w-full space-y-5"
+          className="w-full space-y-5 px-4 md:px-10 bg-white"
         >
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10 ">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-3">
             <Tabs
               activeKey={activeTab}
               defaultActiveKey={activeTab}
@@ -1307,7 +1317,7 @@ function Home() {
         </div>
 
         <div hidden={Boolean(getLectData?.lectures?.length)}>
-          <div className="w-full h-full flex flex-col justify-center items-center">
+          <div className="h-full flex flex-col justify-center items-center bg-white rounded-[16px] pb-7 mx-4 md:mx-8 ">
             <VideoRecordIcon bg="#4970FC" color="#fff" />
             <p className="text-[40px] font-semibold text-secondary mb-5">
               Lectures
@@ -1389,6 +1399,9 @@ function Home() {
             >
               Create Lecture
             </Button>
+            <p className="text-sm font-medium text-[#838382]">
+              Note: Each generation costs 2 credits
+            </p>
           </div>
         </Modal>
 
@@ -1528,6 +1541,15 @@ function Home() {
             >
               Generate
             </Button>
+            <div className="flex justify-center items-center gap-2">
+              <p className="text-sm font-medium text-[#838382]">
+                Available Credit
+              </p>
+              <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
+                <PiCoins />
+                <span>{user?.current_credit}</span>
+              </p>
+            </div>
           </div>
         </Modal>
 

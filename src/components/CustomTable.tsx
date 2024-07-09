@@ -9,6 +9,8 @@ type Props = {
   data?: any,
   column?: any,
   rowKey?: string,
+  hidden?: boolean,
+  noHeader?: boolean,
   loading?: boolean,
   position?: string,
   pagination?: any,
@@ -20,8 +22,10 @@ function CustomTable({
   rowKey,
   loading,
   position,
+  noHeader,
   pagination,
   rowSelection,
+  hidden=false,
 }: Props) {
   const altColumn: ColumnsType<any> = [
     {
@@ -80,11 +84,12 @@ function CustomTable({
     {},
   ]
   return (
-    <div className='w-full whitespace-nowrap overflow-x-auto'>
+    <div className='w-full whitespace-nowrap overflow-x-auto' hidden={hidden}>
       <Table
         key={rowKey}
         rowKey={rowKey}
         loading={loading}
+        showHeader={!noHeader}
         rowSelection={rowSelection}
         dataSource={data || altData}
         columns={column || altColumn}

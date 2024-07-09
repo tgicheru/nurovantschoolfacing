@@ -2,13 +2,14 @@ import { lazy } from "react";
 
 // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Authentication = lazy(() => import("../pages/auth"));
-const EmailLogin = lazy(() => import("../pages/auth/emailLogin"));
 const EmailRegister = lazy(() => import("../pages/auth/emailRegister"));
 const EmailPassword = lazy(() => import("../pages/auth/emailPassword"));
 const PhoneRegister = lazy(() => import("../pages/auth/phoneRegister"));
+const Login = lazy(() => import("../pages/auth/login"));
 const Verify = lazy(() => import("../pages/auth/verify"));
 const Logout = lazy(() => import("../pages/auth/logout"));
-const InfoPage = lazy(() => import("../pages/main/info"));
+const Record = lazy(() => import("../pages/auth/record"));
+const AuthInfo = lazy(() => import("../pages/auth/info"));
 
 // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const UnderMaintenance = lazy(() => import("../pages/public/underMaintenance"));
@@ -18,6 +19,12 @@ const TermsAndCondition = lazy(
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Home = lazy(() => import("../pages/main/home"));
+const Settings = lazy(() => import("../pages/main/settings"));
+const ProofReader = lazy(() => import("../pages/main/proofreader"));
+const SpeechRate = lazy(() => import("../pages/main/speechrate"));
+const QuestionBank = lazy(() => import("../pages/main/questionbank"));
+const GPTZero = lazy(() => import("../pages/main/gptzero"));
+const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -27,9 +34,34 @@ export const routes = [
     component: <Home />,
   },
   {
-    path: "/info",
-    label: "Info page",
-    component: <InfoPage />,
+    path: "/settings",
+    label: "Settings",
+    component: <Settings />,
+  },
+  {
+    path: "/proofreader",
+    label: "Proof Reader",
+    component: <ProofReader />,
+  },
+  {
+    path: "/speech-rate",
+    label: "Speech Rate",
+    component: <SpeechRate />,
+  },
+  {
+    path: "/question-bank",
+    label: "Question Bank",
+    component: <QuestionBank />,
+  },
+  {
+    path: "/gpt-zero",
+    label: "GPT Zero",
+    component: <GPTZero />,
+  },
+  {
+    path: "/question-tracker",
+    label: "Question Tracker",
+    component: <QuestionTracker />,
   },
 
   // public pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -53,7 +85,7 @@ export const routes = [
   {
     path: "/auth/login",
     label: "Login",
-    component: <EmailLogin />,
+    component: <Login />,
   },
   {
     path: "/auth/email-register",
@@ -79,5 +111,15 @@ export const routes = [
     path: "/auth/phone",
     label: "Phone Register",
     component: <PhoneRegister />,
+  },
+  {
+    path: "/auth/record",
+    label: "Record Page",
+    component: <Record />,
+  },
+  {
+    path: "/auth/info",
+    label: "Info Page",
+    component: <AuthInfo />,
   },
 ];

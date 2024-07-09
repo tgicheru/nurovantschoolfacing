@@ -1,152 +1,46 @@
-import AppleIcon from "../../assets/Apple.svg";
-import GoogleIcon from "../../assets/Google.svg";
-import { CustomButton } from "../../components";
-import { Link } from "react-router-dom";
-import { auth, provider, appleProvider } from "../../firebaseAuth/config";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  OAuthProvider,
-} from "firebase/auth";
-import { useGoogleRegister } from "../../hooks/auth/authentications";
+import { useState } from "react";
 import AuthContainer from "../../components/AuthContainer";
+import { onboardingAtom } from "../../atoms/other/other.atom";
+import { useSearchParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import authAtom from "../../atoms/auth/auth.atom";
+import { isEqual } from "../../context/utils";
+import DetailsSection from "./sections/details";
+import GradeSection from "./sections/grade";
+import SubjectSection from "./sections/subject";
+import InformationSection from "./sections/info";
+import RecordingSection from "./sections/recording";
 
 function AuthPage() {
-  const { mutate } = useGoogleRegister();
+  const [param, setParam] = useSearchParams()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [payload, setPayload] = useRecoilState(onboardingAtom)
+  const keys = ["details", "grade", "subject", "info", "recording"]
+  const [active, setActive] = useState(param.get("section") || "details")
 
-  const handleGoogleLogin = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        mutate({
-          email: user.email,
-          name: user.displayName,
-          sign_up_type: "google",
-        } as unknown as void);
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
-  };
+  const handleSection = (data: any) => {
+    const nextIndex = (activeIndex + 1)
+    const nextSection = keys?.find((d, idx) => isEqual(idx, nextIndex))
+    setPayload({...payload, ...(data || {})})
+    setParam({section: nextSection || ""})
+    setActive(nextSection || "")
+    setActiveIndex(nextIndex)
+  }
 
-  const handleAppleLogin = () => {
-    signInWithPopup(auth, appleProvider)
-      .then((result) => {
-        // The signed-in user info.
-        const user = result.user;
-        // console.log(user);
+  const sections = [
+    {key: "details", component: <DetailsSection payload={payload} handleNext={handleSection} />},
+    {key: "grade", component: <GradeSection payload={payload} handleNext={handleSection} />},
+    {key: "subject", component: <SubjectSection payload={payload} handleNext={handleSection} />},
+    {key: "info", component: <InformationSection payload={payload} handleNext={handleSection} />},
+    {key: "recording", component: <RecordingSection />, noBg: true},
+  ]
 
-        // Apple credential
-        const credential = OAuthProvider.credentialFromResult(result);
-        console.log(credential);
-        const accessToken = credential?.accessToken;
-        const idToken = credential?.idToken;
-
-        // console.log(user);
-        mutate({
-          email: user.email,
-          name: user.displayName,
-          sign_up_type: "apple",
-        } as unknown as void);
-
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The credential that was used.
-        const credential = OAuthProvider.credentialFromError(error);
-        console.log(error);
-
-        // ...
-      });
-  };
-
+  const CurrentSection = sections?.find(({key}) => isEqual(key, active))
+  const CurrentSectionComponent = CurrentSection?.component
+  const isNoBg = CurrentSection?.noBg
   return (
     <AuthContainer>
-      <div className="max-w-[420px] w-full flex items-center justify-center flex-col gap-[23px] h-screen">
-        <div className="flex w-full items-center justify-center gap-[14px] flex-col">
-          <div style={{ width: "124px" }}>
-            {/* <LogoIcon /> */}
-            <img
-              src="https://res.cloudinary.com/depqqbyyn/image/upload/v1689696632/Favicon_Transparent_yo3v6b.ico"
-              alt="nurovant-logo"
-            />
-          </div>
-          <h2 className="text-dark text-[30px] leading-[36px] lg:text-[36px] lg:leading-[48px] tracking-[-0.72px] font-bold text-center">
-            Capturing live lectures with AI
-          </h2>
-        </div>
-
-        {/*Buttons*/}
-        <div className="w-full flex items-center justify-center flex-col gap-[11px]">
-          <Link to={"/auth/email-register"}>
-            <CustomButton text="Get Started" onClick={() => {}} />
-          </Link>
-          <Link to={"/auth/login"}>
-            <CustomButton
-              text="I Have An Account"
-              onClick={() => {}}
-              variant="outline"
-            />
-          </Link>
-        </div>
-
-        <div className="flex w-full items-center justify-center gap-2">
-          <div
-            className="w-[105px] h-[1px]"
-            style={{
-              background:
-                "linear-gradient(180deg, #E0E0E0 2.98%, rgba(224, 224, 224, 0.00) 87.42%)",
-            }}
-          ></div>
-          <span className="text-[14px] leading-[20px] text-[#1b1b1b]">
-            Or sign up with
-          </span>
-
-          <div
-            className="w-[105px] h-[1px]"
-            style={{
-              background:
-                "linear-gradient(90deg, #E0E0E0 2.98%, rgba(224, 224, 224, 0.00) 87.42%)",
-            }}
-          ></div>
-        </div>
-
-        {/* Other login options */}
-        <div className="flex w-full items-center justify-center flex-row gap-[32px]">
-          <img
-            src={AppleIcon}
-            alt="apple-icon"
-            className="cursor-pointer"
-            onClick={() => handleAppleLogin()}
-          />
-          <img
-            src={GoogleIcon}
-            alt="google-icon"
-            className="cursor-pointer"
-            onClick={() => handleGoogleLogin()}
-          />
-        </div>
+      <div className={`w-full md:w-[90%] rounded-lg p-5 md:p-10 ${!isNoBg && "bg-white"}`}>
+        {CurrentSectionComponent}
       </div>
     </AuthContainer>
   );

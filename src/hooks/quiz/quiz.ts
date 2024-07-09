@@ -1,15 +1,21 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
-import { deleteRequest, getRequest, postRequest } from "../../context/requestTypes";
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+} from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-
 export function useGetAllQuiz(params?: any) {
-  const url = "/api/quiz/";
+  const url = "/api_backend/quiz/";
   const axios = useContext(AxiosContext);
-  return useQuery(["get:all_quiz"], () => getRequest(axios as unknown as AxiosInstance, url, params), {
+  return useQuery(
+    ["get:all_quiz"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -24,9 +30,12 @@ export function useGetAllQuiz(params?: any) {
 }
 
 export function useGetQuiz(id: string) {
-  const url = "/api/quiz/";
+  const url = "/api_backend/quiz/";
   const axios = useContext(AxiosContext);
-  return useQuery(["get:single_quiz"], () => getRequest(axios as unknown as AxiosInstance, url+id), {
+  return useQuery(
+    ["get:single_quiz"],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -41,9 +50,12 @@ export function useGetQuiz(id: string) {
 }
 
 export function useGetQuizParticipants(id: string) {
-  const url = "/api/quiz/get_all_results/";
+  const url = "/api_backend/quiz/get_all_results/";
   const axios = useContext(AxiosContext);
-  return useQuery(["get:quiz_participants"], () => getRequest(axios as unknown as AxiosInstance, url+id), {
+  return useQuery(
+    ["get:quiz_participants"],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -58,9 +70,12 @@ export function useGetQuizParticipants(id: string) {
 }
 
 export function usePostQuiz(successAction?: any) {
-  const url = "/api/quiz/create";
+  const url = "/api_backend/quiz/create";
   const axios = useContext(AxiosContext);
-  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload), {
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -82,9 +97,12 @@ export function usePostQuiz(successAction?: any) {
 }
 
 export function usePostQuizAnswer(successAction?: any) {
-  const url = "/api/quiz/submit_quiz";
+  const url = "/api_backend/quiz/submit_quiz";
   const axios = useContext(AxiosContext);
-  return useMutation(async (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload), {
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -106,9 +124,12 @@ export function usePostQuizAnswer(successAction?: any) {
 }
 
 export function useDeleteQuiz(successAction?: any, errorAction?: any) {
-  const url = "/api/quiz/";
+  const url = "/api_backend/quiz/";
   const axios = useContext(AxiosContext);
-  return useMutation(async (id: any) => deleteRequest(axios as unknown as AxiosInstance, url+id), {
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
       onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
@@ -125,7 +146,7 @@ export function useDeleteQuiz(successAction?: any, errorAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        })
+        });
       },
     }
   );
