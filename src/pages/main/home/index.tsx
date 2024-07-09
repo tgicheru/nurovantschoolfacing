@@ -141,7 +141,8 @@ function Home() {
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -238,7 +239,8 @@ function Home() {
 
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
-            Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+            // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+            Bucket: "nurovantfrontend",
             Key: `${new Date()
               .toLocaleTimeString([], { hour12: false })
               .split(":")
@@ -1248,7 +1250,8 @@ function Home() {
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
