@@ -1262,7 +1262,12 @@ function Home() {
       (err: Error | null, data: AWS.S3.ManagedUpload.SendData | undefined) => {
         setLoading(false);
         console.log(data);
-        if (err) return message.error("Error uploading file");
+        if (err) {
+          console.log("error", err);
+          setLoading(false);
+          onLoadClose();
+          return message.error("Error uploading file");
+        }
         handleAction("lecture", "id");
         setUpldData(data);
         onLoadClose();
@@ -1273,7 +1278,7 @@ function Home() {
   };
 
   if (SectionContent) return SectionContent;
-  console.log(user);
+  // console.log(user);
   return (
     <Spin spinning={isFetchLoad}>
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
