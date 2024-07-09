@@ -13,6 +13,7 @@ import { useSetProfile } from '../../hooks/profile/profile'
 import { getBase64 } from '../../context/utils'
 import Dragger from 'antd/es/upload/Dragger'
 import { LuUploadCloud } from 'react-icons/lu'
+import { ImSpinner } from 'react-icons/im'
 
 
 function RecordPage() {
@@ -83,7 +84,7 @@ function RecordPage() {
       <p className='text-2xl font-bold text-[#0F1632]'>"The quick brown fox jumps over the lazy dog."</p>
       <Dragger {...props}>
         <p className="ant-upload-drag-icon">
-          <LuUploadCloud className="!text-2xl mx-auto" />
+          {isLoading ? (<ImSpinner className="!text-2xl mx-auto animate-spin" />) : (<LuUploadCloud className="!text-2xl mx-auto" />)}
         </p>
         <p hidden={!payload?.voice_url} className="ant-upload-text px-5">Document Uploaded.</p>
         <p hidden={payload?.voice_url} className="ant-upload-text px-5"> Click to upload audio document.</p>
