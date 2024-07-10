@@ -39,7 +39,7 @@ const FlashcardSection = () => {
 
   return (
     <Spin spinning={getFlashcardLoad}>
-      <div className="w-full min-h-[95vh] flex flex-col justify-between items-center md:py-5 space-y-5">
+      <div className="w-full md:min-h-[95vh] flex flex-col justify-between items-center md:py-5 space-y-5 bg-white">
         <div className="w-full flex items-center px-5 md:px-10 gap-5">
           <MdCancel className="cursor-pointer text-3xl" onClick={goBack} />
           <div className="w-full pb-1 flex flex-nowrap items-center gap-3 overflow-x-auto">
@@ -67,7 +67,7 @@ const FlashcardSection = () => {
               {/* <span className="px-4 py-2 border border-[#F2F2FA] rounded-3xl">
                 {activeQuest + 1}/{getFlashcardData?.data?.flashCards?.length}
               </span> */}
-              <p className="text-dark text-[32px] leading-[40px] text-center w-full font-bold">
+              <p className="text-dark text-[24px] md:text-[28px] leading-[40px] text-center w-full font-bold">
                 {showMeaning
                   ? CurrentFlashcard?.meaning
                   : CurrentFlashcard?.word}
