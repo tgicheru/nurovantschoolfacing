@@ -951,12 +951,20 @@ function Home() {
         file_type: "audio",
         upload_type: "record",
       });
-    if (upldFile?.file?.type?.includes("pdf"))
+    if (
+      upldFile?.file?.type === "application/pdf" ||
+      upldFile?.file?.type === "text/plain" ||
+      upldFile?.file?.type ===
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+      upldFile?.file?.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
       return postLectAction({
         ...payload,
-        file_type: "pdf",
+        file_type: "doc",
         // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
       });
+    }
     postLectAction({
       ...payload,
       file_type: "audio",
