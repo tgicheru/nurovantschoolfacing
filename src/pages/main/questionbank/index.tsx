@@ -9,6 +9,7 @@ import { useAWSUpload } from "../../../hooks/otherhooks";
 import { useSearchParams } from "react-router-dom";
 import DetailsSection from "./sections/details";
 import { handleObj } from "../../../context/utils";
+import { ImSpinner } from "react-icons/im";
 
 function QuestionBankPage() {
   const [params, setParams] = useSearchParams()
@@ -57,9 +58,11 @@ function QuestionBankPage() {
   })
 
   const {
-    mutate: postUplAction,
     isLoading: postUplLoad,
-  } = useAWSUpload((res: any) => setPayload({...payload, [payload?.key]: res?.Location, key: ""}))
+    mutateAsync: postUplAction,
+  } = useAWSUpload()
+
+  const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
   const {
     mutate: postQBankAction,
@@ -114,9 +117,9 @@ function QuestionBankPage() {
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "question_source"})})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "question_source")})}>
                 <p className="ant-upload-drag-icon">
-                  <LuUploadCloud className="!text-2xl mx-auto" />
+                  {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
                 <p hidden={!payload?.question_source} className="ant-upload-text px-5">Document Uploaded.</p>
                 <p hidden={payload?.question_source} className="ant-upload-text px-5">Upload the document containing your source material.</p>
@@ -124,9 +127,9 @@ function QuestionBankPage() {
               </Dragger>
             </Form.Item>
             <Form.Item label="Upload List of Questions">
-              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "user_content"})})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "user_content")})}>
                 <p className="ant-upload-drag-icon">
-                  <LuUploadCloud className="!text-2xl mx-auto" />
+                  {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
                 <p hidden={!payload?.user_content} className="ant-upload-text px-5">Document Uploaded.</p>
                 <p hidden={payload?.user_content} className="ant-upload-text px-5">Upload the document with your list of questions.</p>
