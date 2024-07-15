@@ -20,6 +20,7 @@ function QuestionBankPage() {
   const [isOpen, setIsOpen] = useState(false)
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
+  const [form] = Form.useForm()
   const id = params.get("id")
 
 
@@ -65,11 +66,15 @@ function QuestionBankPage() {
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
   const {
-    mutate: postQBankAction,
+    mutateAsync: postQBankAction,
     isLoading: postQBankLoad,
   } = usePostQuestionBank(getQBankFetch)
 
-  const handleSubmit = (data: any) => postQBankAction(handleObj({...data, ...payload}))
+  const handleSubmit = async (data: any) => await postQBankAction(handleObj({...data, ...payload})).then(() => {
+    form.resetFields()
+    setPayload({})
+    onClose()
+  })
 
   const actionLoad = (postUplLoad || postQBankLoad)
 
@@ -104,7 +109,7 @@ function QuestionBankPage() {
             <p className="text-base font-normal text-[#414141]">Organise and monitor classroom questions for effective teaching.</p>
           </div>}
         >
-          <Form onFinish={handleSubmit} layout="vertical">
+          <Form form={form} onFinish={handleSubmit} layout="vertical">
             <Form.Item name="title" label="Title">
               <Input size="large" placeholder="Enter title" />
             </Form.Item>
