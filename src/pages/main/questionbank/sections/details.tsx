@@ -41,20 +41,36 @@ function DetailsSection() {
     label: `Variant ${d?.variant_number}`,
     children: (<div className='space-y-5'>
       <p className='text-base font-normal text-[#010101]'>{d?.main_question}</p>
+      
       {d?.questions?.map((b: any) => {
         const isEdit = (isEqual(payload?.variant_number, String(d?.variant_number)) && isEqual(payload?.question_id, String(b?.id)))
         const handleEdit = () => setPayload({
+          question: String(b?.question?.question || b?.question),
           variant_number: String(d?.variant_number),
-          question: String(b?.question),
           question_id: String(b?.id),
         })
-        return (<div className='flex justify-between items-center gap-5 p-3 border border-[#E6E9ED] rounded-lg'>
-          <p hidden={isEdit} className='text-base font-normal text-[#010101]'>{b?.id+1}. {b?.question}</p>
-          <Button hidden={isEdit} onClick={handleEdit} title='Edit Question' type='text' icon={<TbEdit className='text-xl' />} />
-          <Input hidden={!isEdit} value={payload?.question} onChange={({target:{value:question}}) => setPayload({...payload, question})} size='large' placeholder='Enter question' className='w-full' bordered={false} />
-          <Button hidden={!isEdit} loading={putQBankLoad} onClick={handleSubmit} title='Save Changes' type='text' icon={<FaRegSave className='text-xl' />} />
-          <Button hidden={!isEdit} onClick={handleClear} title='Cancel' type='text' icon={<AiTwotoneCloseCircle className='text-xl' />} />
-        </div>)
+        return (
+          <Collapse
+            accordion
+            items={[{
+              key: b?.id,
+              label: (<div className='!w-full flex justify-between items-center gap-5'>
+                <p hidden={isEdit} className='text-base font-normal text-[#010101]'>{Number(b?.id)+1}. {String(b?.question?.question || b?.question)}</p>
+                <Button hidden={isEdit} onClick={handleEdit} title='Edit Question' type='text' icon={<TbEdit className='text-xl' />} />
+                <Input hidden={!isEdit} value={payload?.question} onChange={({target:{value:question}}) => setPayload({...payload, question})} size='large' placeholder='Enter question' className='w-full' bordered={false} />
+                <Button hidden={!isEdit} loading={putQBankLoad} onClick={handleSubmit} title='Save Changes' type='text' icon={<FaRegSave className='text-xl' />} />
+                <Button hidden={!isEdit} onClick={handleClear} title='Cancel' type='text' icon={<AiTwotoneCloseCircle className='text-xl' />} />
+              </div>),
+              children: (<div className='space-y-2'>
+                <p className=''>Options:</p>
+                <ul className=''>
+                  {Object.values(b?.question?.options || {})?.map(([k, v]: any) => <li>{String(k)}. {String(v)}</li>)}
+                </ul>
+                <p className=''>Answer: {Object.entries(b?.question?.answer || {})?.map(([k, v]) => <span>{String(k)}. {String(v)}</span>)}</p>
+              </div>),
+            }]}
+          />
+        )
       })}
     </div>)
   })), [getQBankData, payload, putQBankLoad])

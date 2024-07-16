@@ -136,12 +136,14 @@ function Home() {
     AWS.config.update({
       accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
       secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
-      region: process.env["REACT_APP_AWS_REGION"],
+      // region: process.env["REACT_APP_AWS_REGION"],
+      region: "us-east-1",
     });
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -233,12 +235,14 @@ function Home() {
           AWS.config.update({
             accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
             secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
-            region: process.env["REACT_APP_AWS_REGION"],
+            // region: process.env["REACT_APP_AWS_REGION"],
+            region: "us-east-1",
           });
 
           // Specify the bucket and key (object key) for the upload
           const uploadParams = {
-            Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+            // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+            Bucket: "nurovantfrontend",
             Key: `${new Date()
               .toLocaleTimeString([], { hour12: false })
               .split(":")
@@ -947,12 +951,20 @@ function Home() {
         file_type: "audio",
         upload_type: "record",
       });
-    if (upldFile?.file?.type?.includes("pdf"))
+    if (
+      upldFile?.file?.type === "application/pdf" ||
+      upldFile?.file?.type === "text/plain" ||
+      upldFile?.file?.type ===
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+      upldFile?.file?.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
       return postLectAction({
         ...payload,
-        file_type: "pdf",
+        file_type: "doc",
         // file_name: `${user?._id}-uploadPdf-${moment().format("DD-MM-YYYY")}`,
       });
+    }
     postLectAction({
       ...payload,
       file_type: "audio",
@@ -1243,12 +1255,14 @@ function Home() {
     const s3 = new AWS.S3({
       accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
       secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
-      region: process.env["REACT_APP_AWS_REGION"],
+      // region: process.env["REACT_APP_AWS_REGION"],
+      region: "us-east-1",
     });
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
+      Bucket: "nurovantfrontend",
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
