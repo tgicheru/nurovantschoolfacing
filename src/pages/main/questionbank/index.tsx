@@ -122,7 +122,7 @@ function QuestionBankPage() {
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <Dragger {...props((file: any) => {handleUpload(file, "question_source")})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "question_source")})} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
                   {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
@@ -132,13 +132,13 @@ function QuestionBankPage() {
               </Dragger>
             </Form.Item>
             <Form.Item label="Upload List of Questions">
-              <Dragger {...props((file: any) => {handleUpload(file, "user_content")})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "user_content")})} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
                   {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
                 <p hidden={!payload?.user_content} className="ant-upload-text px-5">Document Uploaded.</p>
                 <p hidden={payload?.user_content} className="ant-upload-text px-5">Upload the document with your list of questions.</p>
-                <p hidden={payload?.user_content} className="ant-upload-hint px-5">File size no more than 10MB</p>
+                <p hidden={payload?.user_content} className="ant-upload-hint px-5">It is recommended to upload files in the ".txt" format for improved output.</p>
               </Dragger>
             </Form.Item>
             <Button loading={actionLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
