@@ -9,6 +9,7 @@ import { useAWSUpload } from "../../../hooks/otherhooks";
 import { useSearchParams } from "react-router-dom";
 import DetailsSection from "./sections/details";
 import { handleObj } from "../../../context/utils";
+import { ImSpinner } from "react-icons/im";
 
 function QuestionBankPage() {
   const [params, setParams] = useSearchParams()
@@ -19,6 +20,7 @@ function QuestionBankPage() {
   const [isOpen, setIsOpen] = useState(false)
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
+  const [form] = Form.useForm()
   const id = params.get("id")
 
 
@@ -57,16 +59,22 @@ function QuestionBankPage() {
   })
 
   const {
-    mutate: postUplAction,
     isLoading: postUplLoad,
-  } = useAWSUpload((res: any) => setPayload({...payload, [payload?.key]: res?.Location, key: ""}))
+    mutateAsync: postUplAction,
+  } = useAWSUpload()
+
+  const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
   const {
-    mutate: postQBankAction,
+    mutateAsync: postQBankAction,
     isLoading: postQBankLoad,
   } = usePostQuestionBank(getQBankFetch)
 
-  const handleSubmit = (data: any) => postQBankAction(handleObj({...data, ...payload}))
+  const handleSubmit = async (data: any) => await postQBankAction(handleObj({...data, ...payload})).then(() => {
+    form.resetFields()
+    setPayload({})
+    onClose()
+  })
 
   const actionLoad = (postUplLoad || postQBankLoad)
 
@@ -101,7 +109,7 @@ function QuestionBankPage() {
             <p className="text-base font-normal text-[#414141]">Organise and monitor classroom questions for effective teaching.</p>
           </div>}
         >
-          <Form onFinish={handleSubmit} layout="vertical">
+          <Form form={form} onFinish={handleSubmit} layout="vertical">
             <Form.Item name="title" label="Title">
               <Input size="large" placeholder="Enter title" />
             </Form.Item>
@@ -114,9 +122,9 @@ function QuestionBankPage() {
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "question_source"})})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "question_source")})} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
-                  <LuUploadCloud className="!text-2xl mx-auto" />
+                  {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
                 <p hidden={!payload?.question_source} className="ant-upload-text px-5">Document Uploaded.</p>
                 <p hidden={payload?.question_source} className="ant-upload-text px-5">Upload the document containing your source material.</p>
@@ -124,13 +132,13 @@ function QuestionBankPage() {
               </Dragger>
             </Form.Item>
             <Form.Item label="Upload List of Questions">
-              <Dragger {...props((file: any) => {postUplAction(file); setPayload({...payload, key: "user_content"})})}>
+              <Dragger {...props((file: any) => {handleUpload(file, "user_content")})} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
-                  <LuUploadCloud className="!text-2xl mx-auto" />
+                  {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
                 <p hidden={!payload?.user_content} className="ant-upload-text px-5">Document Uploaded.</p>
                 <p hidden={payload?.user_content} className="ant-upload-text px-5">Upload the document with your list of questions.</p>
-                <p hidden={payload?.user_content} className="ant-upload-hint px-5">File size no more than 10MB</p>
+                <p hidden={payload?.user_content} className="ant-upload-hint px-5">It is recommended to upload files in the ".txt" format for improved output.</p>
               </Dragger>
             </Form.Item>
             <Button loading={actionLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
