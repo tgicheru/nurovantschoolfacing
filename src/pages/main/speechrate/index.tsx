@@ -133,6 +133,16 @@ function SpeechRatePage() {
     // onGenOpen();
   };
 
+  const formatSpeakerName = (name: string): string => {
+    // takes speaker_0 and changes it to Teacher then subsequent speakers i.e speaker_1 and speaker_2 e.t.c and changes them to Student 1 and Student 2
+
+    if (name === "speaker_0") {
+      return "Teacher";
+    } else {
+      return `Student ${parseInt(name.split("_")[1])}`;
+    }
+  };
+
   const column = useMemo(() => {
     return [
       {
@@ -267,7 +277,7 @@ function SpeechRatePage() {
                       <h3 className="text-[16px] leading-[20px] font-semibold">
                         Name:{" "}
                         <span className="text-[16px] font-normal leading-[20px] ">
-                          {speaker?.speaker}
+                          {formatSpeakerName(speaker?.speaker)}
                         </span>
                       </h3>
 
