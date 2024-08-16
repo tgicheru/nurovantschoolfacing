@@ -91,9 +91,9 @@ function CustomTable({
         loading={loading}
         showHeader={!noHeader}
         rowSelection={rowSelection}
-        dataSource={data || altData}
-        columns={column || altColumn}
         className='min-w-full relative'
+        dataSource={data || [] || altData}
+        columns={column || [] || altColumn}
         pagination={pagination && { pageSize: pagination || 5, position: [position || 'bottomCenter'] }}
       />
     </div>
