@@ -31,12 +31,12 @@ function QuizSection({}: Props) {
 
   const {
     data: getQuizData,
-    isFetching: getQuizLoad,
+    isLoading: getQuizLoad,
   } = useGetQuiz(id!)
 
   const {
     data: getQuizPartData,
-    isFetching: getQuizPartLoad,
+    isLoading: getQuizPartLoad,
   } = useGetQuizParticipants(id!)
 
   const handleResult = (result?: any, quests?: any) => {
@@ -53,11 +53,10 @@ function QuizSection({}: Props) {
   const { pass: isPreviewPass } = handleResult()
   const previewStatus = statusType?.[String(isPreviewPass) as keyof typeof statusType]
 
-
-  const handlePreview = (data: any) => {
-    setSelected(data)
-    onPreOpen()
-  }
+  // const handlePreview = (data: any) => {
+  //   setSelected(data)
+  //   onPreOpen()
+  // }
 
   const participantColumns: ColumnsType<any> = [
     {
@@ -82,10 +81,10 @@ function QuizSection({}: Props) {
         return <Tag className={`${status?.col} ${status?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}>{pass ? "Pass" : "Fail"}</Tag>
       },
     },
-    {
-      title: "Action",
-      render: (d) => <Button onClick={() => handlePreview(d)} icon={<BsEye />}>Preview</Button>,
-    },
+    // {
+    //   title: "Action",
+    //   render: (d) => <Button onClick={() => handlePreview(d)} icon={<BsEye />}>Preview</Button>,
+    // },
   ];
 
   const handleDelete = () => alert("delete this")
@@ -157,8 +156,6 @@ function QuizSection({}: Props) {
     () => tabs.find((d) => isEqual(d.key, activeTab)),
     [activeTab, tabs]
   );
-
-  console.log(selected)
 
   const isLoading = (getQuizLoad || getQuizPartLoad)
   return (

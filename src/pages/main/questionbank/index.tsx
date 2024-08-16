@@ -27,7 +27,7 @@ function QuestionBankPage() {
   const {
     data: getQBankData,
     refetch: getQBankFetch,
-    isFetching: getQBankLoad,
+    isLoading: getQBankLoad,
   } = useGetQuestionBanks()
 
   const columns = [

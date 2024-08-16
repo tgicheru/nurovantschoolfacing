@@ -1,14 +1,19 @@
 import { Button, Spin, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useGetAdaptiveLearning } from '../../../../hooks/adaptivelearning/adaptivelearning'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { HiArrowLeft } from 'react-icons/hi'
+import QuestionsTab from '../tabs/questions'
+import ParticipantsTab from '../tabs/participants'
 
 function DetailsSection() {
+  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const tab = (params.get("tab") || "questions")
   const [activeTab, setActiveTab] = useState(tab)
   const id = params.get("id")
+
+  const handleBack = () => navigate("/adaptive-learning")
 
   const handleTab = (tab: any) => {
     setParams({id: id!, tab})
@@ -23,13 +28,13 @@ function DetailsSection() {
   const tabs = [
     {
       key: "questions",
-      label: "Generated Quiz Questions",
-      children: "hello"
+      label: "Quiz Questions",
+      children: <QuestionsTab />,
     },
     {
       key: "participants",
       label: "Quiz Participants",
-      children: "hello"
+      children: <ParticipantsTab />,
     },
   ]
   return (
@@ -39,6 +44,7 @@ function DetailsSection() {
           <Button
             type='text'
             size='large'
+            onClick={handleBack}
             icon={<HiArrowLeft className='text-xl font-bold' />}
             className='items-center text-xl font-semibold text-[#414141]'
           >{getALData?.data?.lecture?.lecture_title}</Button>

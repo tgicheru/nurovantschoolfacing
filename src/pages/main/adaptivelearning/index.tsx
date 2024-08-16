@@ -107,7 +107,7 @@ function AdaptiveLearning() {
         </div>
 
         <div hidden={getALsData?.data?.length}>
-          <div className="h-full flex flex-col justify-center items-center bg-white rounded-[16px] pb-7 mx-4 md:mx-8 ">
+          <div className="h-full flex flex-col justify-center items-center bg-white rounded-[16px] pb-7 px-5 md:px-10 ">
             <VideoRecordIcon bg="#4970FC" color="#fff" />
             <p className="text-[40px] font-semibold text-secondary mb-5">Adaptive Learning System</p>
             <Button
