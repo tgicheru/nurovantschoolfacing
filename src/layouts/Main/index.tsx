@@ -66,6 +66,11 @@ const MainLayout = ({ children }: Props) => {
       icon: "",
     },
     {
+      key: "/adaptive-learning",
+      label: "Adaptive Learning",
+      icon: "",
+    },
+    {
       key: "/question-tracker",
       label: "Question Tracker",
       icon: "",

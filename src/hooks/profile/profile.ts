@@ -56,8 +56,6 @@ export function useGetProfile() {
 
 export function useGetProfileInfo(successAction?: any, errorAction?: any) {
   const url = "/api_backend/teachers/profile/";
-  const navigate = useNavigate();
-  const location = useLocation();
   const axios = useContext(AxiosContext);
 
   return useQuery(
@@ -66,10 +64,6 @@ export function useGetProfileInfo(successAction?: any, errorAction?: any) {
     {
       onSuccess: (response) => successAction?.(response),
       onError: (error: any) => {
-        if (error?.message?.includes("authenticated") || error?.message?.includes("Only teachers are required to perform this action!")) {
-          sessionStorage.setItem("fallback", JSON.stringify(location));
-          navigate("/auth");
-        }
         errorAction?.(error)
         notification.error({
           message: "Error!",

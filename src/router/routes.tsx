@@ -24,6 +24,7 @@ const ProofReader = lazy(() => import("../pages/main/proofreader"));
 const SpeechRate = lazy(() => import("../pages/main/speechrate"));
 const QuestionBank = lazy(() => import("../pages/main/questionbank"));
 const GPTZero = lazy(() => import("../pages/main/gptzero"));
+const AdaptiveLearning = lazy(() => import("../pages/main/adaptivelearning"));
 const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
 
 export const routes = [
@@ -32,6 +33,11 @@ export const routes = [
     path: "/",
     label: "Home",
     component: <Home />,
+  },
+  {
+    label: "Adaptive Learning",
+    path: "/adaptive-learning",
+    component: <AdaptiveLearning />,
   },
   {
     path: "/settings",
