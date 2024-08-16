@@ -1,7 +1,6 @@
 import { notification } from "antd";
 import { useMutation, useQuery } from "react-query";
 import {
-  deleteRequest,
   getRequest,
   postRequest,
 } from "../../context/requestTypes";
@@ -40,6 +39,7 @@ export function useGetAdaptiveLearning(
     ["get:single_als", id],
     () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
+      enabled: Boolean(id),
       onSuccess: () => successAction?.(),
       onError: (error: any) => {
         errorAction?.();
@@ -85,19 +85,24 @@ export function usePostAdaptiveLearning(successAction?: any, errorAction?: any) 
   );
 }
 
-export function usePostAdaptiveLearningChat(successAction?: any, id?: string) {
-  const url = "/api_backend/als/chat/";
+
+
+// quiz questions section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetALQuiz(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/als/als_quiz/";
   const axios = useContext(AxiosContext);
-  return useMutation(
-    async (payload: any) =>
-      postRequest(
-        axios as unknown as AxiosInstance,
-        url + (id || payload?.id),
-        payload
-      ),
+  return useQuery(
+    ["get:single_als_quiz", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
-      onSuccess: (response: any) => successAction?.(),
-      onError: (error: any) =>
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -105,17 +110,18 @@ export function usePostAdaptiveLearningChat(successAction?: any, id?: string) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        });
+      },
     }
   );
 }
 
-export function useDeleteAdaptiveLearning(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/als/";
+export function usePostALQuiz(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/create_quiz/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (id: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + id),
+      getRequest(axios as unknown as AxiosInstance, url + id),
     {
       onSuccess: (response: any) => {
         successAction?.(response);
@@ -124,6 +130,37 @@ export function useDeleteAdaptiveLearning(successAction?: any, errorAction?: any
           description: response?.message || "action successful.",
         });
       },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+
+// quiz participants section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetALQuizParticipants(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/als/all_quiz_results/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_als_quiz_participants", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
       onError: (error: any) => {
         errorAction?.();
         notification.error({

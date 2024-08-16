@@ -26,7 +26,7 @@ const FlashcardSection = () => {
   const resetQuest = () => setActiveQuest(0);
   const goBack = () => navigate("/");
 
-  const { data: getFlashcardData, isFetching: getFlashcardLoad } =
+  const { data: getFlashcardData, isLoading: getFlashcardLoad } =
     useGetFlashcard(id!);
   console.log(getFlashcardData?.data?.flashCards);
 

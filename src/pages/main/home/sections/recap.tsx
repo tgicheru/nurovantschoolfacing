@@ -19,7 +19,7 @@ const RecapSection = () => {
 
   const goBack = () => navigate("/?tab=recaps");
 
-  const { data: getRecapData, isFetching: getRecapLoad } = useGetRecap(id!);
+  const { data: getRecapData, isLoading: getRecapLoad } = useGetRecap(id!);
 
   const tabs = useMemo(
     () =>
