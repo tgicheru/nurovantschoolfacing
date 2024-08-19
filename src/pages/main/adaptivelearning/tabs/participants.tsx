@@ -68,7 +68,7 @@ function ParticipantsTab() {
   const handleGenerateReport = async () => await postGenALReportAction(getALData?.data?.quiz?._id).then(() => postUpALReportAction(getALData?.data?.quiz?._id))
 
   const isParticipants = getALParticipantsData?.data?.length
-  const inviteLink = "https://app.nurovant.com/adaptive-learning/quiz/".concat(id!)
+  const inviteLink = "https://app.nurovant.com/als_quiz/".concat(id!)
   const isALSCompleted = (getALData?.data?.quiz?.aws_path && getALData?.data?.quiz?.knowledge_graph_id)
   const handleCopy = () => {message.success("Copied to clipboard"); navigator.clipboard.writeText(inviteLink)};
 
