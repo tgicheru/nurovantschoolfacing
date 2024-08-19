@@ -19,7 +19,7 @@ function DetailsSection() {
   const id = params.get("id")
 
   const handleBack = () => navigate("/adaptive-learning")
-  const inviteLink = "https://app.nurovant.com/adaptive-learning/quiz/".concat(id!)
+  const inviteLink = "https://app.nurovant.com/als_quiz/".concat(id!)
 
   const handleTab = (tab: any) => {
     setParams({id: id!, tab})
