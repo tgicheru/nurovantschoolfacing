@@ -175,3 +175,61 @@ export function useGetALQuizParticipants(
     }
   );
 }
+
+export function usePostGenerateALReport(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/generate_csv/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function usePostUploadALReport(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/upload_csv/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
