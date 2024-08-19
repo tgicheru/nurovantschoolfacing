@@ -68,7 +68,7 @@ function ParticipantsTab() {
   const handleGenerateReport = async () => await postGenALReportAction(getALData?.data?.quiz?._id).then(() => postUpALReportAction(getALData?.data?.quiz?._id))
 
   const isParticipants = getALParticipantsData?.data?.length
-  const inviteLink = "https://app.nurovant.com/als_quiz/".concat(id!)
+  const inviteLink = "https://app.nurovant.com/als-quiz/".concat(id!)
   const isALSCompleted = (getALData?.data?.quiz?.aws_path && getALData?.data?.quiz?.knowledge_graph_id)
   const handleCopy = () => {message.success("Copied to clipboard"); navigator.clipboard.writeText(inviteLink)};
 
@@ -76,7 +76,7 @@ function ParticipantsTab() {
     {
       title: "Name",
       dataIndex: "user",
-      render: (d: any) => d?.full_name || d?.name || "NIL",
+      render: (d: any) => d?.name || "NIL",
     },
     {
       title: "Email",
@@ -154,7 +154,7 @@ function ParticipantsTab() {
 
           <CustomTable
             column={column}
-            pagination={10}
+            pagination={false}
             data={getALParticipantsData?.data}
           />
         </div>
@@ -183,7 +183,7 @@ function ParticipantsTab() {
           width={(width <= 500) ? width : (width / 2)}
           footer={<CustomPagination pageSize={limit} onSizeChange={(b: any, d: any) => setLimit(d)} onChange={setPage} current={page}  total={selected?.result?.length} />}
           title={<div className='flex justify-between items-center gap-5'>
-            <p className='text-xl font-semibold text-[#414141] capitalize'>{selected?.user?.user_name || selected?.user?.email || "NIL"}</p>
+            <p className='text-xl font-semibold text-[#414141] capitalize'>{selected?.user?.name || selected?.user?.email || "NIL"}</p>
             <div className='flex items-center gap-5 md:gap-10'>
               <Tag className={`${previewStatus?.col} ${previewStatus?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}>{isPreviewPass ? "Pass" : "Fail"}</Tag>
               <Button onClick={onClose} type='primary' className='bg-primary' icon={<MdClose />}>Close</Button>
