@@ -7,7 +7,7 @@ export const formatNumber = (num: number | string | null) => {
       .toString()
       .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   }
-  return 0;
+  return "0";
 };
 
 export const formatCurrency = (value: number, currency?: string) =>
