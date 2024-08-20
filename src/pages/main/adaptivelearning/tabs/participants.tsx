@@ -5,7 +5,7 @@ import { Alert, Button, Collapse, Drawer, Input, message, Modal, QRCode, Spin, T
 import { IoMailOutline } from 'react-icons/io5'
 import CustomTable from '../../../../components/CustomTable'
 import moment from 'moment'
-import { statusType } from '../../../../context/utils'
+import { formatNumber, statusType } from '../../../../context/utils'
 import { LuEye } from 'react-icons/lu'
 import { MdClose } from 'react-icons/md'
 import CustomPagination from '../../../../components/CustomPagination'
@@ -68,7 +68,7 @@ function ParticipantsTab() {
   const handleGenerateReport = async () => await postGenALReportAction(getALData?.data?.quiz?._id).then(() => postUpALReportAction(getALData?.data?.quiz?._id))
 
   const isParticipants = getALParticipantsData?.data?.length
-  const inviteLink = "https://app.nurovant.com/als-quiz/".concat(id!)
+  const inviteLink = "https://app.nurovant.com/als?section=quiz&id=".concat(id!)
   const isALSCompleted = (getALData?.data?.quiz?.aws_path && getALData?.data?.quiz?.knowledge_graph_id)
   const handleCopy = () => {message.success("Copied to clipboard"); navigator.clipboard.writeText(inviteLink)};
 
@@ -87,6 +87,10 @@ function ParticipantsTab() {
       title: "Timestamp",
       dataIndex: "createdAt",
       render: (d: any) => moment(d).format("lll"),
+    },
+    {
+      title: "Score",
+      render: (d: any) => formatNumber(d?.score)?.concat(" / ", d?.result?.length),
     },
     {
       title: "Pass/Fail",
