@@ -6,7 +6,7 @@ import VideoRecordIcon from '../../../assets/icons/videorecordicon';
 import Dragger from 'antd/es/upload/Dragger';
 import { ImSpinner } from 'react-icons/im';
 import { LuUploadCloud } from 'react-icons/lu';
-import { useAWSUpload } from '../../../hooks/otherhooks';
+import { useAWSUploadALS } from '../../../hooks/otherhooks';
 import { handleObj, isEqual, statusType } from '../../../context/utils';
 import { useGetAllAdaptiveLearning, usePostAdaptiveLearning } from '../../../hooks/adaptivelearning/adaptivelearning';
 import moment from 'moment';
@@ -44,7 +44,7 @@ function AdaptiveLearning() {
   const {
     isLoading: postUplLoad,
     mutateAsync: postUplAction,
-  } = useAWSUpload()
+  } = useAWSUploadALS()
 
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
