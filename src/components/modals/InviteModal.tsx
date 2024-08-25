@@ -2,10 +2,10 @@ import { Alert, Button, Form, Input, Modal, QRCode, message } from "antd";
 import { IoMailOutline } from "react-icons/io5";
 
 type Props = {
-  type: "quiz" | "flashcard" | "recap" | string;
+  type?: "quiz" | "flashcard" | "recap" | string;
   otherValue?: string;
   isOpen: boolean;
-  value: string;
+  value?: string;
   onClose: any;
 };
 function InviteModal({ isOpen, onClose, value, otherValue, type }: Props) {

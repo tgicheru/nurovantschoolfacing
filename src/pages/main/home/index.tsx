@@ -325,31 +325,31 @@ function Home() {
   const {
     data: getLectData,
     refetch: getLectFetch,
-    isFetching: getLectLoad,
+    isLoading: getLectLoad,
   } = useGetLectures({ limit, page });
 
   const {
     data: getAllQuizData,
     refetch: getAllQuizFetch,
-    isFetching: getAllQuizLoad,
+    isLoading: getAllQuizLoad,
   } = useGetAllQuiz({ limit, page });
 
   const {
     data: getAllFlashcardData,
     refetch: getAllFlashcardFetch,
-    isFetching: getAllFlashcardLoad,
+    isLoading: getAllFlashcardLoad,
   } = useGetAllFlashcards({ limit, page });
 
   const {
     data: getAllRecapData,
     refetch: getAllRecapFetch,
-    isFetching: getAllRecapLoad,
+    isLoading: getAllRecapLoad,
   } = useGetAllRecaps({ limit, page });
 
   const {
     data: getAllDiscussData,
     refetch: getAllDiscussFetch,
-    isFetching: getAllDiscussLoad,
+    isLoading: getAllDiscussLoad,
   } = useGetAllDiscuss({ limit, page });
 
   const handleRefetch = () => {

@@ -19,7 +19,7 @@ function GptZeroPage() {
   const {
     data: getGptsData,
     refetch: getGptsFetch,
-    isFetching: getGptsLoad,
+    isLoading: getGptsLoad,
   } = useGetGptZeros()
 
   const handleSuccess = () => {

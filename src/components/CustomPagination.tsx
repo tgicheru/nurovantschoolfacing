@@ -3,15 +3,16 @@ import React from 'react'
 // import { BsArrowLeft, BsArrowRight } from 'react-icons/bs'
 
 type Props = {
-  size?: "small" | "default",
   total: number,
-  current: number,
   onChange?: any,
-  pageSize: number,
+  current: number,
   hidden?: boolean,
+  pageSize?: number,
+  onSizeChange?: any,
   sizeChanger?: boolean,
   defaultCurrent?: number,
   defaultPageSize?: number,
+  size?: "small" | "default",
 }
 function CustomPagination({
   size,
@@ -21,6 +22,7 @@ function CustomPagination({
   onChange,
   pageSize,
   sizeChanger,
+  onSizeChange,
   defaultCurrent,
   defaultPageSize,
 }: Props) {
@@ -36,9 +38,10 @@ function CustomPagination({
         pageSize={pageSize||10}
         showSizeChanger={sizeChanger}
         defaultCurrent={defaultCurrent}
+        onShowSizeChange={onSizeChange}
         defaultPageSize={defaultPageSize}
         className='!w-full md:flex justify-center items-center gap-2 border-0'
-        showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of  ${total} results`}
+        showTotal={(total, range) => <p className='hidden md:block'>Showing {range[0]}-{range[1]} of  {total} results</p>}
         itemRender={(e, type, originalElement) => {
           if (type === 'page') return <button className={`text-base font-normal`}>{e}</button>
           if (type === 'prev') return ""

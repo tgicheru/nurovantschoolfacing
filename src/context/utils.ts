@@ -7,7 +7,7 @@ export const formatNumber = (num: number | string | null) => {
       .toString()
       .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   }
-  return 0;
+  return "0";
 };
 
 export const formatCurrency = (value: number, currency?: string) =>
@@ -86,8 +86,11 @@ export function getBinary(file: File) {
 
 export const statusType = {
   success: { col: "!text-[#12B76A]", bg: "!bg-[#ECFDF3]" },
+  "true": { col: "!text-[#12B76A]", bg: "!bg-[#ECFDF3]" },
+  "created": { col: "!text-[#12B76A]", bg: "!bg-[#ECFDF3]" },
   pending: { col: "!text-[#FFBD00]", bg: "!bg-[#FFBD001F]" },
   error: { col: "!text-[#E01020]", bg: "!bg-[#E010201F]" },
+  "false": { col: "!text-[#E01020]", bg: "!bg-[#E010201F]" },
   info: { col: "!text-[#495057]", bg: "!bg-[#878A991F]" },
 };
 

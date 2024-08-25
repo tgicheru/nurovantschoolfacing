@@ -8,7 +8,13 @@ const handleExpOut = () => {
 }
 
 const handleError = (error: any) => {
-  if(["Token is not valid!"].includes(error?.message)) return handleExpOut()
+  const messages = [
+    "authenticated",
+    "Token is not valid!",
+    "Token is not valid! - 1",
+    "Only teachers are required to perform this action!",
+  ]
+  if(messages?.includes(error?.message)) return handleExpOut()
   return Promise.reject(error)
 }
 const head = { "Content-Type": "multipart/form-data", Accept: "multipart/form-data" }

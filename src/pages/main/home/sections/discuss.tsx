@@ -37,7 +37,7 @@ function DiscussSection() {
     data: getDiscussData,
     refetch: getDiscussFetch,
     isLoading: getDiscussLoad,
-    isFetching: getDiscissFetching,
+    isLoading: getDiscissFetching,
   } = useGetDiscuss(
     id!,
     () => {

@@ -59,7 +59,7 @@ function ProofReaderPage() {
   const {
     data: getProofReaderData,
     refetch: getProofReaderRefetch,
-    isFetching: getProofReaderLoad,
+    isLoading: getProofReaderLoad,
     data: editProofReaderData,
   } = useGetProofReader();
 
