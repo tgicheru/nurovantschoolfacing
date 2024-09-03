@@ -30,7 +30,7 @@ function QuestionsTab() {
 
   const handleCreateQuiz = () => postALQuizAction(id!)
 
-  const isSaved = ["quizResult_saved", "knowledgeGraph_saved"].includes(getALData?.data?.quiz?.status)
+  const isSaved = ["quizResult_saved", "knowledgeGraph_saved", "awaiting_quizResult"].includes(getALData?.data?.quiz?.status)
   const isCreated = Object.keys(getALData?.data?.quiz || {"": ""})?.every(d => d)
   const isLectureQuizReady = (isSaved && isCreated)
 
