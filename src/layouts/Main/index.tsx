@@ -85,16 +85,16 @@ const MainLayout = ({ children }: Props) => {
       label: "Question Bank",
       icon: "",
     },
-    {
-      key: "/proofreader",
-      label: "Proof Reader",
-      icon: "",
-    },
-    {
-      key: "/gpt-zero",
-      label: "GPT Zero",
-      icon: "",
-    },
+    // {
+    //   key: "/proofreader",
+    //   label: "Proof Reader",
+    //   icon: "",
+    // },
+    // {
+    //   key: "/gpt-zero",
+    //   label: "GPT Zero",
+    //   icon: "",
+    // },
   ];
 
   const menu = [
