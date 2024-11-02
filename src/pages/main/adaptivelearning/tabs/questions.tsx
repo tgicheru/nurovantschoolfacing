@@ -16,7 +16,7 @@ function QuestionsTab() {
     data: getALData,
     refetch: getALFetch,
     isLoading: getALLoad,
-  } = useGetAdaptiveLearning(id!)j
+  } = useGetAdaptiveLearning(id!)
   const {
     data: getALQuizData,
     refetch: getALQuizFetch,
