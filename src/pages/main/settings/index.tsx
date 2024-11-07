@@ -64,7 +64,7 @@ function SettingsPage() {
 
   const isNoEditMail = ["google", "apple"]?.includes(user?.info?.sign_up_type);
 
-  const { data: getSubsData, isFetching: getSubsLoad } = useGetSubs();
+  const { data: getSubsData, isLoading: getSubsLoad } = useGetSubs();
 
   const { isLoading: postSubLoad, mutateAsync: postSubAction } = usePostSub();
 

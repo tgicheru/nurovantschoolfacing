@@ -1,175 +1,20 @@
-import { useContext } from "react";
 import { notification } from "antd";
-import { useRecoilState } from "recoil";
-import { useLocation, useNavigate } from "react-router";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import {
   getRequest,
-  otherRequest,
   postRequest,
-  putRequest,
 } from "../../context/requestTypes";
+import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
-import authAtom from "../../atoms/auth/auth.atom";
 import { AxiosInstance } from "axios";
 
-export function useGetProfile() {
-  const url = "/api_backend/user/";
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [auth, setAuth] = useRecoilState(authAtom);
+export function useGetAllAdaptiveLearning(params?: any) {
+  const url = "/api_backend/als/get_lectures";
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:user_profile"],
-    () => getRequest(axios as unknown as AxiosInstance, url),
+    ["get:all_als"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
-      onSuccess: (response) =>
-        setAuth({
-          ...auth,
-          user: {
-            ...auth?.user,
-            info: {
-              ...auth?.user?.info,
-              ...response?.data?.info,
-              ...response?.data,
-            },
-          },
-        }),
-      onError: (error: any) => {
-        if (error?.message?.includes("authenticated")) {
-          sessionStorage.setItem("fallback", JSON.stringify(location));
-          navigate("/auth");
-        }
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-      retry: 2,
-    }
-  );
-}
-
-export function useGetProfileInfo(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/teachers/profile/";
-  const axios = useContext(AxiosContext);
-
-  return useQuery(
-    ["get:user_profile_info"],
-    () => getRequest(axios as unknown as AxiosInstance, url),
-    {
-      onSuccess: (response) => successAction?.(response),
-      onError: (error: any) => {
-        errorAction?.(error)
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-      retry: 2,
-    }
-  );
-}
-
-export function useGetUserSub() {
-  const url = "/api_backend/teachers/subscription_detail";
-  const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:user_subscription"],
-    () => getRequest(axios as unknown as AxiosInstance, url),
-    {
-      onError: (error: any) =>
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        }),
-      retry: 2,
-    }
-  );
-}
-
-export function useGetSubs() {
-  const url = "/api_backend/user/subscription_pricing";
-  const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:subscription_pricing"],
-    () => getRequest(axios as unknown as AxiosInstance, url),
-    {
-      onError: (error: any) =>
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        }),
-      retry: 2,
-    }
-  );
-}
-
-export function useSetProfile(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/teachers/update_profile/";
-  const axios = useContext(AxiosContext);
-  const queryClient = useQueryClient();
-  return useMutation(
-    (payload: any) =>
-      putRequest(axios as unknown as AxiosInstance, url, payload),
-    {
-      onSuccess: (response) => {
-        successAction?.();
-        notification.success({
-          key: "updateable",
-          message: "Success!",
-          description: response?.message || "profile set successfully.",
-        });
-        queryClient.invalidateQueries("get:user_profile_info");
-        queryClient.invalidateQueries("get:user_profile");
-      },
-      onError: (error: any) => {
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-        errorAction?.(error);
-      },
-    }
-  );
-}
-
-export function useChangePassword() {
-  const url = "/api_backend/auth/reset_password";
-  const navigate = useNavigate();
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
-    {
-      onSuccess: (response) => {
-        notification.success({
-          message: "Success!",
-          description:
-            response?.message ||
-            "password changed, you'll be required to re-login.",
-        });
-        navigate("/auth/logout");
-      },
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -183,21 +28,50 @@ export function useChangePassword() {
   );
 }
 
-export function usePostSub(successAction?: any) {
-  const url = "/api_backend/teachers/subscription_token";
+export function useGetAdaptiveLearning(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/als/als_lecture/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_als", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function usePostAdaptiveLearning(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/create_lecture";
   const axios = useContext(AxiosContext);
   return useMutation(
-    (payload: any) =>
+    async (payload: any) =>
       postRequest(axios as unknown as AxiosInstance, url, payload),
     {
-      onSuccess: (response) => {
+      onSuccess: (response: any) => {
         successAction?.(response);
         notification.success({
           message: "Success!",
           description: response?.message || "action successful.",
         });
       },
-      onError: (error: any) =>
+      onError: (error: any) => {
+        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -205,30 +79,30 @@ export function usePostSub(successAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        });
+      },
     }
   );
 }
 
-export function usePostVerifySub(successAction?: any) {
-  const queryClient = useQueryClient();
-  const url = "api/teachers/subscription_upgrade";
-  return useMutation(
-    (payload: any) =>
-      otherRequest(url, "post", payload, {
-        Authorization: `Bearer ${payload?.token}`,
-      }),
+
+
+// quiz questions section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetALQuiz(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/als/als_quiz/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_als_quiz", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
-      onSuccess: (response) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-        queryClient.invalidateQueries("get:user_profile_info");
-        queryClient.invalidateQueries("get:user_profile");
-      },
-      onError: (error: any) =>
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -236,7 +110,126 @@ export function usePostVerifySub(successAction?: any) {
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        }),
+        });
+      },
+    }
+  );
+}
+
+export function usePostALQuiz(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/create_quiz/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+
+// quiz participants section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetALQuizParticipants(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/als/all_quiz_results/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_als_quiz_participants", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function usePostGenerateALReport(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/generate_csv/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function usePostUploadALReport(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/als/upload_csv/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
     }
   );
 }

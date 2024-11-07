@@ -66,6 +66,11 @@ const MainLayout = ({ children }: Props) => {
       icon: "",
     },
     {
+      key: "/adaptive-learning",
+      label: "Adaptive Learning",
+      icon: "",
+    },
+    {
       key: "/question-tracker",
       label: "Question Tracker",
       icon: "",
@@ -80,16 +85,16 @@ const MainLayout = ({ children }: Props) => {
       label: "Question Bank",
       icon: "",
     },
-    {
-      key: "/proofreader",
-      label: "Proof Reader",
-      icon: "",
-    },
-    {
-      key: "/gpt-zero",
-      label: "GPT Zero",
-      icon: "",
-    },
+    // {
+    //   key: "/proofreader",
+    //   label: "Proof Reader",
+    //   icon: "",
+    // },
+    // {
+    //   key: "/gpt-zero",
+    //   label: "GPT Zero",
+    //   icon: "",
+    // },
   ];
 
   const menu = [
@@ -117,7 +122,7 @@ const MainLayout = ({ children }: Props) => {
   const handleLogout = () => navigate("/auth/logout");
   return (
     <ModalContainer>
-      <div className="w-full h-screen flex flex-col p-0 m-0 bg-light font-montserrat">
+      <div className="w-full h-screen overflow-hidden flex flex-col p-0 m-0 bg-light font-montserrat">
         {/* <div className="flex justify-between items-center md:hidden p-5">
           <div className="text-dark truncate">
             <p className="text-xl font-bold">{`Hello ${user?.info?.name}`}</p>
@@ -141,9 +146,9 @@ const MainLayout = ({ children }: Props) => {
             onMenuClose={onMenuClose}
           />
         </div> */}
-        <div className="md:px-10 bg-white">
+        <div className="w-full md:px-10 bg-white sticky top-0 z-10">
           <div className="flex justify-between items-center py-4 px-4 md:py-5 md:px-0">
-            <img src={Logo} alt="logo" className="hidden lg:block" />
+            <Link to="/"><img src={Logo} alt="logo" className="hidden lg:block" /></Link>
 
             <Dropdown menu={{ items: menu }} trigger={["click"]}>
               <div className="cursor-pointer">
@@ -168,9 +173,7 @@ const MainLayout = ({ children }: Props) => {
             </Dropdown>
 
             <Button
-              icon={
-                <LuMenu className="!text-2xl !font-medium !bg-transparent" />
-              }
+              icon={<LuMenu className="!text-2xl !font-medium !bg-transparent" />}
               className="text-[#101828] !p-0 !m-0 md:hidden"
               onClick={onMenuOpen}
               type="text"
@@ -226,17 +229,9 @@ const MainLayout = ({ children }: Props) => {
           </Drawer>
         </div>
 
-        <div
-          className={`w-full h-full bg-homeBg bg-center bg-no-repeat ${
-            pathname === "/auth/info" ? "" : "pt-2"
-          }`}
-        >
+        <div className="w-full h-full overflow-y-auto bg-homeBg bg-center bg-no-repeat">
           {/* main layout pages children  */}
-          <div
-            className={`w-full h-full ${
-              pathname === "/auth/info" ? "" : "overflow-y-auto p-5 md:p-0"
-            }`}
-          >
+          <div className="w-full h-full overflow-y-auto p-5 md:p-0">
             {children}
           </div>
         </div>

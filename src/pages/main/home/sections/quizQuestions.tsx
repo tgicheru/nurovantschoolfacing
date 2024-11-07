@@ -25,7 +25,7 @@ function QuizQuestionsSection({}: Props) {
 
   const {
     data: getQuizData,
-    isFetching: getQuizLoad,
+    isLoading: getQuizLoad,
   } = useGetQuiz(id!)
 
   const {
