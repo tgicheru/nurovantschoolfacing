@@ -2,6 +2,8 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import authAtom from "../../../atoms/auth/auth.atom";
 import BorderHOC from "../../../components/BorderHOC";
+import AddItemImg from "../../../assets/additem.svg";
+import QuickActions from "../../../components/overview/QuickActions";
 
 const OverviewPage = () => {
   const { user } = useRecoilValue(authAtom);
@@ -46,11 +48,14 @@ const OverviewPage = () => {
                 padding="p-[1px]"
                 rounded={"rounded-[10px]"}
               >
-                <div className="flex flex-col gap-[5px] rounded-[10px]">
-                  <p className="text-[14px] leading-[20px] font-semibold text-neutral-900">
-                    {metric.name}
-                  </p>
-                  <p className="text-[14px] leading-[20px] font-normal text-neutral-600">
+                <div className="flex flex-col p-6">
+                  <div className="flex items-center w-full justify-between">
+                    <p className="text-[14px] leading-[20px] font-medium text-neutral-600">
+                      {metric.name}
+                    </p>
+                    <img src={AddItemImg} alt="addItem-img" />
+                  </div>
+                  <p className="text-[48px] leading-[60px] font-bold text-neutral-900">
                     {metric.value}
                   </p>
                 </div>
@@ -58,6 +63,8 @@ const OverviewPage = () => {
             </div>
           ))}
         </div>
+
+        <QuickActions />
       </div>
     </div>
   );
