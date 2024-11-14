@@ -1,48 +1,37 @@
 import { useState } from "react";
-import AuthContainer from "../../components/AuthContainer";
-import { onboardingAtom } from "../../atoms/other/other.atom";
 import { useSearchParams } from "react-router-dom";
-import { useRecoilState } from "recoil";
 import { isEqual } from "../../context/utils";
 import DetailsSection from "./sections/details";
-import GradeSection from "./sections/grade";
-import SubjectSection from "./sections/subject";
-import InformationSection from "./sections/info";
-import RecordingSection from "./sections/recording";
+import VerifySection from "./sections/verify";
+import OtherSection from "./sections/other";
 
 function AuthPage() {
   const [param, setParam] = useSearchParams()
+  const keys = ["details", "verify", "other"]
   const [activeIndex, setActiveIndex] = useState(0)
-  const [payload, setPayload] = useRecoilState(onboardingAtom)
-  const keys = ["details", "grade", "subject", "info", "recording"]
+  // const [payload, setPayload] = useRecoilState(onboardingAtom)
   const [active, setActive] = useState(param.get("section") || "details")
 
-  const handleSection = (data: any) => {
-    const nextIndex = (activeIndex + 1)
+  const handleSection = (section?: string) => {
+    const nextIndex = (section ? keys.findIndex(d => isEqual(d, section)) : (activeIndex + 1))
     const nextSection = keys?.find((d, idx) => isEqual(idx, nextIndex))
-    setPayload({...payload, ...(data || {})})
-    setParam({section: nextSection || ""})
-    setActive(nextSection || "")
+    setParam({section: section || nextSection || ""})
+    setActive(section || nextSection || "")
     setActiveIndex(nextIndex)
   }
 
   const sections = [
-    {key: "details", component: <DetailsSection payload={payload} handleNext={handleSection} />},
-    {key: "grade", component: <GradeSection payload={payload} handleNext={handleSection} />},
-    {key: "subject", component: <SubjectSection payload={payload} handleNext={handleSection} />},
-    {key: "info", component: <InformationSection payload={payload} handleNext={handleSection} />},
-    {key: "recording", component: <RecordingSection />, noBg: true},
+    {key: "details", component: <DetailsSection handleSection={handleSection} />},
+    {key: "verify", component: <VerifySection />},
+    {key: "other", component: <OtherSection />},
   ]
 
   const CurrentSection = sections?.find(({key}) => isEqual(key, active))
   const CurrentSectionComponent = CurrentSection?.component
-  const isNoBg = CurrentSection?.noBg
   return (
-    <AuthContainer>
-      <div className={`w-full md:w-[90%] rounded-lg p-5 md:p-10 ${!isNoBg && "bg-white"}`}>
-        {CurrentSectionComponent}
-      </div>
-    </AuthContainer>
+    <div className="w-full p-5">
+      {CurrentSectionComponent}
+    </div>
   );
 }
 
