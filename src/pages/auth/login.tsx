@@ -1,78 +1,44 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import AppleIcon from "../../assets/Apple.svg";
-import GoogleIcon from "../../assets/Google.svg";
-import AuthContainer from '../../components/AuthContainer'
-import { Button, Divider, Form, Input, notification } from 'antd'
-import { useEmailLogin, useOAuthRegister } from '../../hooks/auth/authentications';
-import { signInWithPopup } from 'firebase/auth';
-import { appleProvider, auth, provider } from '../../firebaseAuth/config';
+import { Link, useNavigate } from 'react-router-dom'
+import { Button, Divider, Form, Input } from 'antd'
+import OAuth from './components/oauth';
 
 function LoginPage() {
-  const { mutate, isLoading } = useOAuthRegister();
-  const { mutate: loginAction, isLoading: loginLoad } = useEmailLogin();
+  const navigate = useNavigate()
 
-  const handleGoogleLogin = () => signInWithPopup(auth, provider)
-    .then((res) => mutate({
-        role: "teacher",
-        sign_up_type: "google",
-        email: res?.user?.email,
-        name: res?.user?.displayName,
-      } as unknown as void))
-    .catch((err) => notification.error({message: "Error!", description: err?.message}));
-
-  const handleAppleLogin = () => signInWithPopup(auth, appleProvider)
-    .then((res) => mutate({
-        role: "teacher",
-        sign_up_type: "apple",
-        email: res?.user?.email,
-        name: res?.user?.displayName,
-      } as unknown as void))
-    .catch((err) => notification.error({message: "Error!", description: err?.message}));
+  const handleAuth = () => navigate("/")
+  const handleSubmit = () => navigate("/")
   return (
-    <AuthContainer>
-      <div className="w-full md:w-[90%] rounded-lg p-5 md:p-10 bg-white space-y-5">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-          <div className="">
-            <p className="text-2xl font-semibold text-[#1B1B1B]">Hey there!</p>
-            <p className="text-sm font-normal text-[#1B1B1B]">Capturing knowledge one step at a time</p>
-          </div>
-          <Link className="block text-base font-medium text-primary" to="/auth">Create a new account</Link>
-        </div>
-
-        <Form onFinish={loginAction} layout="vertical">
-          <Form.Item label="Email" name="email">
-            <Input placeholder="Enter full name" size="large" required />
-          </Form.Item>
-          <Form.Item label="  Password" name="password">
-            <Input.Password placeholder="Enter password" size="large" required />
-          </Form.Item>
-          <Button loading={loginLoad} className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Log in</Button>
-        </Form>
-
-        <Divider className="text-sm font-normal">Or sign in with</Divider>
-
-        {/* Other login options */}
-        <div className="flex w-full items-center justify-center flex-row gap-5">
-          <Button
-            type="text"
-            size="large"
-            loading={isLoading}
-            onClick={handleAppleLogin}
-            className="!bg-transparent !p-0 !m-0 !w-[100px]"
-            icon={<img src={AppleIcon} alt="apple-icon" />}
-          />
-          <Button
-            type="text"
-            size="large"
-            loading={isLoading}
-            onClick={handleGoogleLogin}
-            className="!bg-transparent !p-0 !m-0 !w-[100px]"
-            icon={<img src={GoogleIcon} alt="google-icon" />}
-          />
-        </div>
+    <div className='w-full space-y-5'>
+      <div className="w-full">
+        <p className="text-2xl font-bold text-[#161617]">Login</p>
+        <p className="text-sm font-semibold text-[#57585A]">Welcome Back, glad to see you! 😊</p>
       </div>
-    </AuthContainer>
+
+      <OAuth successAction={handleAuth} />
+
+      <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
+
+      <Form onFinish={handleSubmit} layout="vertical">
+        <Form.Item label="Email" name="email" >
+          <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+            <Input placeholder="Enter email address here" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+          </div>
+        </Form.Item>
+        <Form.Item label="Password" name="password">
+          <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+            <Input.Password placeholder="Enter password" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+          </div>
+        </Form.Item>
+        <Link className="block text-base font-medium text-primary" to="/auth">Forgot Password</Link>
+        <Button className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Continue</Button>
+      </Form>
+
+      <div className='flex justify-center items-center gap-2'>
+        <p className='text-base font-medium'>Don't have an account? </p>
+        <Link className="block text-base font-medium text-primary" to="/auth">Sign Up</Link>
+      </div>
+    </div>
   )
 }
 

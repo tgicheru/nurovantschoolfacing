@@ -13,20 +13,18 @@ type Props = {
 };
 function Logo({ path, isIcon, isText, noLogo  }: Props) {
   return (
-    <Link to={path || "/"} className="w-full flex items-center logo-b">
+    <Link to={path || "/"} className="block">
       <Image
         alt="logo"
         preview={false}
         hidden={noLogo}
         src={isIcon ? icon : logo}
-        className="w-auto mx-auto"
       />
       <Image
         src={text}
         alt="logo"
         preview={false}
         hidden={!isText}
-        className="w-auto mx-auto"
       />
     </Link>
   );

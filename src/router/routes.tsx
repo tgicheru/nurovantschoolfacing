@@ -2,9 +2,6 @@ import { lazy } from "react";
 
 // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Authentication = lazy(() => import("../pages/auth"));
-const EmailRegister = lazy(() => import("../pages/auth/emailRegister"));
-const EmailPassword = lazy(() => import("../pages/auth/emailPassword"));
-const PhoneRegister = lazy(() => import("../pages/auth/phoneRegister"));
 const Login = lazy(() => import("../pages/auth/login"));
 const Verify = lazy(() => import("../pages/auth/verify"));
 const Logout = lazy(() => import("../pages/auth/logout"));
@@ -94,11 +91,6 @@ export const routes = [
     component: <Login />,
   },
   {
-    path: "/auth/email-register",
-    label: "Email Register",
-    component: <EmailRegister />,
-  },
-  {
     path: "/auth/verify/:id",
     label: "Verify",
     component: <Verify />,
@@ -107,16 +99,6 @@ export const routes = [
     path: "/auth/logout",
     label: "Logout",
     component: <Logout />,
-  },
-  {
-    path: "/auth/password",
-    label: "Set Email Password",
-    component: <EmailPassword />,
-  },
-  {
-    path: "/auth/phone",
-    label: "Phone Register",
-    component: <PhoneRegister />,
   },
   {
     path: "/auth/record",
