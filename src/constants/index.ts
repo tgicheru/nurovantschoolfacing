@@ -1,3 +1,8 @@
+export const states = ["Alabama", "Alaska", "Arizona", "Arkansas"].map(d => ({label: d, value: d}))
+export const subjects = ["English", "Mathematics", "Science", "Social Studies"].map(d => ({label: d, value: d}))
+export const grades = ["K-2 (Elementary)", "3-5 (Middle School)", "6-8 (High School/Secondary)", "9-11 (High School/Secondary)"].map(d => ({label: d, value: d}))
+
+
 export const AllNationsCode = [
   {
     label: "🇺🇸 United States",

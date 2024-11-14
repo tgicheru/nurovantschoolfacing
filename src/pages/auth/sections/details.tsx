@@ -1,81 +1,67 @@
-import React, { useMemo } from 'react'
-import AppleIcon from "../../../assets/Apple.svg";
-import GoogleIcon from "../../../assets/Google.svg";
-import { Link } from "react-router-dom";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider, appleProvider } from "../../../firebaseAuth/config";
-import { useOAuthRegister } from "../../../hooks/auth/authentications";
-import { Button, Divider, Form, Input, notification } from 'antd'
+import React from 'react'
+import { Link } from "react-router-dom"
+import { Button, Divider, Form, Input, Select } from 'antd'
+import OAuth from '../components/oauth';
+import { grades, states, subjects } from '../../../constants';
 
-function DetailsSection({
-  payload,
-  handleNext,
-}:{ payload?: any; handleNext: any }) {
+type Props = {
+  handleSection: any
+}
+function DetailsSection({ handleSection }: Props) {
   const [form] = Form.useForm()
-  const {isLoading,  mutate } = useOAuthRegister();
 
-  useMemo(() => form.setFieldsValue(payload), [form, payload])
-
-  const handleGoogleLogin = () => signInWithPopup(auth, provider)
-    .then((res) => mutate({
-        role: "teacher",
-        sign_up_type: "google",
-        email: res?.user?.email,
-        name: res?.user?.displayName,
-      } as unknown as void))
-    .catch((err) => notification.error({message: "Error!", description: err?.message}));
-
-  const handleAppleLogin = () => signInWithPopup(auth, appleProvider)
-    .then((res) => mutate({
-        role: "teacher",
-        sign_up_type: "apple",
-        email: res?.user?.email,
-        name: res?.user?.displayName,
-      } as unknown as void))
-    .catch((err) => notification.error({message: "Error!", description: err?.message}));
+  const handleSubmit = () => handleSection()
   return (
-    <div className='space-y-5'>
-      <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-        <div className="">
-          <p className="text-2xl font-semibold text-[#1B1B1B]">Hey there!</p>
-          <p className="text-sm font-normal text-[#1B1B1B]">Capturing knowledge one step at a time</p>
-        </div>
-        <Link className="block text-base font-medium text-primary" to="/auth/login">Sign into my account</Link>
+    <div className='w-full space-y-5'>
+      <div className="w-full">
+        <p className="text-2xl font-bold text-[#161617]">Sign up your account</p>
+        <p className="text-sm font-semibold text-[#57585A]">Fill in these details to get your account running.</p>
       </div>
 
-      <Form form={form} onFinish={handleNext} layout="vertical">
-        <Form.Item label="Full Name" name="full_name">
-          <Input placeholder="Enter full name" size="large" required />
+      <OAuth successAction={() => handleSection("other")} />
+
+      <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
+
+      <Form form={form} onFinish={handleSubmit} layout="vertical">
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
+          <Form.Item label="First Name" name="first_name">
+            <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+              <Input placeholder="Enter your first name here" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+            </div>
+          </Form.Item>
+          <Form.Item label="Last Name" name="last_name">
+            <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+              <Input placeholder="Enter your last name here" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+            </div>
+          </Form.Item>
+        </div>
+        <Form.Item label="Email" name="email" >
+          <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+            <Input placeholder="Enter email address here" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+          </div>
         </Form.Item>
-        <Form.Item label="Email" name="email">
-          <Input placeholder="Enter email" size="large" required />
+        <Form.Item label="Password" name="password">
+          <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
+            <Input.Password placeholder="Enter password" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
+          </div>
         </Form.Item>
-        <Form.Item label="Set Password" name="password">
-          <Input.Password placeholder="Enter password" size="large" required />
+        <Form.Item label="State" name="state" >
+          <Select placeholder="Select state" className='!h-[50px]' size="large" options={states} />
         </Form.Item>
-        <Button className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Sign Up</Button>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
+          <Form.Item label="Grade Level" name="grade_level" >
+            <Select placeholder="Select grade level" className='!h-[50px]' size="large" options={grades} />
+          </Form.Item>
+          <Form.Item label="Subject" name="subject" >
+            <Select placeholder="Select subject" className='!h-[50px]' size="large" options={subjects} />
+          </Form.Item>
+        </div>
+        <Button className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Continue</Button>
       </Form>
 
-      <Divider className="text-sm font-normal">Or sign up with</Divider>
-
-      {/* Other login options */}
-      <div className="flex w-full items-center justify-center flex-row gap-5">
-        <Button
-          type="text"
-          size="large"
-          loading={isLoading}
-          onClick={handleAppleLogin}
-          className="!bg-transparent !p-0 !m-0 !w-[100px]"
-          icon={<img src={AppleIcon} alt="apple-icon" />}
-        />
-        <Button
-          type="text"
-          size="large"
-          loading={isLoading}
-          onClick={handleGoogleLogin}
-          className="!bg-transparent !p-0 !m-0 !w-[100px]"
-          icon={<img src={GoogleIcon} alt="google-icon" />}
-        />
+      <div className='flex justify-center items-center gap-2'>
+        <p className='text-base font-medium'>Already have an account? </p>
+        <Link className="block text-base font-medium text-primary" to="/auth/login">Sign In</Link>
       </div>
     </div>
   )
