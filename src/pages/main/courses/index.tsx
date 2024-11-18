@@ -23,7 +23,7 @@ import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import VideoRecordIcon from "../../../assets/icons/videorecordicon";
+import EmptyState from "../../../assets/EmptyState.svg";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
@@ -71,6 +71,11 @@ import { ReactMic } from "react-mic";
 import Logo from "../../../assets/newLogo.svg";
 import { extractAvatar } from "../../../constants";
 import { FaChevronDown } from "react-icons/fa6";
+import { BorderHOC, ContentHeader } from "../../../components";
+import { TbFilterSearch } from "react-icons/tb";
+import { RiSearch2Line } from "react-icons/ri";
+import { RxDashboard } from "react-icons/rx";
+import { GoRows } from "react-icons/go";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -1296,7 +1301,83 @@ function Home() {
   return (
     <Spin spinning={isFetchLoad}>
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
-        <div className="px-5 md:px-10 flex justify-end items-center">
+        <ContentHeader
+          headerText={`Courses 📚`}
+          subText={`Organize and manage your lecture materials.`}
+        />
+
+        <BorderHOC className="" rounded="rounded-[10px]">
+          <div className="w-full p-[15px]">
+            <div className="w-full pb-[10px]">
+              <div className="w-full flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <h1 className="text-neutral-900 text-[24px] leading-[32px] font-bold">
+                    0
+                  </h1>
+                  <p className="text-sm font-semibold text-neutral-600">
+                    lectures
+                  </p>
+                </div>
+                <div className="flex items-center gap-[10px] h-[40px]">
+                  <div
+                    className="h-full flex items-center py-[8px] gap-[7px] px-3 cursor-pointer"
+                    onClick={() => {}}
+                  >
+                    <TbFilterSearch className="text-neutral-900 text-[24px]" />
+                    <p className="text-sm font-bold text-neutral-900">Filter</p>
+                  </div>
+                  <BorderHOC className="h-full w-[1px]" />
+                  <div className="w-[40px] flex items-center justify-center h-full">
+                    <RiSearch2Line className="text-[24px]" />
+                  </div>
+                  <BorderHOC className="h-full w-[1px]" />
+                  <div className="flex items-center gap-[5px]">
+                    <div className="w-[40px] flex items-center justify-center h-full">
+                      <RxDashboard className="text-[24px]" />
+                    </div>
+                    <div className="w-[40px] flex items-center justify-center h-full">
+                      <GoRows className="text-[24px]" />
+                    </div>
+                  </div>
+                  <BorderHOC className="h-full w-[1px]" />
+                  <Button
+                    onClick={onOpen}
+                    className="bg-primary !rounded-[1000px]"
+                    type="primary"
+                    size="large"
+                    icon={<FaPlus />}
+                  >
+                    Create course
+                  </Button>
+                </div>
+              </div>
+              <BorderHOC className="mt-[10px]" />
+            </div>
+
+            <div className="w-full flex items-center justify-center py-[72px]">
+              <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+                <div className="flex flex-col items-center justify-center">
+                  <img src={EmptyState} alt="empty courses" />
+                  <span className="text-base font-bold text-neutral-900 text-center">
+                    You don’t have any course created yet
+                  </span>
+                </div>
+
+                <Button
+                  onClick={onOpen}
+                  className="bg-primary !rounded-[1000px]"
+                  type="primary"
+                  size="large"
+                  icon={<FaPlus />}
+                >
+                  Create course
+                </Button>
+              </div>
+            </div>
+          </div>
+        </BorderHOC>
+
+        {/* <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             onClick={onOpen}
             className="bg-primary !rounded-2xl"
@@ -1350,7 +1431,7 @@ function Home() {
               Create New
             </Button>
           </div>
-        </div>
+        </div> */}
 
         {/* upload document modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
         <Modal

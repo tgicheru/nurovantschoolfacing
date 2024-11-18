@@ -67,8 +67,8 @@ const MainLayout = ({ children }: Props) => {
       icon: "",
     },
     {
-      key: "/lectures",
-      label: "Lectures",
+      key: "/courses",
+      label: "Courses",
       icon: "",
     },
     {
