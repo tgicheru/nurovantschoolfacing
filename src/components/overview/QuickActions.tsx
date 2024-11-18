@@ -1,8 +1,8 @@
 import React from "react";
 import ExportImage from "../../assets/export.svg";
-import BorderHOC from "../BorderHOC";
+import { BorderHOC } from "../BorderHOC";
 
-const QuickActions = () => {
+export const QuickActions = () => {
   const options = [
     {
       name: "Create a course",
@@ -46,5 +46,3 @@ const QuickActions = () => {
     </div>
   );
 };
-
-export default QuickActions;

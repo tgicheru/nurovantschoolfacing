@@ -7,7 +7,7 @@ type IBorderHOC = {
   rounded?: string;
 };
 
-const BorderHOC = ({
+export const BorderHOC = ({
   padding = "p-[1px]",
   className,
   children,
@@ -21,5 +21,3 @@ const BorderHOC = ({
     </div>
   );
 };
-
-export default BorderHOC;
