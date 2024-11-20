@@ -2,9 +2,7 @@ import { Breadcrumb, Button, Modal } from "antd";
 import DefaultBanner from "../../../../assets/default_banner.png";
 import EmptyState from "../../../../assets/EmptyState.svg";
 import React, { useState } from "react";
-import { PiDotsThreeOutlineDuotone } from "react-icons/pi";
 import { BorderHOC } from "../../../../components";
-import { TbFilterSearch } from "react-icons/tb";
 import { RiSearch2Line } from "react-icons/ri";
 import { useNavigate } from "react-router";
 import { RxDashboard } from "react-icons/rx";
@@ -12,7 +10,10 @@ import { GoRows } from "react-icons/go";
 import { FaPlus } from "react-icons/fa";
 import { FiUploadCloud } from "react-icons/fi";
 import { BiBook } from "react-icons/bi";
-import { PiBookOpenText } from "react-icons/pi";
+import { PiBookOpenText, PiDotsThreeOutlineDuotone } from "react-icons/pi";
+import { TbMessageQuestion, TbCards, TbFilterSearch } from "react-icons/tb";
+import { BsRepeat } from "react-icons/bs";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 const CourseDetails = () => {
   const navigate = useNavigate();
@@ -185,11 +186,15 @@ const CourseDetails = () => {
                       }}
                     >
                       <BorderHOC className="" rounded="rounded-[10px]">
-                        <div className="space-y-4 p-4 w-full flex gap-4">
-                          <div className="h-[50px] w-[50px] bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
-                            <h5 className="text-[20px] leading-[30px] font-bold text-black">
-                              {lecture.title.charAt(0)}
-                            </h5>
+                        <div className=" p-4 w-full flex gap-4">
+                          <div className="h-[50px] w-[50px]">
+                            <BorderHOC rounded="rounded-[10px]">
+                              <div className="h-[50px] w-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
+                                <h5 className="text-[20px] leading-[30px] font-bold text-black">
+                                  {lecture.title.charAt(0)}
+                                </h5>
+                              </div>
+                            </BorderHOC>
                           </div>
 
                           <div className="w-full flex flex-col gap-4">
@@ -215,19 +220,19 @@ const CourseDetails = () => {
                               </div>
                               <div className="w-[30px] h-[18px] flex items-center gap-[5px]">
                                 <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
-                                <PiBookOpenText />
+                                <TbMessageQuestion />
                               </div>
                               <div className="w-[30px] h-[18px] flex items-center gap-[5px]">
                                 <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
-                                <PiBookOpenText />
+                                <TbCards />
                               </div>
                               <div className="w-[30px] h-[18px] flex items-center gap-[5px]">
                                 <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
-                                <PiBookOpenText />
+                                <BsRepeat />
                               </div>
                               <div className="w-[30px] h-[18px] flex items-center gap-[5px]">
                                 <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
-                                <PiBookOpenText />
+                                <IoChatboxEllipsesOutline />
                               </div>
                             </div>
                           </div>
@@ -243,71 +248,102 @@ const CourseDetails = () => {
                       className="w-full cursor-pointer"
                       key={idx}
                       onClick={() => {
-                        navigate("/courses/details");
+                        // navigate("/courses/details");
                       }}
                     >
                       <BorderHOC className="w-full" rounded="rounded-[10px]">
                         <div className="flex items-center gap-4 px-4 py-[10px]">
-                          <div className="w-[98px] rounded-[10px] overflow-hidden">
-                            <img
-                              src={course.image}
-                              onLoadStart={() => {
-                                setIsLoadingImage(true);
-                              }}
-                              onLoad={() => {
-                                setIsLoadingImage(false);
-                              }}
-                              onError={(error) => {
-                                error.currentTarget.src = DefaultBanner;
-                                setIsLoadingImage(false);
-                              }}
-                              alt="business logo"
-                              className={`h-[53px] w-full object-cover ${
-                                isLoadingImage ? "blur-sm" : ""
-                              }`}
-                            />
+                          <div className="h-[50px] w-[50px]">
+                            <BorderHOC rounded="rounded-[10px]">
+                              <div className="h-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
+                                <h5 className="text-[20px] leading-[30px] font-bold text-black">
+                                  {lecture.title.charAt(0)}
+                                </h5>
+                              </div>
+                            </BorderHOC>
                           </div>
                           <div className="flex items-center justify-around flex-1 gap-4">
                             <div className="flex flex-col gap-[5px]">
                               <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                                {course.title}
+                                {lecture.title}
                               </h2>
                               <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                                {course.createdAt}
+                                {lecture.createdAt}
                               </p>
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-neutral-900">
-                                Students
-                              </p>
-                              <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                                -- --
-                              </p>
+                              <div className="flex items-center gap-1">
+                                <PiBookOpenText />
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Lesson Plan
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="h-[7px] w-[7px] rounded-full bg-primary"></div>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  Created
+                                </p>
+                              </div>
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-neutral-900">
-                                Grade
-                              </p>
-                              <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                                {course.grade}
-                              </p>
+                              <div className="flex items-center gap-1">
+                                <TbMessageQuestion />
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Quiz
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  Not Created
+                                </p>
+                              </div>
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-neutral-900">
-                                State
-                              </p>
-                              <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                                {course.state}
-                              </p>
+                              <div className="flex items-center gap-1">
+                                <TbCards />
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Flashcards
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  Not Created
+                                </p>
+                              </div>
                             </div>
                             <div>
-                              <p className="font-bold text-sm text-neutral-900">
-                                Institution
-                              </p>
-                              <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                                {course.institution}
-                              </p>
+                              <div className="flex items-center gap-1">
+                                <BsRepeat />
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Recap
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  Not Created
+                                </p>
+                              </div>
                             </div>
+                            <div>
+                              <div className="flex items-center gap-1">
+                                <IoChatboxEllipsesOutline />
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Discuss
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="h-[7px] w-[7px] rounded-full bg-[#F79009]"></div>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  Not Created
+                                </p>
+                              </div>
+                            </div>
+                            <button className="flex items-center justify-center">
+                              <PiDotsThreeOutlineDuotone className="text-[20px]" />
+                            </button>
                           </div>
                         </div>
                       </BorderHOC>
