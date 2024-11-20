@@ -21,7 +21,7 @@ import { GoGear } from "react-icons/go";
 import { FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import BorderHOC from "../../components/BorderHOC";
+import { BorderHOC } from "../../components";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -67,8 +67,8 @@ const MainLayout = ({ children }: Props) => {
       icon: "",
     },
     {
-      key: "/lectures",
-      label: "Lectures",
+      key: "/courses",
+      label: "Courses",
       icon: "",
     },
     {

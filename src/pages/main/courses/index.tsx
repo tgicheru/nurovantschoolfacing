@@ -4,10 +4,14 @@ import React, { useMemo, useState, useEffect } from "react";
 import {
   Avatar,
   Button,
+  Divider,
+  Drawer,
   Form,
+  Image,
   Input,
   Menu,
   Modal,
+  Select,
   Spin,
   Tabs,
   Tag,
@@ -23,14 +27,14 @@ import { PiCoins, PiRepeatFill } from "react-icons/pi";
 import { IoIosVideocam } from "react-icons/io";
 import { LuAlarmClock, LuUploadCloud } from "react-icons/lu";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import VideoRecordIcon from "../../../assets/icons/videorecordicon";
+import EmptyState from "../../../assets/EmptyState.svg";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
 import { BiTestTube } from "react-icons/bi";
 import { isEqual } from "../../../context/utils";
 import { AiOutlineMessage } from "react-icons/ai";
-import { IoMailOutline } from "react-icons/io5";
+import { IoArrowBack, IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
 import FlashcardSection from "./sections/flashcard";
 import modalAtom from "../../../atoms/modal/modal.atom";
@@ -71,8 +75,21 @@ import { ReactMic } from "react-mic";
 import Logo from "../../../assets/newLogo.svg";
 import { extractAvatar } from "../../../constants";
 import { FaChevronDown } from "react-icons/fa6";
+import { BorderHOC, ContentHeader, CustomButton } from "../../../components";
+import { TbFilterSearch } from "react-icons/tb";
+import { RiSearch2Line } from "react-icons/ri";
+import { RxDashboard } from "react-icons/rx";
+import { GoRows } from "react-icons/go";
+import DefaultBanner from "../../../assets/default_banner.png";
+import { PiDotsThreeOutlineDuotone, PiBookOpenText } from "react-icons/pi";
+import { IoCloseCircleOutline } from "react-icons/io5";
+import { FiUploadCloud } from "react-icons/fi";
+import DummyCoursePic from "../../../assets/dummyCourse.svg";
+import { MdOutlineArrowBackIos } from "react-icons/md";
 
 function Home() {
+  const width = window.innerWidth;
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [param, setParam] = useSearchParams();
@@ -98,7 +115,10 @@ function Home() {
   const onInvOpen = () => setIsInvite(true);
   const onRecOpen = () => setIsRecord(true);
   const activeSection = param.get("section");
-  const onClose = () => setIsOpen(false);
+  const onClose = () => {
+    setIsOpen(false);
+    setSteps(0);
+  };
   const inviteType = param.get("type");
   const onCreOpen = () => {
     setIsCreate(true);
@@ -1291,12 +1311,293 @@ function Home() {
     );
   };
 
+  const [isGridView, setIsGridView] = useState(true);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+
+  const [courses, setCourses] = useState<any[]>([]);
+
+  const [steps, setSteps] = useState(0);
+
   if (SectionContent) return SectionContent;
   // console.log(user);
   return (
     <Spin spinning={isFetchLoad}>
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
-        <div className="px-5 md:px-10 flex justify-end items-center">
+        <ContentHeader
+          headerText={`Courses 📚`}
+          subText={`Organize and manage your lecture materials.`}
+        />
+
+        <BorderHOC className="" rounded="rounded-[10px]">
+          <div className="w-full px-[15px] pt-[15px]">
+            <div className="w-full pb-[10px]">
+              <div className="w-full flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <h1 className="text-neutral-900 text-[24px] leading-[32px] font-bold">
+                    {courses.length}
+                  </h1>
+                  <p className="text-sm font-semibold text-neutral-600">
+                    Course
+                  </p>
+                </div>
+                <div className="flex items-center gap-[10px] h-[40px]">
+                  <div
+                    className="h-full flex items-center py-[8px] gap-[7px] px-3 cursor-pointer"
+                    onClick={() => {}}
+                  >
+                    <TbFilterSearch className="text-neutral-900 text-[24px]" />
+                    <p className="text-sm font-bold text-neutral-900">Filter</p>
+                  </div>
+                  <BorderHOC className="h-full !w-[1px]" />
+                  <div className="w-[40px] flex items-center justify-center h-full">
+                    <RiSearch2Line className="text-[24px]" />
+                  </div>
+                  <BorderHOC className="h-full !w-[1px]" />
+                  <div className="flex items-center gap-[5px] h-full">
+                    <div
+                      className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
+                        courses.length && isGridView && "bg-[#E7E7E7]"
+                      }`}
+                      onClick={() => {
+                        setIsGridView(true);
+                      }}
+                    >
+                      <RxDashboard className="text-[24px]" />
+                    </div>
+                    <div
+                      className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
+                        courses.length && isGridView === false && "bg-[#E7E7E7]"
+                      }`}
+                      onClick={() => {
+                        setIsGridView(false);
+                      }}
+                    >
+                      <GoRows className="text-[24px]" />
+                    </div>
+                  </div>
+                  <BorderHOC className="h-full !w-[1px]" />
+                  <Button
+                    onClick={onOpen}
+                    className="bg-primary !rounded-[1000px]"
+                    type="primary"
+                    size="large"
+                    icon={<FaPlus />}
+                  >
+                    Create course
+                  </Button>
+                </div>
+              </div>
+              <BorderHOC className="mt-[10px]" />
+            </div>
+
+            {courses.length ? (
+              <div className="w-full flex flex-col">
+                {isGridView ? (
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {courses.map((course, idx) => (
+                      <div
+                        className="w-full cursor-pointer"
+                        key={idx}
+                        onClick={() => {
+                          navigate("/courses/details");
+                        }}
+                      >
+                        <BorderHOC className="" rounded="rounded-[10px]">
+                          <div className="space-y-4 p-4 w-full">
+                            <div className="w-full rounded-[10px] overflow-hidden">
+                              <img
+                                src={course.image}
+                                onLoadStart={() => {
+                                  setIsLoadingImage(true);
+                                }}
+                                onLoad={() => {
+                                  setIsLoadingImage(false);
+                                }}
+                                onError={(error) => {
+                                  error.currentTarget.src = DefaultBanner;
+                                  setIsLoadingImage(false);
+                                }}
+                                alt="business logo"
+                                className={`h-[93px] w-full object-cover ${
+                                  isLoadingImage ? "blur-sm" : ""
+                                }`}
+                              />
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-col gap-[5px]">
+                                <h2 className="text-sm text-neutral-900 font-bold">
+                                  {course.title}
+                                </h2>
+                                <p className="text-[12px] leading-[18px] text-neutral-600">
+                                  {course.createdAt}
+                                </p>
+                              </div>
+
+                              <button className="flex items-center justify-center">
+                                <PiDotsThreeOutlineDuotone className="text-[20px]" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Institution
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.institution}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  State
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.state}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Grade
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.grade}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </BorderHOC>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col w-full gap-3 p-4">
+                    {courses.map((course, idx) => (
+                      <div
+                        className="w-full cursor-pointer"
+                        key={idx}
+                        onClick={() => {
+                          navigate("/courses/details");
+                        }}
+                      >
+                        <BorderHOC className="w-full" rounded="rounded-[10px]">
+                          <div className="flex items-center gap-4 px-4 py-[10px]">
+                            <div className="w-[98px] rounded-[10px] overflow-hidden">
+                              <img
+                                src={course.image}
+                                onLoadStart={() => {
+                                  setIsLoadingImage(true);
+                                }}
+                                onLoad={() => {
+                                  setIsLoadingImage(false);
+                                }}
+                                onError={(error) => {
+                                  error.currentTarget.src = DefaultBanner;
+                                  setIsLoadingImage(false);
+                                }}
+                                alt="business logo"
+                                className={`h-[53px] w-full object-cover ${
+                                  isLoadingImage ? "blur-sm" : ""
+                                }`}
+                              />
+                            </div>
+                            <div className="flex items-center justify-around flex-1 gap-4">
+                              <div className="flex flex-col gap-[5px]">
+                                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                                  {course.title}
+                                </h2>
+                                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                                  {course.createdAt}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Students
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  -- --
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Grade
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.grade}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  State
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.state}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm text-neutral-900">
+                                  Institution
+                                </p>
+                                <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
+                                  {course.institution}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </BorderHOC>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <BorderHOC className="mt-[10px]" />
+                <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
+                  <p className="text-sm text-neutral-900">Page 1 of 10</p>
+                  <div className="flex items-center gap-4">
+                    <button className="">
+                      <BorderHOC className="w-full" rounded="rounded-[1000px]">
+                        <div className="py-[10px] w-[106px] flex items-center justify-center">
+                          <span className="text-[#344054] text-sm">
+                            Previous
+                          </span>
+                        </div>
+                      </BorderHOC>
+                    </button>
+
+                    <button className="">
+                      <BorderHOC className="w-full" rounded="rounded-[1000px]">
+                        <div className="py-[10px] w-[80px] flex items-center justify-center">
+                          <span className="text-[#344054] text-sm">Next</span>
+                        </div>
+                      </BorderHOC>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full flex items-center justify-center py-[72px]">
+                <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+                  <div className="flex flex-col items-center justify-center">
+                    <img src={EmptyState} alt="empty courses" />
+                    <span className="text-base font-bold text-neutral-900 text-center">
+                      You don’t have any course created yet
+                    </span>
+                  </div>
+
+                  <Button
+                    onClick={onOpen}
+                    className="bg-primary !rounded-[1000px]"
+                    type="primary"
+                    size="large"
+                    icon={<FaPlus />}
+                  >
+                    Create course
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </BorderHOC>
+
+        {/* <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             onClick={onOpen}
             className="bg-primary !rounded-2xl"
@@ -1350,10 +1651,311 @@ function Home() {
               Create New
             </Button>
           </div>
-        </div>
+        </div> */}
+
+        {/* Create Course Drawer >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Drawer
+          open={isOpen}
+          onClose={onClose}
+          width={width <= 500 ? width : 512}
+          styles={{
+            header: {
+              borderRadius: 20,
+            },
+          }}
+          footer={false}
+          style={{
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            marginTop: 20,
+            marginRight: 20,
+            boxShadow: "none",
+            // boxShadow: undefined,
+          }}
+          maskClosable={true}
+          // mask={false}
+          maskClassName="!bg-[rgba(0,0,0,0.3)]"
+          closeIcon={false}
+          className=""
+          // classNames={}
+          rootClassName="!pr-[20px] !pt-[20px] !shadow-none "
+        >
+          <div className="w-full flex justify-between pb-6">
+            <div className="flex gap-3">
+              {steps !== 0 && (
+                <button
+                  onClick={() => {
+                    setSteps((prev) => prev - 1);
+                  }}
+                  className="flex items-start pt-1"
+                >
+                  <MdOutlineArrowBackIos className="text-[20px] text-neutral-900" />
+                </button>
+              )}
+
+              <div className="flex flex-col gap-[5px]">
+                <h3 className="text-[24px] leading-[32px] font-bold text-neutral-900">
+                  {steps === 2 ? "One more thing!" : "Create Course"}
+                </h3>
+                <p className="text-sm font-semibold text-neutral-600 max-w-[293px">
+                  {steps === 1
+                    ? `Add the necessary details to your course.`
+                    : steps === 2
+                    ? `Set clear goals to guide and measure student 
+progress effectively`
+                    : `Let's get you all set up by creating your first class.`}
+                </p>
+              </div>
+            </div>
+            <button onClick={onClose} className="flex items-start pt-1">
+              <IoCloseCircleOutline className="text-[24px] text-neutral-900" />
+            </button>
+          </div>
+          <BorderHOC className="" />
+          {steps === 0 && (
+            <div className="w-full pt-[50px] flex flex-col gap-5">
+              <BorderHOC rounded="rounded-[10px]">
+                <div
+                  className="px-5 py-[19px] gap-[9px] cursor-pointer"
+                  onClick={() => {
+                    setSteps(1);
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-[30px] h-[30px] rounded-[7px] bg-[#17B26A] flex items-center justify-center">
+                      <PiBookOpenText className="text-[18px] text-white transform scale-x-[-1]" />
+                    </div>
+                    <h5 className="text-base font-bold text-neutral-900">
+                      Create a new course
+                    </h5>
+                  </div>
+                  <p className="text-sm font-semibold text-neutral-600 mt-2">
+                    Create a course and add lectures for your students
+                  </p>
+                </div>
+              </BorderHOC>
+
+              <BorderHOC rounded="rounded-[10px]">
+                <div className="px-5 py-[19px] gap-[9px] cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="w-[30px] h-[30px] rounded-[7px] bg-[#F79009] flex items-center justify-center">
+                      <FiUploadCloud className="text-white" />
+                    </div>
+                    <h5 className="text-base font-bold text-neutral-900">
+                      Import from LMS
+                    </h5>
+                  </div>
+                  <p className="text-sm font-semibold text-neutral-600 mt-2">
+                    Create a course by uploading your LMS
+                  </p>
+                </div>
+              </BorderHOC>
+            </div>
+          )}
+
+          {steps === 1 && (
+            <div className="w-full pt-[50px] flex flex-col gap-5">
+              <div className="w-full flex gap-5">
+                <div className="flex flex-col gap-[6px] w-full">
+                  <h4 className="text-sm font-bold text-neutral-900">
+                    Courses Image
+                  </h4>
+                  <div className="w-full h-[95px] rounded-[10px] bg-[#F5F5F5] bg-opacity-90 flex items-center justify-center">
+                    <img src={DummyCoursePic} alt={"dummy picture"} />
+                  </div>
+                </div>
+
+                <div className="w-[135px] h-full flex items-end justify-end mt-auto">
+                  <button className="w-full mt-auto">
+                    <BorderHOC rounded="rounded-[1000px]">
+                      <div className="flex items-center gap-[10px] justify-center px-2 w-full h-[40px]">
+                        <FiUploadCloud className="" />
+                        <span className="text-[12px] leading-[18px] font-bold text-neutral-900 whitespace-nowrap">
+                          Upload image
+                        </span>
+                      </div>
+                    </BorderHOC>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-[6px] w-full">
+                <h4 className="text-sm font-bold text-neutral-900">
+                  Courses Name
+                </h4>
+                <input
+                  type="email"
+                  placeholder="Enter email address here"
+                  className="px-5 py-[14px] placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-[6px] w-full">
+                <h4 className="text-sm font-bold text-neutral-900">
+                  Upload Curriculum
+                </h4>
+                <Upload.Dragger {...uploadProps} className="w-full">
+                  <p className="ant-upload-drag-icon">
+                    <LuUploadCloud className="text-black text-2xl bg-light mx-auto" />
+                  </p>
+                  <p className="ant-upload-text">
+                    {upldFile?.file ? (
+                      "Your file has been uploaded"
+                    ) : (
+                      <>
+                        <span className="text-primary">Click to upload</span> or
+                        drag and drop
+                      </>
+                    )}
+                  </p>
+                  <p className="ant-upload-hint">
+                    {upldFile?.file ? (
+                      <Button
+                        onClick={handleUpldFileClr}
+                        type="text"
+                        danger
+                        size="large"
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      "SVG, PNG, JPG or GIF (max. 800x400px)"
+                    )}
+                  </p>
+                </Upload.Dragger>
+              </div>
+              <Button
+                // disabled={!upldFile?.file}
+                // onClick={handleUploadTest}
+                loading={loading}
+                onClick={() => {
+                  // handleUpload();
+                  setSteps(2);
+                }}
+                className="bg-primary !w-full !h-[48px]"
+                type="primary"
+                size="large"
+                shape="round"
+              >
+                Continue
+              </Button>
+            </div>
+          )}
+
+          {steps === 2 && (
+            <div className="w-full pt-[50px] flex flex-col gap-5">
+              <h4 className="text-base font-bold text-neutral-900">
+                Learning Standard
+              </h4>
+
+              <div className="w-full flex gap-5 items-center">
+                <div className="flex flex-col gap-[6px] w-full">
+                  <h4 className="text-sm font-bold text-neutral-900">State</h4>
+                  <Select
+                    placeholder="Select state"
+                    className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none h-[48px]"
+                    options={[
+                      { label: "Lagos", value: "lagos" },
+                      { label: "Abuja", value: "abuja" },
+                    ]}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-[6px] w-full">
+                  <h4 className="text-sm font-bold text-neutral-900">Grade</h4>
+                  <Select
+                    placeholder="Select Grade"
+                    className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none !outline-none !focus:outline-none h-[48px]"
+                    options={[
+                      { label: "Lagos", value: "lagos" },
+                      { label: "Abuja", value: "abuja" },
+                    ]}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-[6px] w-full">
+                <h4 className="text-sm font-bold text-neutral-900">
+                  Institution
+                </h4>
+                <Select
+                  placeholder="Select institution"
+                  className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none !outline-none !focus:outline-none h-[48px]"
+                  options={[
+                    { label: "Lagos", value: "lagos" },
+                    { label: "Abuja", value: "abuja" },
+                  ]}
+                />
+              </div>
+
+              <Divider className="border-light">Or</Divider>
+
+              <div className="flex flex-col gap-[6px] w-full">
+                <h4 className="text-sm font-bold text-neutral-900">
+                  Upload Learning Standard
+                </h4>
+                <Upload.Dragger {...uploadProps} className="w-full">
+                  <p className="ant-upload-drag-icon">
+                    <LuUploadCloud className="text-black text-2xl bg-light mx-auto" />
+                  </p>
+                  <p className="ant-upload-text">
+                    {upldFile?.file ? (
+                      "Your file has been uploaded"
+                    ) : (
+                      <>
+                        <span className="text-primary">Click to upload</span> or
+                        drag and drop
+                      </>
+                    )}
+                  </p>
+                  <p className="ant-upload-hint">
+                    {upldFile?.file ? (
+                      <Button
+                        onClick={handleUpldFileClr}
+                        type="text"
+                        danger
+                        size="large"
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      "SVG, PNG, JPG or GIF (max. 800x400px)"
+                    )}
+                  </p>
+                </Upload.Dragger>
+              </div>
+              <Button
+                // disabled={!upldFile?.file}
+                // onClick={handleUploadTest}
+                loading={loading}
+                onClick={() => {
+                  // handleUpload();
+                  setCourses((prev) => [
+                    ...prev,
+                    {
+                      title: "Understanding Mathematics",
+                      createdAt: "Created 11 Nov, 2024 • 12:09PM",
+                      institution: "St. Calton High School",
+                      state: "Alabama",
+                      grade: "3-5 (Middle School)",
+                      image: DefaultBanner,
+                    },
+                  ]);
+                  onClose();
+                }}
+                className="bg-primary !w-full !h-[48px]"
+                type="primary"
+                size="large"
+                shape="round"
+              >
+                Create Course
+              </Button>
+            </div>
+          )}
+        </Drawer>
 
         {/* upload document modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <Modal
+        {/* <Modal
           onCancel={onClose}
           closeIcon={false}
           footer={false}
@@ -1422,7 +2024,7 @@ function Home() {
               Note: Each generation costs 2 credits
             </p>
           </div>
-        </Modal>
+        </Modal> */}
 
         {/* record lecture modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
         <Modal

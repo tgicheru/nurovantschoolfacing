@@ -36,3 +36,9 @@
   background: white !important;
   color: #4970fc !important;
 }
+
+:where(.css-dev-only-do-not-override-3rel02).ant-drawer-right
+  > .ant-drawer-content-wrapper {
+  box-shadow: none;
+  right: 10;
+}
