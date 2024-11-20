@@ -14,8 +14,9 @@ const handleError = (error: any) => {
     "Token is not valid! - 1",
     "Only teachers are required to perform this action!",
   ]
+  const message = (error?.message ? Object.entries(error?.errors || { key: [error?.message] })?.map(([, value]) => (value as any)?.join(", "))?.join(", ") : "something went wrong please check internet connection.")
   if(messages?.includes(error?.message)) return handleExpOut()
-  return Promise.reject(error)
+  return Promise.reject({ ...(error || {}), message })
 }
 const head = { "Content-Type": "multipart/form-data", Accept: "multipart/form-data" }
 export const patchFormRequest = async (url: string, data: any, token: string, params: any, method="patch") => httpAxios({url: baseURL+url, method, headers: {...head, Authorization: `Bearer ${token}`}, data, params}).then(({ data }) => Promise.resolve(data)).catch(({ response: { data }}) => handleError(data));
