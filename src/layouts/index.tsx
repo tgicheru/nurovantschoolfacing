@@ -39,13 +39,13 @@ const Layout = ({ children }: Props) => {
 
   // redirect to login page if current is not login page and user not authorized
   useEffect(() => {
-    //if (isMainLayout && !isLoggedIn) {
-    //  message.info({
-    //    content: "Welcome! please authenticate to proceed.",
-    //    key: "updatable",
-    //  });
-    //  navigate("/auth");
-    //}
+    if (isMainLayout && !isLoggedIn) {
+      message.info({
+        content: "Welcome! please authenticate to proceed.",
+        key: "updatable",
+      });
+      navigate("/auth");
+    }
     // if (pathname !== "/public/terms") {
     //   navigate("/public/maintenance");
     // } else {

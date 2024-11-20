@@ -3,7 +3,9 @@ import { lazy } from "react";
 // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Authentication = lazy(() => import("../pages/auth"));
 const Login = lazy(() => import("../pages/auth/login"));
+const Forgot = lazy(() => import("../pages/auth/forgot"));
 const Verify = lazy(() => import("../pages/auth/verify"));
+const Reset = lazy(() => import("../pages/auth/reset"));
 const Logout = lazy(() => import("../pages/auth/logout"));
 const Record = lazy(() => import("../pages/auth/record"));
 const AuthInfo = lazy(() => import("../pages/auth/info"));
@@ -95,6 +97,16 @@ export const routes = [
     path: "/auth/login",
     label: "Login",
     component: <Login />,
+  },
+  {
+    path: "/auth/forgot",
+    label: "Forgot Password",
+    component: <Forgot />,
+  },
+  {
+    path: "/auth/reset/:id",
+    label: "Reset Password",
+    component: <Reset />,
   },
   {
     path: "/auth/verify/:id",

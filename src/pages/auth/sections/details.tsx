@@ -1,16 +1,23 @@
 import React from 'react'
 import { Link } from "react-router-dom"
-import { Button, Divider, Form, Input, Select } from 'antd'
 import OAuth from '../components/oauth';
-import { grades, states, subjects } from '../../../constants';
+import { Button, Divider, Form, Input, Select } from 'antd';
+import { genders, grades, states, subjects } from '../../../constants';
+import { useForget as useResend, useRegister } from '../../../hooks/auth/authentications';
 
 type Props = {
   handleSection: any
 }
 function DetailsSection({ handleSection }: Props) {
-  const [form] = Form.useForm()
+  const { mutate: resendAction, isLoading: resendLoad } = useResend(({ message }: any) => {
+    const words = message?.split(" ")
+    const email = words?.[words?.length - 1]
+    handleSection("", {email, type: "VERIFY_USER"})
+  });
 
-  const handleSubmit = () => handleSection()
+  const { mutate, isLoading } = useRegister(({user: {email}}: any) => resendAction({email, otp_type: "VERIFY_USER"}))
+
+  const actionLoad = (isLoading || resendLoad)
   return (
     <div className='w-full space-y-5'>
       <div className="w-full">
@@ -22,7 +29,7 @@ function DetailsSection({ handleSection }: Props) {
 
       <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
 
-      <Form form={form} onFinish={handleSubmit} layout="vertical">
+      <Form onFinish={mutate} layout="vertical">
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
           <Form.Item label="First Name" name="first_name">
             <div className="w-full rounded-xl p-[1px] bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]">
@@ -45,9 +52,14 @@ function DetailsSection({ handleSection }: Props) {
             <Input.Password placeholder="Enter password" className='h-[50px] !border-none bg-[#F5F5F5E5] !rounded-xl' size="large" required />
           </div>
         </Form.Item>
-        <Form.Item label="State" name="state" >
-          <Select placeholder="Select state" className='!h-[50px]' size="large" options={states} />
-        </Form.Item>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
+          <Form.Item label="Gender" name="sex" >
+            <Select placeholder="Select gender" className='!h-[50px]' size="large" options={genders} />
+          </Form.Item>
+          <Form.Item label="State" name="state" >
+            <Select placeholder="Select state" className='!h-[50px]' size="large" options={states} />
+          </Form.Item>
+        </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
           <Form.Item label="Grade Level" name="grade_level" >
             <Select placeholder="Select grade level" className='!h-[50px]' size="large" options={grades} />
@@ -56,7 +68,7 @@ function DetailsSection({ handleSection }: Props) {
             <Select placeholder="Select subject" className='!h-[50px]' size="large" options={subjects} />
           </Form.Item>
         </div>
-        <Button className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Continue</Button>
+        <Button loading={actionLoad} className="bg-primary !h-[50px]" size="large" block type="primary" htmlType="submit" shape="round">Continue</Button>
       </Form>
 
       <div className='flex justify-center items-center gap-2'>
