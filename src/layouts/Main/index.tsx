@@ -58,7 +58,7 @@ const MainLayout = ({ children }: Props) => {
   }, [width]);
 
   // get user profile
-  useGetProfile();
+  // useGetProfile();
 
   const items = [
     {

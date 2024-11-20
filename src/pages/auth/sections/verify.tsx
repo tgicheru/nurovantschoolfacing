@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import OtpInput from "react-otp-input";
 import Countdown from "react-countdown";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useResend, useVerify } from "../../../hooks/auth/authentications";
+import { useRegVerify, useForget as useResend } from "../../../hooks/auth/authentications";
 
 function VerifySection() {
   const otpLen = 4;
@@ -11,17 +11,22 @@ function VerifySection() {
   const [otp, setOTP] = useState("");
   const [params] = useSearchParams();
   const email = params.get("email");
+  const otp_type = params.get("type");
 
-  const { mutate, isLoading } = useVerify();
+  const { mutate, isLoading } = useRegVerify(({ reference_id }: any) => {
+    if (!reference_id) return navigate("/auth/login")
+    navigate("/auth/reset/".concat(reference_id))
+  });
 
-  const handleSubmit = () => navigate("/")
   const [timeLapse, setTimeLapse] = useState(Date.now() + 30000);
   const { mutate: resendAction, isLoading: resendLoad } = useResend();
+
   const handleResend = () => {
-    resendAction({ email });
+    resendAction({ email, otp_type });
     setTimeLapse(Date.now() + 30000);
   };
-
+  
+  const handleSubmit = () => mutate({ email, otp, otp_type })
   return (
     <div className="w-full space-y-5">
       <div className="w-full">
@@ -48,7 +53,7 @@ function VerifySection() {
           />
         </Form.Item>
 
-        <div hidden className="text-center text-base font-normal">
+        <div className="text-center text-base font-normal">
           <Countdown
             autoStart
             date={timeLapse}
@@ -57,7 +62,7 @@ function VerifySection() {
                 <Button
                   loading={resendLoad}
                   onClick={handleResend}
-                  className="!bg-transparent !p-0 !m-0 font-bold !underline hover:!text-silver"
+                  className="!bg-transparent !p-0 !m-0 font-bold !underline hover:!text-primary"
                   size="large"
                   type="text"
                 >
