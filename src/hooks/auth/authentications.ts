@@ -3,10 +3,150 @@ import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router";
 import authAtom from "../../atoms/auth/auth.atom";
 import { useMutation, useQueryClient } from "react-query";
-import { postRequest, putRequest } from "../../context/requestTypes";
+import { patchRequest, postRequest, putRequest } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
+
+
+// New API Hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+export function useRegister(successAction?: any) {
+  const url = "/teacher_api/auth/sign_up";
+  const axios = useContext(AxiosContext);
+
+  return useMutation(
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response)
+      },
+      onError: (error: any) => notification.error({
+        message: "Error!",
+        description: error?.message,
+      }),
+    }
+  );
+}
+
+export function useRegVerify(successAction?: any) {
+  const url = "/teacher_api/auth/verify_otp";
+  const axios = useContext(AxiosContext);
+
+  return useMutation(
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response);
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message,
+        }),
+    }
+  );
+}
+
+export function useLogin(successAction?: any) {
+  const url = "/teacher_api/auth/login";
+  const axios = useContext(AxiosContext);
+  const [auth, setAuth] = useRecoilState(authAtom);
+
+  return useMutation(
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        setAuth({ ...auth, isLoggedIn: true, user: response?.data });
+        successAction?.(response)
+      },
+      onError: (error: any) => notification.error({
+        message: "Error!",
+        description: error?.message,
+      }),
+    }
+  );
+}
+
+export function useForget(successAction?: any) {
+  const url = "/teacher_api/auth/send_otp";
+  const axios = useContext(AxiosContext);
+
+  return useMutation(
+    (payload: any) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response);
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message,
+        }),
+    }
+  );
+}
+
+export function useReset(successAction?: any) {
+  const url = "/teacher_api/auth/reset_password";
+  const axios = useContext(AxiosContext);
+
+  return useMutation(
+    (payload: any) => patchRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response);
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message,
+        }),
+    }
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Old API Hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export function useEmailLogin() {
   // "/api_backend/teachers/signin_email"

@@ -9,13 +9,12 @@ function AuthPage() {
   const [param, setParam] = useSearchParams()
   const keys = ["details", "verify", "other"]
   const [activeIndex, setActiveIndex] = useState(0)
-  // const [payload, setPayload] = useRecoilState(onboardingAtom)
   const [active, setActive] = useState(param.get("section") || "details")
 
-  const handleSection = (section?: string) => {
+  const handleSection = (section?: string, extra?: any) => {
     const nextIndex = (section ? keys.findIndex(d => isEqual(d, section)) : (activeIndex + 1))
     const nextSection = keys?.find((d, idx) => isEqual(idx, nextIndex))
-    setParam({section: section || nextSection || ""})
+    setParam({section: section || nextSection || "", ...(extra || {})})
     setActive(section || nextSection || "")
     setActiveIndex(nextIndex)
   }

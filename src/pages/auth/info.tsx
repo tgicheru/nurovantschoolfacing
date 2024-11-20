@@ -12,7 +12,7 @@ import InformationSection from "./sections/info";
 import RecordingSection from "./sections/recording";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-function AuthPage() {
+function InfoPage() {
   const navigate = useNavigate()
   const [param, setParam] = useSearchParams()
   const [activeIndex, setActiveIndex] = useState(0)
@@ -58,4 +58,4 @@ function AuthPage() {
   )
 }
 
-export default AuthPage;
+export default InfoPage;
