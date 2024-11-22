@@ -182,7 +182,7 @@ const CourseDetails = () => {
                       className="w-full cursor-pointer"
                       key={idx}
                       onClick={() => {
-                        // navigate("/courses/details");
+                        navigate("/courses/lecture");
                       }}
                     >
                       <BorderHOC className="" rounded="rounded-[10px]">
@@ -248,7 +248,7 @@ const CourseDetails = () => {
                       className="w-full cursor-pointer"
                       key={idx}
                       onClick={() => {
-                        // navigate("/courses/details");
+                        navigate("/courses/lecture");
                       }}
                     >
                       <BorderHOC className="w-full" rounded="rounded-[10px]">
