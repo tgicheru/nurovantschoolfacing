@@ -35,3 +35,11 @@
   background: white !important;
   color: #4970fc !important;
 }
+
+.top-prompt {
+  width: 100%;
+  background-image: url(../assets/bubble-bg.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

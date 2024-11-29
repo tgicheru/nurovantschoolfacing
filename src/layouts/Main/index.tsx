@@ -21,6 +21,8 @@ import { GoGear } from "react-icons/go";
 import { FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import { promptAtom } from "../../atoms/other/other.atom";
+import { MdClose } from "react-icons/md";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -36,7 +38,10 @@ const MainLayout = ({ children }: Props) => {
   const onOpen = () => setIsOpen(true);
   const { pathname } = useLocation();
   const { user } = useRecoilValue(authAtom);
+  const [isPrompt, setIsPrompt] = useRecoilState(promptAtom);
   const [isMobile, setIsMobile] = useState<null | boolean>(null);
+  const onPromptClose = () => setIsPrompt(false);
+
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -146,6 +151,20 @@ const MainLayout = ({ children }: Props) => {
             onMenuClose={onMenuClose}
           />
         </div> */}
+        {isPrompt && (
+          <div className="w-full top-prompt bg-primary text-white flex flex-col md:flex-row justify-center text-center items-center gap-3 p-2 px-5 relative">
+            <p className="text-base font-bold">Want to see Nurovant from a student perspective?</p>
+            <Link to="https://app.nurovant.com/page/demo" className="hover:underline">See Demo</Link>
+            <Button
+              className="bg-[#101828] absolute top-2 right-5"
+              onClick={onPromptClose}
+              icon={<MdClose />}
+              shape="circle"
+              type="primary"
+              size="small"
+            />
+          </div>
+        )}
         <div className="w-full md:px-10 bg-white sticky top-0 z-10">
           <div className="flex justify-between items-center py-4 px-4 md:py-5 md:px-0">
             <Link to="/"><img src={Logo} alt="logo" className="hidden lg:block" /></Link>
