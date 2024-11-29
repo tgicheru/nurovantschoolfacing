@@ -15,8 +15,9 @@ import QuizContent from "./components/QuizContent";
 import FlashCardsContent from "./components/FlashCardsContent";
 import RecapContent from "./components/RecapContent";
 import DiscussContent from "./components/DiscussContent";
+import { useSearchParams } from "react-router-dom";
 
-const LabelComponent = ({
+export const LabelComponent = ({
   isActive,
   label,
   icon,
@@ -24,7 +25,7 @@ const LabelComponent = ({
 }: {
   isActive: boolean;
   label: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   length: number;
 }) => {
   return (
@@ -54,6 +55,8 @@ const LabelComponent = ({
 
 const LectureDetail = () => {
   const navigate = useNavigate();
+  const [param, setParam] = useSearchParams();
+
   const lecture = {
     title: "Algebra",
     createdAt: "Created 11 Nov, 2024 • 12:09PM",
@@ -66,12 +69,14 @@ const LectureDetail = () => {
       createdAt: "Created 11 Nov, 2024 • 12:09PM",
     },
   ]);
-  const [activeTab, setActiveTab] = React.useState("lesson plan");
+  const [activeTab, setActiveTab] = React.useState(
+    param.get("tab") || "lesson-plan"
+  );
 
   const tabs = React.useMemo(
     () => [
       {
-        key: "lesson plan",
+        key: "lesson-plan",
         // column: lectureColumns,
         data: [],
         label: (isActive: boolean) => (
@@ -161,18 +166,11 @@ const LectureDetail = () => {
         content: <DiscussContent data={data} isGridView={isGridView} />,
       },
     ],
-    [
-      data,
-      isGridView,
-      setData,
-      activeTab,
-      setActiveTab,
-      setIsGridView,
-      navigate,
-    ]
+    [data, isGridView]
   );
 
   const handleTab = (tab: string) => {
+    setParam({ tab });
     setActiveTab(tab);
   };
 
@@ -180,6 +178,13 @@ const LectureDetail = () => {
     <div className="w-full flex flex-col gap-5">
       <Breadcrumb
         items={[
+          {
+            title: (
+              <a href="/courses" className="hover:bg-none">
+                Courses
+              </a>
+            ),
+          },
           {
             title: (
               <a href="/courses/details" className="hover:bg-none">
@@ -221,7 +226,7 @@ const LectureDetail = () => {
       </div>
 
       <BorderHOC className="" rounded="rounded-[10px]">
-        <div className="w-full px-[15px] pt-[15px]">
+        <div className="w-full px-[15px] pt-[15px] min-h-[435px]">
           <div className="w-full pb-[10px]">
             <div className="w-full flex items-center justify-between">
               <div className="flex items-center gap-5">

@@ -76,7 +76,7 @@ const LessonPlanContent = ({
                     <div className="flex items-center gap-4 px-4 py-[10px]">
                       <div className="h-[50px] w-[50px]">
                         <BorderHOC rounded="rounded-[10px]">
-                          <div className="h-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
+                          <div className="h-[50px] flex-shrink-0 bg-[#FDDBDB] rounded-[10px] flex items-center justify-center">
                             <h5 className="text-[24px] leading-[30px] font-bold text-black">
                               <IoDocumentTextOutline className="text-[]" />
                             </h5>
@@ -103,7 +103,7 @@ const LessonPlanContent = ({
               ))}
             </div>
           )}
-          <BorderHOC className="mt-[10px]" />
+          {/* <BorderHOC className="mt-[10px]" />
           <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
             <p className="text-sm text-neutral-900">Page 1 of 10</p>
             <div className="flex items-center gap-4">
@@ -123,7 +123,7 @@ const LessonPlanContent = ({
                 </BorderHOC>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       ) : (
         <div className="w-full flex items-center justify-center py-[72px]">

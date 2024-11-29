@@ -1,12 +1,14 @@
-import { Button, Form, Input, message, QRCode } from "antd";
+import { Button, Form, Input, message } from "antd";
 import React from "react";
 import { WiStars } from "react-icons/wi";
 import { BorderHOC } from "../../../../../components";
 import { PiDotsThreeOutlineDuotone } from "react-icons/pi";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import EmptyState from "../../../../../assets/EmptyState.svg";
 import { RiFileCopy2Line } from "react-icons/ri";
+import { BsQrCodeScan } from "react-icons/bs";
+import { useSearchParams } from "react-router-dom";
 
 export const TruncatedText = ({
   text,
@@ -33,6 +35,7 @@ const QuizContent = ({
 }) => {
   const navigate = useNavigate();
   const url = `https://app.nurovant.com/page/quiz/?id=673b06f088793a2c42ede9ec`;
+  const { pathname } = useLocation();
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -49,7 +52,7 @@ const QuizContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate(`${pathname}/quiz`);
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -69,13 +72,16 @@ const QuizContent = ({
                           <PiDotsThreeOutlineDuotone className="text-[20px]" />
                         </button>
                       </div>
-                      <div className="flex flex-col">
-                        <h2 className="text-sm text-neutral-900 font-bold">
-                          {"Algebra 101 Quiz"}
-                        </h2>
-                        <p className="text-[12px] leading-[18px] text-neutral-600">
-                          {lecture.createdAt}
-                        </p>
+                      <div className="w-full flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <h2 className="text-sm text-neutral-900 font-bold">
+                            {"Algebra 101 Quiz"}
+                          </h2>
+                          <p className="text-[12px] leading-[18px] text-neutral-600">
+                            {lecture.createdAt}
+                          </p>
+                        </div>
+                        <BsQrCodeScan />
                       </div>
                     </div>
                   </BorderHOC>
@@ -96,7 +102,7 @@ const QuizContent = ({
                     <div className="flex items-center gap-4 px-4 py-[10px]">
                       <div className="h-[50px] w-[50px]">
                         <BorderHOC rounded="rounded-[10px]">
-                          <div className="h-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
+                          <div className="h-[50px] flex-shrink-0 bg-[#FDDBDB] rounded-[10px] flex items-center justify-center">
                             <h5 className="text-[24px] leading-[30px] font-bold text-black">
                               <IoDocumentTextOutline className="text-[]" />
                             </h5>
@@ -157,10 +163,11 @@ const QuizContent = ({
                               >
                                 <BorderHOC rounded="rounded-[5px]">
                                   <div className="h-[28px] w-[34px] flex-shrink-0  rounded-[5px] flex items-center justify-center py-[6px] px-[9px]">
-                                    <QRCode
+                                    {/* <QRCode
                                       value={"https://ant.design/" || "-"}
                                       size={16}
-                                    />
+                                    /> */}
+                                    <BsQrCodeScan />
                                   </div>
                                 </BorderHOC>
                               </button>
@@ -178,27 +185,6 @@ const QuizContent = ({
               ))}
             </div>
           )}
-          <BorderHOC className="mt-[10px]" />
-          <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
-            <p className="text-sm text-neutral-900">Page 1 of 10</p>
-            <div className="flex items-center gap-4">
-              <button className="">
-                <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                  <div className="py-[10px] w-[106px] flex items-center justify-center">
-                    <span className="text-[#344054] text-sm">Previous</span>
-                  </div>
-                </BorderHOC>
-              </button>
-
-              <button className="">
-                <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                  <div className="py-[10px] w-[80px] flex items-center justify-center">
-                    <span className="text-[#344054] text-sm">Next</span>
-                  </div>
-                </BorderHOC>
-              </button>
-            </div>
-          </div>
         </div>
       ) : (
         <div className="w-full flex items-center justify-center py-[72px]">

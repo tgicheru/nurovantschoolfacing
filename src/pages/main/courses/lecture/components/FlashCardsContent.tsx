@@ -4,7 +4,7 @@ import { WiStars } from "react-icons/wi";
 import { BorderHOC } from "../../../../../components";
 import { PiBookOpenText, PiDotsThreeOutlineDuotone } from "react-icons/pi";
 import { TbCards, TbMessageQuestion } from "react-icons/tb";
-import { BsRepeat } from "react-icons/bs";
+import { BsQrCodeScan, BsRepeat } from "react-icons/bs";
 import {
   IoChatboxEllipsesOutline,
   IoDocumentTextOutline,
@@ -40,7 +40,7 @@ const FlashCardsContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/flashcard");
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -60,13 +60,16 @@ const FlashCardsContent = ({
                           <PiDotsThreeOutlineDuotone className="text-[20px]" />
                         </button>
                       </div>
-                      <div className="flex flex-col">
-                        <h2 className="text-sm text-neutral-900 font-bold">
-                          {"Algebra 101 Flash Cards"}
-                        </h2>
-                        <p className="text-[12px] leading-[18px] text-neutral-600">
-                          {lecture.createdAt}
-                        </p>
+                      <div className="w-full flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <h2 className="text-sm text-neutral-900 font-bold">
+                            {"Algebra 101 Flash Cards"}
+                          </h2>
+                          <p className="text-[12px] leading-[18px] text-neutral-600">
+                            {lecture.createdAt}
+                          </p>
+                        </div>
+                        <BsQrCodeScan />
                       </div>
                     </div>
                   </BorderHOC>
@@ -80,14 +83,14 @@ const FlashCardsContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/flashcard");
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">
                     <div className="flex items-center gap-4 px-4 py-[10px]">
                       <div className="h-[50px] w-[50px]">
                         <BorderHOC rounded="rounded-[10px]">
-                          <div className="h-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
+                          <div className="h-[50px] flex-shrink-0 bg-[#FDDBDB] rounded-[10px] flex items-center justify-center">
                             <h5 className="text-[24px] leading-[30px] font-bold text-black">
                               <IoDocumentTextOutline className="text-[]" />
                             </h5>
@@ -148,10 +151,11 @@ const FlashCardsContent = ({
                               >
                                 <BorderHOC rounded="rounded-[5px]">
                                   <div className="h-[28px] w-[34px] flex-shrink-0  rounded-[5px] flex items-center justify-center py-[6px] px-[9px]">
-                                    <QRCode
+                                    {/* <QRCode
                                       value={"https://ant.design/" || "-"}
                                       size={16}
-                                    />
+                                    /> */}
+                                    <BsQrCodeScan />
                                   </div>
                                 </BorderHOC>
                               </button>
@@ -169,7 +173,7 @@ const FlashCardsContent = ({
               ))}
             </div>
           )}
-          <BorderHOC className="mt-[10px]" />
+          {/* <BorderHOC className="mt-[10px]" />
           <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
             <p className="text-sm text-neutral-900">Page 1 of 10</p>
             <div className="flex items-center gap-4">
@@ -189,7 +193,7 @@ const FlashCardsContent = ({
                 </BorderHOC>
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       ) : (
         <div className="w-full flex items-center justify-center py-[72px]">
