@@ -11,3 +11,8 @@ export const onboardingAtom = atom({
   default: {role: "teacher"},
   effects_UNSTABLE: [persistAtom],
 });
+
+export const promptAtom = atom<any>({
+  key: "prompt_atom",
+  default: true,
+});

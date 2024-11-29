@@ -82,7 +82,7 @@ function AdaptiveLearning() {
   if (id) return <DetailsSection />
   return (
     <Spin spinning={getALsLoad}>
-      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
+      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6 font-montserrat">
         <div className="px-5 md:px-10 flex justify-end items-center">
           <Button
             size="large"

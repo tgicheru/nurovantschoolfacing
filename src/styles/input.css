@@ -4,6 +4,10 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
 .auth-layout {
   width: 100%;
   min-height: 100vh;
@@ -22,12 +26,20 @@
 }
 
 .ant-menu .ant-menu-submenu-selected .ant-menu-item-selected,
-.ant-menu-submenu:hover .ant-menu-item:hover{
-  color: #4970FC !important;
+.ant-menu-submenu:hover .ant-menu-item:hover {
+  color: #4970fc !important;
   background: transparent !important;
 }
 .ant-menu .ant-menu-item:hover,
-.ant-menu-item-selected{
+.ant-menu-item-selected {
   background: white !important;
-  color: #4970FC !important;
+  color: #4970fc !important;
+}
+
+.top-prompt {
+  width: 100%;
+  background-image: url(../assets/bubble-bg.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
