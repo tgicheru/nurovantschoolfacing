@@ -384,7 +384,9 @@ const CourseDetails = () => {
                 </div>
 
                 <Button
-                  onClick={() => {}}
+                  onClick={() => {
+                    setIsOpen(true);
+                  }}
                   className="bg-primary !rounded-[1000px]"
                   type="primary"
                   size="large"

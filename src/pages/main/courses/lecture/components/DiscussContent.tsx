@@ -40,7 +40,7 @@ const DiscussContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/discuss");
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -80,7 +80,7 @@ const DiscussContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/discuss");
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">

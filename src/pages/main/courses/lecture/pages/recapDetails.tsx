@@ -3,23 +3,13 @@ import { MdOutlineArrowBackIos } from "react-icons/md";
 import { IoCopyOutline } from "react-icons/io5";
 import { LuDownloadCloud } from "react-icons/lu";
 import { useNavigate } from "react-router";
+import BackButton from "../components/BackButton";
 
 const RecapDetailsPage = () => {
-  const navigate = useNavigate();
   return (
     <div className="w-full flex flex-col gap-[50px]">
       <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex items-center gap-[5px]">
-          <button
-            onClick={() => {
-              navigate(-1);
-            }}
-            className="flex items-start"
-          >
-            <MdOutlineArrowBackIos className="text-[14px] text-neutral-900" />
-          </button>
-          <h2 className="text-sm font-bold text-neutral-900">Back to Recap</h2>
-        </div>
+        <BackButton text="Back to Recap" />
         <div className="flex flex-row items-center gap-4">
           <button className="w-[40px] h-[40px] flex items-center justify-center">
             <IoCopyOutline className="text-[14px] text-neutral-900" />
