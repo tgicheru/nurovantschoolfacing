@@ -31,6 +31,9 @@ const RecapsPage = lazy(
 const RecapsDetailsPage = lazy(
   () => import("../pages/main/courses/lecture/pages/recapDetails")
 );
+const DiscussPage = lazy(
+  () => import("../pages/main/courses/lecture/pages/discuss")
+);
 const Settings = lazy(() => import("../pages/main/settings"));
 const ProofReader = lazy(() => import("../pages/main/proofreader"));
 const SpeechRate = lazy(() => import("../pages/main/speechrate"));
@@ -80,6 +83,11 @@ export const routes = [
     path: "/courses/lecture/recap/details",
     label: "Lecture Recap Details",
     component: <RecapsDetailsPage />,
+  },
+  {
+    path: "/courses/lecture/discuss",
+    label: "Lecture Discuss",
+    component: <DiscussPage />,
   },
   {
     label: "Adaptive Learning",
