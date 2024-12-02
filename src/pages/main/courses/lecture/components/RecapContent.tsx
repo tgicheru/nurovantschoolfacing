@@ -40,7 +40,7 @@ const RecapContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/recap");
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -83,7 +83,7 @@ const RecapContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate("/courses/lecture/recap");
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">

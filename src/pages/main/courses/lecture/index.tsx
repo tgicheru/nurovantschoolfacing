@@ -26,7 +26,7 @@ export const LabelComponent = ({
   isActive: boolean;
   label: string;
   icon?: React.ReactNode;
-  length: number;
+  length?: number;
 }) => {
   return (
     <div className="flex justify-center px-[9px] h-[39px]">
@@ -41,13 +41,17 @@ export const LabelComponent = ({
         >
           {label}
         </p>
-        <Tag
-          className={`!bg-lit !border-0 h-6 w-6 rounded-[100px] flex items-center justify-center ${
-            isActive ? "!bg-[#E1E7FF] text-primary" : "text-neutral-400"
-          }`}
-        >
-          {length}
-        </Tag>
+        {length ? (
+          <Tag
+            className={`!bg-lit !border-0 h-6 w-6 rounded-[100px] flex items-center justify-center ${
+              isActive ? "!bg-[#E1E7FF] text-primary" : "text-neutral-400"
+            }`}
+          >
+            {length}
+          </Tag>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

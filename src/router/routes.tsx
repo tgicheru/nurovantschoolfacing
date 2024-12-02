@@ -25,6 +25,12 @@ const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
 const FlashCardPage = lazy(
   () => import("../pages/main/courses/lecture/pages/flashcards")
 );
+const RecapsPage = lazy(
+  () => import("../pages/main/courses/lecture/pages/recaps")
+);
+const RecapsDetailsPage = lazy(
+  () => import("../pages/main/courses/lecture/pages/recapDetails")
+);
 const Settings = lazy(() => import("../pages/main/settings"));
 const ProofReader = lazy(() => import("../pages/main/proofreader"));
 const SpeechRate = lazy(() => import("../pages/main/speechrate"));
@@ -64,6 +70,16 @@ export const routes = [
     path: "/courses/lecture/flashcard",
     label: "Lecture Flashcard",
     component: <FlashCardPage />,
+  },
+  {
+    path: "/courses/lecture/recap",
+    label: "Lecture Recap",
+    component: <RecapsPage />,
+  },
+  {
+    path: "/courses/lecture/recap/details",
+    label: "Lecture Recap Details",
+    component: <RecapsDetailsPage />,
   },
   {
     label: "Adaptive Learning",
