@@ -53,7 +53,7 @@ function LoginPage() {
         <Divider className="text-sm font-normal">Or sign in with</Divider>
 
         {/* Other login options */}
-        <div className="flex w-full items-center justify-center flex-row gap-5">
+        <div className="flex w-full items-center justify-center flex-row gap-5 !hidden">
           <Button
             type="text"
             size="large"
