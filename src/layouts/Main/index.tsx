@@ -22,6 +22,7 @@ import { FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { BorderHOC } from "../../components";
+import NotificationStatusImg from "../../assets/notification-status.svg";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -105,6 +106,20 @@ const MainLayout = ({ children }: Props) => {
 
   const menu = [
     {
+      key: "1",
+      label: (
+        <div>
+          <p className="text-[14px] leading-[20px] font-semibold text-secondary">
+            {user?.info?.name}
+          </p>
+          <p className="text-[14px] leading-[20px] font-normal text-gray">
+            {user?.info?.email}
+          </p>
+        </div>
+      ),
+      disabled: true,
+    },
+    {
       key: "/settings",
       icon: <GoGear className="!text-base" />,
       label: <Link to="/settings">Settings</Link>,
@@ -164,31 +179,45 @@ const MainLayout = ({ children }: Props) => {
                   />
                 </Link>
 
-                <Dropdown menu={{ items: menu }} trigger={["click"]}>
-                  <div className="cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <Avatar
-                        alt="user"
-                        size="large"
-                        src={user?.info?.profile_img}
-                      >
-                        {extractAvatar(
-                          user?.info?.name || user?.info?.email || "USER"
-                        )}
-                      </Avatar>
-                      <div>
-                        <p className="text-[14px] leading-[20px] font-semibold text-secondary">
-                          {user?.info?.name}
-                        </p>
-                        <p className="text-[14px] leading-[20px] font-normal text-gray">
-                          {user?.info?.email}
+                <div className="flex items-center gap-[50px]">
+                  <div className="w-[122px] h-[40px]">
+                    <BorderHOC rounded="rounded-[1000px]">
+                      <div className="py-[10px] w-full px-[14px] items-center justify-center bg-gradient-to-bl from-[#ffffff] to-[#FCF5EB] rounded-[1000px]">
+                        <p className="text-sm font-bold text-neutral-900 text-center">
+                          Upgrade Plan
                         </p>
                       </div>
-
-                      <FaChevronDown className="text-[14px] leading-[20px] cursor-pointer" />
-                    </div>
+                    </BorderHOC>
                   </div>
-                </Dropdown>
+
+                  <div className="flex items-center gap-[25px]">
+                    <button
+                      onClick={() => {}}
+                      className="h-[40px] w-[40px] flex items-center justify-center"
+                    >
+                      <img
+                        src={NotificationStatusImg}
+                        alt="notification"
+                        className="w-[20px] h-[20px]"
+                      />
+                    </button>
+                    <Dropdown menu={{ items: menu }} trigger={["click"]}>
+                      <div className="cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            alt="user"
+                            size="large"
+                            src={user?.info?.profile_img}
+                          >
+                            {extractAvatar(
+                              user?.info?.name || user?.info?.email || "USER"
+                            )}
+                          </Avatar>
+                        </div>
+                      </div>
+                    </Dropdown>
+                  </div>
+                </div>
 
                 <Button
                   icon={
@@ -259,6 +288,26 @@ const MainLayout = ({ children }: Props) => {
           {/* main layout pages children  */}
           <div className="w-full h-full overflow-y-auto p-5 lg:max-w-7xl lg:mx-auto">
             {children}
+          </div>
+        </div>
+
+        {/* Static footer at bottom of screen */}
+        <div className="w-full bg-white py-4">
+          <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
+            <p className="text-[14px] leading-[20px] text-neutral-600">
+              &copy; NurovantAI 2024. All rights reserved..
+            </p>
+            <div className="flex items-center gap-[10px]">
+              <p className="text-[14px] leading-[20px] text-neutral-600">
+                Contact
+              </p>
+              <p className="text-[14px] leading-[20px] text-neutral-600">
+                Terms of Service
+              </p>
+              <p className="text-[14px] leading-[20px] text-neutral-600">
+                Privacy Policy
+              </p>
+            </div>
           </div>
         </div>
       </div>
