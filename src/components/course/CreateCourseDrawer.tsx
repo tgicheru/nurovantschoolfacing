@@ -279,14 +279,14 @@ const CreateCourseDrawer = ({
     console.log({ response });
   };
 
-  // const { data: jurisdictionData } = useGetJurisdiction();
+  const { data: jurisdictionData } = useGetJurisdiction();
   const { mutate: createCourse, isLoading: createCourseLoad } = useCreateCourse(
     () => {
       onClose();
       refetch();
     }
   );
-  // console.log({ jurisdictionData });
+  console.log({ jurisdictionData });
 
   const handleStep1 = () => {
     // check if course_name, course_image, curriculum is set
