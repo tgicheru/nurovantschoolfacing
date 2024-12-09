@@ -1,11 +1,13 @@
 import AWS from "aws-sdk";
 import Stripe from "stripe";
 import { message, notification } from "antd";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import authAtom from "../atoms/auth/auth.atom";
 import createLecturesAtom from "../atoms/other/createLectures.atom";
 import { removeSpacesFromPdfName } from "../context/utils";
+import axios, { AxiosInstance } from "axios";
+import { getRequest } from "../context/requestTypes";
 
 export const fileTypes = (key: string, idx?: number) => {
   const ext = key?.split("/")?.[idx || 1];
@@ -106,45 +108,48 @@ export function useAWSUpload(
   });
   // Create an S3 service object
   const s3 = new AWS.S3();
-  const handleFormat = (value: string) => value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_")
-  return useMutation(
-    async (payload: any) => {
-      const uploadParams = {
-        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id || "user"}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
-        Bucket: buckets?.[(type || "content") as keyof typeof buckets],
-        Body: payload as unknown as Body,
-        ContentType: payload?.type,
-      };
-      return new Promise((resolve, reject) => {
-        const upload = s3.upload(uploadParams);
+  const handleFormat = (value: string) =>
+    value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_");
+  return useMutation(async (payload: any) => {
+    const uploadParams = {
+      Key: handleFormat(
+        `${new Date().toISOString().replaceAll(".", "_")}_${
+          user?.info?._id || "user"
+        }_${
+          payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`
+        }`
+      ),
+      Bucket: buckets?.[(type || "content") as keyof typeof buckets],
+      Body: payload as unknown as Body,
+      ContentType: payload?.type,
+    };
+    return new Promise((resolve, reject) => {
+      const upload = s3.upload(uploadParams);
 
-        // Track progress of the chunk upload
-        upload.on("httpUploadProgress", (progress) => {
-          const uploadedBytes = progress.loaded;
-          const totalBytes = progress.total;
-          const percentProgress = Math.round(((uploadedBytes / totalBytes) * 100));
+      // Track progress of the chunk upload
+      upload.on("httpUploadProgress", (progress) => {
+        const uploadedBytes = progress.loaded;
+        const totalBytes = progress.total;
+        const percentProgress = Math.round((uploadedBytes / totalBytes) * 100);
 
-          // console.log(`Uploaded ${percentProgress}%`);
-          setLectureState((prev) => ({...prev,
-            progressBar: percentProgress,
-          }));
-        });
-
-        upload.send((err, data) => {
-          if (err) {
-            reject(err);
-            message.error("File upload failed!");
-            console.error(err);
-            errorAction?.();
-          } else {
-            console.log("AWS DATA", data);
-            resolve(data);
-            successAction?.(data);
-          }
-        });
+        // console.log(`Uploaded ${percentProgress}%`);
+        setLectureState((prev) => ({ ...prev, progressBar: percentProgress }));
       });
-    },
-  );
+
+      upload.send((err, data) => {
+        if (err) {
+          reject(err);
+          message.error("File upload failed!");
+          console.error(err);
+          errorAction?.();
+        } else {
+          console.log("AWS DATA", data);
+          resolve(data);
+          successAction?.(data);
+        }
+      });
+    });
+  });
 }
 
 export function useAWSUploadALS(
@@ -170,45 +175,48 @@ export function useAWSUploadALS(
   });
   // Create an S3 service object
   const s3 = new AWS.S3();
-  const handleFormat = (value: string) => value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_")
-  return useMutation(
-    async (payload: any) => {
-      const uploadParams = {
-        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id || "user"}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
-        Bucket: buckets?.[(type || "content") as keyof typeof buckets],
-        Body: payload as unknown as Body,
-        ContentType: payload?.type,
-      };
-      return new Promise((resolve, reject) => {
-        const upload = s3.upload(uploadParams);
+  const handleFormat = (value: string) =>
+    value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_");
+  return useMutation(async (payload: any) => {
+    const uploadParams = {
+      Key: handleFormat(
+        `${new Date().toISOString().replaceAll(".", "_")}_${
+          user?.info?._id || "user"
+        }_${
+          payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`
+        }`
+      ),
+      Bucket: buckets?.[(type || "content") as keyof typeof buckets],
+      Body: payload as unknown as Body,
+      ContentType: payload?.type,
+    };
+    return new Promise((resolve, reject) => {
+      const upload = s3.upload(uploadParams);
 
-        // Track progress of the chunk upload
-        upload.on("httpUploadProgress", (progress) => {
-          const uploadedBytes = progress.loaded;
-          const totalBytes = progress.total;
-          const percentProgress = Math.round(((uploadedBytes / totalBytes) * 100));
+      // Track progress of the chunk upload
+      upload.on("httpUploadProgress", (progress) => {
+        const uploadedBytes = progress.loaded;
+        const totalBytes = progress.total;
+        const percentProgress = Math.round((uploadedBytes / totalBytes) * 100);
 
-          // console.log(`Uploaded ${percentProgress}%`);
-          setLectureState((prev) => ({...prev,
-            progressBar: percentProgress,
-          }));
-        });
-
-        upload.send((err, data) => {
-          if (err) {
-            reject(err);
-            message.error("File upload failed!");
-            console.error(err);
-            errorAction?.();
-          } else {
-            console.log("AWS DATA", data);
-            resolve(data);
-            successAction?.(data);
-          }
-        });
+        // console.log(`Uploaded ${percentProgress}%`);
+        setLectureState((prev) => ({ ...prev, progressBar: percentProgress }));
       });
-    },
-  );
+
+      upload.send((err, data) => {
+        if (err) {
+          reject(err);
+          message.error("File upload failed!");
+          console.error(err);
+          errorAction?.();
+        } else {
+          console.log("AWS DATA", data);
+          resolve(data);
+          successAction?.(data);
+        }
+      });
+    });
+  });
 }
 
 export function useStripePay(successAction?: any) {
@@ -228,6 +236,30 @@ export function useStripePay(successAction?: any) {
         //   description: response?.message || "action successful.",
         // });
       },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+export function useGetJurisdiction(successAction?: any) {
+  const url = "http://api.commonstandardsproject.com/api/v1/jurisdictions/";
+  return useQuery(
+    ["get-jurisdiction"],
+    () =>
+      getRequest(axios as unknown as AxiosInstance, url, {
+        headers: {
+          "Api-Key": `${process.env["REACT_APP_COMMON_WEALTH_API_KEY"]}`,
+        },
+      }),
+    {
       onError: (error: any) =>
         notification.error({
           message: "Error!",

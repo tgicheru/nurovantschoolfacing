@@ -18,7 +18,7 @@ const TermsAndCondition = lazy(
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Overview = lazy(() => import("../pages/main/overview"));
-const Courses = lazy(() => import("../pages/main/courses"));
+const Courses = lazy(() => import("../pages/main/courses/index"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
 const LectureDetails = lazy(() => import("../pages/main/courses/lecture"));
 const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
