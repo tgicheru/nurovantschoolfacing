@@ -258,17 +258,17 @@ export function useGetJurisdiction(successAction?: any) {
         headers: {
           "Api-Key": `${process.env["REACT_APP_COMMON_WEALTH_API_KEY"]}`,
         },
-      }),
-    {
-      onError: (error: any) =>
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        }),
-    }
+      })
+    // {
+    //   onError: (error: any) =>
+    //     notification.error({
+    //       message: "Error!",
+    //       description: error?.message
+    //         ? Object.entries(error?.errors || { key: [error?.message] })
+    //             ?.map(([, value]) => (value as any)?.join(", "))
+    //             ?.join(", ")
+    //         : "something went wrong please check internet connection.",
+    //     }),
+    // }
   );
 }
