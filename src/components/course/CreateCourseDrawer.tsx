@@ -7,7 +7,7 @@ import {
   Upload,
   UploadProps,
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LuUploadCloud } from "react-icons/lu";
 import { BorderHOC } from "../BorderHOC";
 import { FiUploadCloud } from "react-icons/fi";
@@ -16,34 +16,50 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import { MdOutlineArrowBackIos } from "react-icons/md";
 import DummyCoursePic from "../../assets/dummyCourse.svg";
 import AWS from "aws-sdk";
+import { grades, states } from "../../constants";
+import axios from "axios";
+import { useGetJurisdiction } from "../../hooks/otherhooks";
+import { useCreateCourse } from "../../hooks/courses/courses";
 // import { LoadingOutlined } from "@ant-design/icons";
 
 type CreateCourseDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
+  refetch: any;
 };
 
 type InitialValuesTypes = {
-  course_name: string;
+  course_title: string;
   course_image: string;
-  curriculum: string;
+  curriculum_url: string;
   state: string;
   grade: string;
   institution: string;
-  learning_standard: string;
+  learning_standard_url: string;
+  learning_standards: any[];
 };
 
-const CreateCourseDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
+export function removeSpacesFromPdfName(pdfName: string) {
+  const trimmedName = pdfName.trim();
+  return trimmedName.replace(/[^a-zA-Z0-9.]/g, "");
+}
+
+const CreateCourseDrawer = ({
+  isOpen,
+  onClose,
+  refetch,
+}: CreateCourseDrawerProps) => {
   const width = window.innerWidth;
 
   const [initialValues, setInitialValues] = useState<InitialValuesTypes>({
-    course_name: "",
+    course_title: "",
     course_image: "",
-    curriculum: "",
+    curriculum_url: "",
     state: "",
     grade: "",
-    institution: "",
-    learning_standard: "",
+    institution: "Springfield High School",
+    learning_standard_url: "",
+    learning_standards: [],
   });
 
   const [steps, setSteps] = useState(0);
@@ -54,7 +70,9 @@ const CreateCourseDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
   const [learningStandardUploadLoading, setLearningStandardUploadLoading] =
     useState(false);
 
-  const handleUpldFileClr = (key: "curriculum" | "learning_standard") => {
+  const handleUpldFileClr = (
+    key: "curriculum_url" | "learning_standard_url"
+  ) => {
     // setUpldFile({});
     setInitialValues((prev) => ({
       ...prev,
@@ -88,7 +106,7 @@ const CreateCourseDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
-        .join("_")}--picture-${blob.size}.${blob.type}`, // You can customize the key based on your requirement
+        .join("_")}--${removeSpacesFromPdfName(upldFile?.file?.name || "")}}`, // You can customize the key based on your requirement
       Body: blob,
       ContentType: blob.type,
     };
@@ -120,13 +138,13 @@ const CreateCourseDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
           } else if (data && type === "curriculum") {
             setInitialValues((prev) => ({
               ...prev,
-              curriculum: data.Location,
+              curriculum_url: data.Location,
             }));
             setCurriculumUploadLoading(false);
           } else if (data) {
             setInitialValues((prev) => ({
               ...prev,
-              learning_standard: data.Location,
+              learning_standard_url: data.Location,
             }));
             setLearningStandardUploadLoading(false);
           }
@@ -246,6 +264,59 @@ const CreateCourseDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
         reader.readAsArrayBuffer(file?.originFileObj);
       }
     },
+  };
+
+  const getAllInstitutions = async () => {
+    const response = await axios.get(
+      "http://api.commonstandardsproject.com/api/v1/jurisdictions/",
+      {
+        headers: {
+          "Api-Key": `${process.env["REACT_APP_COMMON_STANDARDS_API_KEY"]}`,
+        },
+      }
+    );
+
+    console.log({ response });
+  };
+
+  // const { data: jurisdictionData } = useGetJurisdiction();
+  const { mutate: createCourse, isLoading: createCourseLoad } = useCreateCourse(
+    () => {
+      onClose();
+      refetch();
+    }
+  );
+  // console.log({ jurisdictionData });
+
+  const handleStep1 = () => {
+    // check if course_name, course_image, curriculum is set
+    // if not, return
+    console.log({ initialValues });
+
+    if (
+      !initialValues.course_title ||
+      !initialValues.course_image ||
+      !initialValues.curriculum_url
+    ) {
+      return;
+    } else {
+      setSteps(2);
+    }
+  };
+
+  const handleStep2 = () => {
+    // check if state, grade, institution, learning_standard is set
+    // if not, return
+
+    if (
+      !initialValues.state ||
+      !initialValues.grade ||
+      !initialValues.institution
+    ) {
+      return;
+    } else {
+      createCourse(initialValues);
+    }
   };
 
   return (
@@ -396,7 +467,7 @@ progress effectively`
               onChange={(e: any) => {
                 setInitialValues((prev) => ({
                   ...prev,
-                  course_name: e.target.value,
+                  course_title: e.target.value,
                 }));
               }}
             />
@@ -415,7 +486,7 @@ progress effectively`
                 )}
               </p>
               <p className="ant-upload-text">
-                {initialValues?.curriculum?.length ? (
+                {initialValues?.curriculum_url?.length ? (
                   "Your file has been uploaded"
                 ) : (
                   <>
@@ -425,9 +496,9 @@ progress effectively`
                 )}
               </p>
               <p className="ant-upload-hint">
-                {initialValues.curriculum.length ? (
+                {initialValues.curriculum_url.length ? (
                   <Button
-                    onClick={() => handleUpldFileClr("curriculum")}
+                    onClick={() => handleUpldFileClr("curriculum_url")}
                     type="text"
                     danger
                     size="large"
@@ -445,8 +516,7 @@ progress effectively`
             // onClick={handleUploadTest}
             // loading={loading}
             onClick={() => {
-              // handleUpload();
-              setSteps(2);
+              handleStep1();
             }}
             className="bg-primary !w-full !h-[48px]"
             type="primary"
@@ -467,25 +537,34 @@ progress effectively`
           <div className="w-full flex gap-5 items-center">
             <div className="flex flex-col gap-[6px] w-full">
               <h4 className="text-sm font-bold text-neutral-900">State</h4>
+
               <Select
                 placeholder="Select state"
-                className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none h-[48px]"
-                options={[
-                  { label: "Lagos", value: "lagos" },
-                  { label: "Abuja", value: "abuja" },
-                ]}
+                className="!h-[50px]"
+                size="large"
+                options={states}
+                onChange={(value) => {
+                  setInitialValues((prev) => ({
+                    ...prev,
+                    state: value as string,
+                  }));
+                }}
               />
             </div>
 
             <div className="flex flex-col gap-[6px] w-full">
               <h4 className="text-sm font-bold text-neutral-900">Grade</h4>
               <Select
-                placeholder="Select Grade"
-                className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none !outline-none !focus:outline-none h-[48px]"
-                options={[
-                  { label: "Lagos", value: "lagos" },
-                  { label: "Abuja", value: "abuja" },
-                ]}
+                placeholder="Select grade level"
+                className="!h-[50px]"
+                size="large"
+                options={grades}
+                onChange={(value) => {
+                  setInitialValues((prev) => ({
+                    ...prev,
+                    grade: value as string,
+                  }));
+                }}
               />
             </div>
           </div>
@@ -513,7 +592,7 @@ progress effectively`
                 <LuUploadCloud className="text-black text-2xl bg-light mx-auto" />
               </p>
               <p className="ant-upload-text">
-                {initialValues.learning_standard.length ? (
+                {initialValues.learning_standard_url.length ? (
                   "Your file has been uploaded"
                 ) : (
                   <>
@@ -523,9 +602,9 @@ progress effectively`
                 )}
               </p>
               <p className="ant-upload-hint">
-                {initialValues.learning_standard.length ? (
+                {initialValues.learning_standard_url.length ? (
                   <Button
-                    onClick={() => handleUpldFileClr("learning_standard")}
+                    onClick={() => handleUpldFileClr("learning_standard_url")}
                     type="text"
                     danger
                     size="large"
@@ -540,22 +619,10 @@ progress effectively`
           </div>
           <Button
             // disabled={!upldFile?.file}
-            // onClick={handleUploadTest}
-            // loading={loading}
+
+            loading={createCourseLoad}
             onClick={() => {
-              // handleUpload();
-              //   setCourses((prev) => [
-              //     ...prev,
-              //     {
-              //       title: "Understanding Mathematics",
-              //       createdAt: "Created 11 Nov, 2024 • 12:09PM",
-              //       institution: "St. Calton High School",
-              //       state: "Alabama",
-              //       grade: "3-5 (Middle School)",
-              //       image: DefaultBanner,
-              //     },
-              //   ]);
-              onClose();
+              handleStep2();
             }}
             className="bg-primary !w-full !h-[48px]"
             type="primary"

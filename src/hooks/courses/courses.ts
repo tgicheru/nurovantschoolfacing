@@ -30,8 +30,8 @@ export function useGetCourses(params?: any) {
   );
 }
 
-export function usePostLecture(successAction?: any) {
-  const url = "/api_backend/lectures/create_teacher_lecture";
+export function useCreateCourse(successAction?: any) {
+  const url = "/teacher_api/courses/create";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>

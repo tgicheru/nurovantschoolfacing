@@ -127,7 +127,7 @@ const Home = () => {
                           <div className="space-y-4 p-4 w-full">
                             <div className="w-full rounded-[10px] overflow-hidden">
                               <img
-                                src={course.image}
+                                src={course.course_image}
                                 onLoadStart={() => {
                                   setIsLoadingImage(true);
                                 }}
@@ -319,7 +319,11 @@ const Home = () => {
         </BorderHOC>
 
         {/* Create Course Drawer >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <CreateCourseDrawer isOpen={isOpen} onClose={onClose} />
+        <CreateCourseDrawer
+          isOpen={isOpen}
+          onClose={onClose}
+          refetch={getCoursesFetch}
+        />
       </div>
     </Spin>
   );
