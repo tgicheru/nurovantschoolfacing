@@ -1,52 +1,33 @@
-import { Button, Drawer, Form, Input, Select, Spin } from "antd";
-import Dragger from "antd/es/upload/Dragger";
-import React, { useState } from "react";
-import { LuUploadCloud } from "react-icons/lu";
-import { useGetQuestionBanks, usePostQuestionBank } from "../../../hooks/questionbank/questionbank";
-import CustomTable from "../../../components/CustomTable";
-import moment from "moment";
-import { useAWSUpload } from "../../../hooks/otherhooks";
-import { useSearchParams } from "react-router-dom";
-import DetailsSection from "./sections/details";
-import { handleObj } from "../../../context/utils";
-import { ImSpinner } from "react-icons/im";
+import React, { useState } from 'react'
+import { BorderHOC } from '../../../components'
+import { Button, Divider, Drawer, Form, Input, Select, Upload } from 'antd'
+import { LuSearch, LuUploadCloud } from 'react-icons/lu'
+import { RxDashboard } from 'react-icons/rx'
+import { GoRows } from 'react-icons/go'
+import { HiOutlineSparkles } from 'react-icons/hi2'
+import EmptyDisplay from '../../../components/EmptyDisplay'
+import { isEqual } from '../../../context/utils'
+import { BsJournalBookmark } from 'react-icons/bs'
+import { PiDotsThreeOutline } from 'react-icons/pi'
+import moment from 'moment'
+import { AiOutlineCloseCircle } from 'react-icons/ai'
+import { useAWSUpload } from '../../../hooks/otherhooks'
+import { ImSpinner } from 'react-icons/im'
 
-function QuestionBankPage() {
-  const [params, setParams] = useSearchParams()
-  const [payload, setPayload] = useState<any>({
-    // question_source: "https://nurovantfrontend.s3.amazonaws.com/McGraw-Hill-PhysicsDemystified.pdf",
-    // user_content: "https://nurovantfrontend.s3.amazonaws.com/test.txt",
-  })
+type IconProp = {
+  className?: string
+}
+function QuestionBank() {
+  const [payload, setPayload] = useState<any>()
   const [isOpen, setIsOpen] = useState(false)
+  const [list, setList] = useState("grid")
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
-  const [form] = Form.useForm()
-  const id = params.get("id")
+  const width = window.innerWidth;
 
-
-  const {
-    data: getQBankData,
-    refetch: getQBankFetch,
-    isLoading: getQBankLoad,
-  } = useGetQuestionBanks()
-
-  const columns = [
-    {
-      title: "Name",
-      render: (d: any) => {
-        const handleView = () => setParams({id: d?._id})
-        return <Button onClick={handleView} className="text-primary" type="text">{d?.title}</Button>
-      }
-    },
-    {
-      title: "Variants",
-      dataIndex: "number_of_question",
-    },
-    {
-      title: "Date Generated",
-      datIndex: "createdAt",
-      render: (d: any) => moment(d).format("L")
-    },
+  const lists = [
+    { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
+    { key: "row", Icon: ({ className }: IconProp) => <GoRows className={className} /> },
   ]
 
   const props = (onChange: any) => ({
@@ -55,6 +36,7 @@ function QuestionBankPage() {
     directory: false,
     method: undefined,
     showUploadList: false,
+    className: "px-5 text-center space-y-2",
     onChange: ({ file }: { file: Blob | any }) => onChange(file?.originFileObj),
   })
 
@@ -64,89 +46,143 @@ function QuestionBankPage() {
   } = useAWSUpload()
 
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
-
-  const {
-    mutateAsync: postQBankAction,
-    isLoading: postQBankLoad,
-  } = usePostQuestionBank(getQBankFetch)
-
-  const handleSubmit = async (data: any) => await postQBankAction(handleObj({...data, ...payload})).then(() => {
-    form.resetFields()
-    setPayload({})
-    onClose()
-  })
-
-  const actionLoad = (postUplLoad || postQBankLoad)
-
-  if(id) return <DetailsSection />
   return (
-    <Spin spinning={getQBankLoad}>
-      <div className="w-full p-5 md:px-10 space-y-5">
-        <div className="flex justify-between items-center">
-          <div />
-          <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
-        </div>
-        <div className="w-full p-5 md:p-10 bg-white rounded-lg space-y-5">
-          <p className="text-lg font-semibold text-[#414141]">Streamline Lesson Planning with Automated Question Generation</p>
-          <div hidden={getQBankData?.data?.length}>
-            <div className="min-h-[50vh] flex flex-col justify-center items-center gap-5">
-              <p className="text-sm font-medium text-[#1B2124]">Your generated questions would appear here</p>
-              <Button onClick={onOpen} className="bg-[#4970FC]" size="large" type="primary" shape="round">Generate Question</Button>
+    <div className='w-full py-5 space-y-5'>
+      <div className='w-full'>
+        <p className='text-2xl font-bold text-[#161617]'>Question Bank 📖</p>
+        <p className='text-sm font-semibold text-[#57585A]'>Generate and organize your questions systematically.</p>
+      </div>
+
+      <BorderHOC rounded='rounded-xl' className='w-full h-full'>
+        <div className='w-full h-full p-5 space-y-2'>
+          <div className='w-full h-full flex flex-col md:flex-row justify-between items-center gap-5'>
+            <div className='flex items-center gap-2'>
+              <p className='text-2xl font-bold text-[#161617]'>0</p>
+              <p className='text-sm font-semibold text-[#57585A]'>question(s)</p>
+            </div>
+
+            <div className='h-full flex items-center gap-2'>
+              <Button icon={<LuSearch className='text-xl' />} type='text' />
+              <Divider type='vertical' className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+              {lists.map(({ Icon, key }) => {
+                const isKey = isEqual(key, list)
+                const handleList = () => setList(key)
+                return (<Button className={String(isKey && "bg-[#E7E7E7]")} onClick={handleList} icon={<Icon className='text-lg' />} type='text' shape='circle' />)
+              })}
+              <Divider type='vertical'  className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+              <Button onClick={onOpen} className='!text-sm !font-bold bg-[#4970FC]' icon={<HiOutlineSparkles className='text-xl' />} size='large' type='primary' shape='round'>Generate Questions</Button>
             </div>
           </div>
-          <CustomTable
-            column={columns}
-            data={getQBankData?.data}
-            hidden={!getQBankData?.data?.length}
-          />
-        </div>
 
-        <Drawer
-          open={isOpen}
-          onClose={onClose}
-          title={<div className="">
-            <p className="text-xl font-semibold text-[#414141]">Track Your Questions with Ease</p>
-            <p className="text-base font-normal text-[#414141]">Organise and monitor classroom questions for effective teaching.</p>
-          </div>}
-        >
-          <Form form={form} onFinish={handleSubmit} layout="vertical">
-            <Form.Item name="title" label="Title">
-              <Input size="large" placeholder="Enter title" />
+          <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+
+          <EmptyDisplay hidden className='w-full h-[50vh]'>
+            <Button onClick={onOpen} className='!text-sm !font-bold bg-[#4970FC]' icon={<HiOutlineSparkles className='text-xl' />} size='large' type='primary' shape='round'>Generate Questions</Button>
+          </EmptyDisplay>
+
+          <div hidden={!isEqual(list, "grid")} className='w-full h-full'>
+            <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-5'>
+              <BorderHOC rounded='rounded-xl' className='w-full h-full'>
+                <div className='w-full h-full p-3 space-y-3'>
+                  <div className='flex justify-between items-center gap-5'>
+                    <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
+                      <BsJournalBookmark className='text-xl' />
+                    </BorderHOC>
+                    <Button type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                  </div>
+
+                  <div className='w-full grid md:grid-cols-3 gap-5'>
+                    <div className='md:col-span-2 space-y-1'>
+                      <p className='text-sm font-bold text-[#161617]'>Algebra 101 Questions</p>
+                      <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
+                    </div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold text-[#161617]'>Variants</p>
+                      <p className='text-xs font-medium text-[#57585A]'>20</p>
+                    </div>
+                  </div>
+                </div>
+              </BorderHOC>
+            </div>
+          </div>
+
+          <div hidden={!isEqual(list, "row")} className='w-full h-full'>
+            <div className='w-full space-y-5 overflow-x-auto'>
+              <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5'>
+                <div className='w-full flex items-center gap-10'>
+                  <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
+                    <BsJournalBookmark className='text-xl' />
+                  </BorderHOC>
+                  <div className='space-y-1'>
+                    <p className='text-sm font-bold text-[#161617]'>Algebra 101 Questions</p>
+                    <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
+                  </div>
+                  <div className='space-y-1'>
+                    <p className='text-sm font-bold text-[#161617]'>Variants</p>
+                    <p className='text-xs font-medium text-[#57585A]'>20</p>
+                  </div>
+                </div>
+                <div className='flex justify-between items-center gap-5'>
+                  <Button type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                </div>
+              </BorderHOC>
+            </div>
+          </div>
+        </div>
+      </BorderHOC>
+
+      <Drawer
+        open={isOpen}
+        footer={false}
+        onClose={onClose}
+        closeIcon={false}
+        width={width <= 500 ? width : 500}
+        classNames={{ content: "!bg-transparent", wrapper: "!shadow-none" }}
+      >
+        <div className='w-full p-5 space-y-5 bg-white rounded-3xl'>
+          <div className='w-full flex justify-between gap-5'>
+            <div className=''>
+              <p className='text-xl font-bold text-[#161617]'>Create question bank</p>
+              <p className='text-sm font-medium text-[#57585A]'>Organize and monitor classroom questions for effective teaching.</p>
+            </div>
+            <Button icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
+          </div>
+          <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+          <Form layout='vertical'>
+            <Form.Item label="Title" name="title">
+              <Input placeholder='Enter title' size='large' />
             </Form.Item>
-            <Form.Item name="number_of_question" label="Variants">
-              <Select size="large" placeholder="Select Variants">
-                {Array.from(Array(10).keys()).map(d => {
-                  const variant = ((d + 1) * 10)
-                  return (<Select.Option value={variant}>{variant}</Select.Option>)
-                })}
+            <Form.Item label="Variants" name="variants">
+              <Select placeholder='Select variants' size='large'>
+                {Array.from(Array(10).keys()).map(d => <Select.Option value={(d + 1) * 10}>{(d + 1) * 10}</Select.Option>)}
               </Select>
             </Form.Item>
             <Form.Item label="Upload Source Material">
-              <Dragger {...props((file: any) => {handleUpload(file, "question_source")})} disabled={postUplLoad}>
+              <Upload.Dragger {...props((file: any) => handleUpload(file, "question_source"))} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
                   {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
-                <p hidden={!payload?.question_source} className="ant-upload-text px-5">Document Uploaded.</p>
-                <p hidden={payload?.question_source} className="ant-upload-text px-5">Upload the document containing your source material.</p>
-                <p hidden={payload?.question_source} className="ant-upload-hint px-5">File size no more than 10MB</p>
-              </Dragger>
+                <p hidden={!payload?.question_source} className="text-sm">Document Uploaded.</p>
+                <p hidden={payload?.question_source} className="text-sm"><span className='text-primary'>Click to upload</span> or drag and drop</p>
+                <p hidden={payload?.question_source} className=" text-xs">File size no more than 10MB</p>
+              </Upload.Dragger>
             </Form.Item>
             <Form.Item label="Upload List of Questions">
-              <Dragger {...props((file: any) => {handleUpload(file, "user_content")})} disabled={postUplLoad}>
+              <Upload.Dragger {...props((file: any) => handleUpload(file, "user_content"))} disabled={postUplLoad}>
                 <p className="ant-upload-drag-icon">
                   {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
                 </p>
-                <p hidden={!payload?.user_content} className="ant-upload-text px-5">Document Uploaded.</p>
-                <p hidden={payload?.user_content} className="ant-upload-text px-5">Upload the document with your list of questions.</p>
-                <p hidden={payload?.user_content} className="ant-upload-hint px-5">It is recommended to upload files in the ".txt" format for improved output.</p>
-              </Dragger>
+                <p hidden={!payload?.user_content} className="text-sm">Document Uploaded.</p>
+                <p hidden={payload?.user_content} className="text-sm"><span className='text-primary'>Click to upload</span> or drag and drop</p>
+                <p hidden={payload?.user_content} className="text-xs">It is recommended to upload files in the ".txt" format for improved output.</p>
+              </Upload.Dragger>
             </Form.Item>
-            <Button loading={actionLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
+            <Button className="bg-[#4970FC]" block size="large" type="primary" htmlType="submit" shape="round">Generate Question</Button>
           </Form>
-        </Drawer>
-      </div>
-    </Spin>
-  );
+        </div>
+      </Drawer>
+    </div>
+  )
 }
 
-export default QuestionBankPage;
+export default QuestionBank
