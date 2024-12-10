@@ -20,6 +20,8 @@ import { grades, states } from "../../constants";
 import axios from "axios";
 import { useGetJurisdiction } from "../../hooks/otherhooks";
 import { useCreateCourse } from "../../hooks/courses/courses";
+import { useRecoilValue } from "recoil";
+import authAtom from "../../atoms/auth/auth.atom";
 // import { LoadingOutlined } from "@ant-design/icons";
 
 type CreateCourseDrawerProps = {
@@ -50,6 +52,7 @@ const CreateCourseDrawer = ({
   refetch,
 }: CreateCourseDrawerProps) => {
   const width = window.innerWidth;
+  const { user } = useRecoilValue(authAtom);
 
   const [initialValues, setInitialValues] = useState<InitialValuesTypes>({
     course_title: "",
@@ -105,7 +108,7 @@ const CreateCourseDrawer = ({
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
-        .join("_")}--${removeSpacesFromPdfName(upldFile?.file?.name || "")}}`, // You can customize the key based on your requirement
+        .join("_")}--${user?._id}`, // You can customize the key based on your requirement
       Body: blob,
       ContentType: blob.type,
     };
@@ -265,22 +268,22 @@ const CreateCourseDrawer = ({
     },
   };
 
-  const getAllInstitutions = async () => {
-    const response = await axios.get(
-      "http://api.commonstandardsproject.com/api/v1/jurisdictions/",
-      {
-        headers: {
-          "Api-Key": `${process.env["REACT_APP_COMMON_STANDARDS_API_KEY"]}`,
-        },
-      }
-    );
+  // const getAllInstitutions = async () => {
+  //   const response = await axios.get(
+  //     "http://api.commonstandardsproject.com/api/v1/jurisdictions/",
+  //     {
+  //       headers: {
+  //         "Api-Key": `${process.env["REACT_APP_COMMON_STANDARDS_API_KEY"]}`,
+  //       },
+  //     }
+  //   );
 
-    console.log({ response });
-  };
+  //   console.log({ response });
+  // };
 
-  useEffect(() => {
-    getAllInstitutions();
-  }, []);
+  // useEffect(() => {
+  //   getAllInstitutions();
+  // }, []);
 
   const { data: jurisdictionData } = useGetJurisdiction();
   const { mutate: createCourse, isLoading: createCourseLoad } = useCreateCourse(

@@ -110,10 +110,10 @@ const MainLayout = ({ children }: Props) => {
       label: (
         <div>
           <p className="text-[14px] leading-[20px] font-semibold text-secondary">
-            {user?.info?.name}
+            {user?.first_name} {user?.last_name}
           </p>
           <p className="text-[14px] leading-[20px] font-normal text-gray">
-            {user?.info?.email}
+            {user?.email}
           </p>
         </div>
       ),
@@ -210,7 +210,9 @@ const MainLayout = ({ children }: Props) => {
                             src={user?.info?.profile_img}
                           >
                             {extractAvatar(
-                              user?.info?.name || user?.info?.email || "USER"
+                              `${user?.first_name} ${user?.last_name}` ||
+                                user?.email ||
+                                "USER"
                             )}
                           </Avatar>
                         </div>
