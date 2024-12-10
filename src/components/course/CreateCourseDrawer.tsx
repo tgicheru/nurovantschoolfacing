@@ -101,8 +101,7 @@ const CreateCourseDrawer = ({
 
     // Specify the bucket and key (object key) for the upload
     const uploadParams = {
-      // Bucket: process.env["REACT_APP_S3_BUCKET"]!,
-      Bucket: "nurovantfrontend",
+      Bucket: process.env["REACT_APP_S3_BUCKET"]!,
       Key: `${new Date()
         .toLocaleTimeString([], { hour12: false })
         .split(":")
@@ -278,6 +277,10 @@ const CreateCourseDrawer = ({
 
     console.log({ response });
   };
+
+  useEffect(() => {
+    getAllInstitutions();
+  }, []);
 
   const { data: jurisdictionData } = useGetJurisdiction();
   const { mutate: createCourse, isLoading: createCourseLoad } = useCreateCourse(
