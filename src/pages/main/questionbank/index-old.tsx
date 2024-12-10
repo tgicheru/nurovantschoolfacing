@@ -7,7 +7,7 @@ import CustomTable from "../../../components/CustomTable";
 import moment from "moment";
 import { useAWSUpload } from "../../../hooks/otherhooks";
 import { useSearchParams } from "react-router-dom";
-import DetailsSection from "./sections/details";
+import DetailsSection from "./sections/details-old";
 import { handleObj } from "../../../context/utils";
 import { ImSpinner } from "react-icons/im";
 
