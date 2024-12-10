@@ -13,17 +13,24 @@ import moment from 'moment'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { useAWSUpload } from '../../../hooks/otherhooks'
 import { ImSpinner } from 'react-icons/im'
+import { useSearchParams } from 'react-router-dom'
+import DetailsSection from './sections/details'
 
 type IconProp = {
   className?: string
 }
 function QuestionBank() {
   const [payload, setPayload] = useState<any>()
+  const [params, setParams] = useSearchParams()
   const [isOpen, setIsOpen] = useState(false)
   const [list, setList] = useState("grid")
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
-  const width = window.innerWidth;
+  const width = window.innerWidth
+  const id = params.get("id")
+
+  const handleOption = (e: any) => e?.stopPropagation()
+  const handleView = () => setParams({id: "bytubytiyygvutfgbytty"})
 
   const lists = [
     { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
@@ -46,6 +53,8 @@ function QuestionBank() {
   } = useAWSUpload()
 
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
+
+  if (id) return <DetailsSection />
   return (
     <div className='w-full py-5 space-y-5'>
       <div className='w-full'>
@@ -82,24 +91,22 @@ function QuestionBank() {
 
           <div hidden={!isEqual(list, "grid")} className='w-full h-full'>
             <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-5'>
-              <BorderHOC rounded='rounded-xl' className='w-full h-full'>
-                <div className='w-full h-full p-3 space-y-3'>
-                  <div className='flex justify-between items-center gap-5'>
-                    <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
-                      <BsJournalBookmark className='text-xl' />
-                    </BorderHOC>
-                    <Button type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
-                  </div>
+              <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-3 space-y-3 cursor-pointer' onClick={handleView}>
+                <div className='flex justify-between items-center gap-5'>
+                  <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
+                    <BsJournalBookmark className='text-xl' />
+                  </BorderHOC>
+                  <Button onClick={handleOption} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                </div>
 
-                  <div className='w-full grid md:grid-cols-3 gap-5'>
-                    <div className='md:col-span-2 space-y-1'>
-                      <p className='text-sm font-bold text-[#161617]'>Algebra 101 Questions</p>
-                      <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
-                    </div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold text-[#161617]'>Variants</p>
-                      <p className='text-xs font-medium text-[#57585A]'>20</p>
-                    </div>
+                <div className='w-full grid md:grid-cols-3 gap-5'>
+                  <div className='md:col-span-2 space-y-1'>
+                    <p className='text-sm font-bold text-[#161617]'>Algebra 101 Questions</p>
+                    <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
+                  </div>
+                  <div className='space-y-1'>
+                    <p className='text-sm font-bold text-[#161617]'>Variants</p>
+                    <p className='text-xs font-medium text-[#57585A]'>20</p>
                   </div>
                 </div>
               </BorderHOC>
@@ -108,7 +115,7 @@ function QuestionBank() {
 
           <div hidden={!isEqual(list, "row")} className='w-full h-full'>
             <div className='w-full space-y-5 overflow-x-auto'>
-              <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5'>
+              <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5overflow-x-auto cursor-pointer' onClick={handleView}>
                 <div className='w-full flex items-center gap-10'>
                   <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
                     <BsJournalBookmark className='text-xl' />
@@ -122,9 +129,7 @@ function QuestionBank() {
                     <p className='text-xs font-medium text-[#57585A]'>20</p>
                   </div>
                 </div>
-                <div className='flex justify-between items-center gap-5'>
-                  <Button type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
-                </div>
+                <Button onClick={handleOption} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
               </BorderHOC>
             </div>
           </div>
@@ -145,7 +150,7 @@ function QuestionBank() {
               <p className='text-xl font-bold text-[#161617]'>Create question bank</p>
               <p className='text-sm font-medium text-[#57585A]'>Organize and monitor classroom questions for effective teaching.</p>
             </div>
-            <Button icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
+            <Button onClick={onClose} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
           </div>
           <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
           <Form layout='vertical'>

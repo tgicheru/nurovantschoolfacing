@@ -1,93 +1,88 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Collapse, Input, Spin, Tabs } from 'antd'
-import React, { useMemo, useState } from 'react'
-import { useGetQuestionBank, usePutQuestionBank } from '../../../../hooks/questionbank/questionbank'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { FaArrowLeft, FaRegSave } from 'react-icons/fa'
-import { TbEdit } from 'react-icons/tb'
-import { AiTwotoneCloseCircle } from 'react-icons/ai'
+import { Breadcrumb, Button, Collapse, Input, Tabs } from 'antd'
+import React, { useState } from 'react'
+import { BorderHOC } from '../../../../components'
 import { isEqual } from '../../../../context/utils'
+import { AiOutlineDownCircle } from 'react-icons/ai'
 
 function DetailsSection() {
   const [payload, setPayload] = useState<any>({})
-  const [params] = useSearchParams()
-  const navigate = useNavigate()
-  const id = params.get("id")
-
-  const goBack = () => navigate(-1)
-  const handleClear = () => setPayload({})
-
-
-  const {
-    data: getQBankData,
-    refetch: getQBankFetch,
-    isLoading: getQBankLoad,
-  } = useGetQuestionBank(id)
-
-  const handleSuccess = () => {
-    getQBankFetch();
-    handleClear();
-  }
-
-  const {
-    mutate: putQBankAction,
-    isLoading: putQBankLoad,
-  } = usePutQuestionBank(id, handleSuccess)
-
-  const handleSubmit = () => putQBankAction(payload)
-
-  const tabs = useMemo(() => getQBankData?.data?.question_variant?.map((d: any) => ({
-    key: d?.variant_number,
-    label: `Variant ${d?.variant_number}`,
-    children: (<div className='space-y-5'>
-      <p className='text-base font-normal text-[#010101]'>{d?.main_question}</p>
-      
-      {d?.questions?.map((b: any) => {
-        const isEdit = (isEqual(payload?.variant_number, String(d?.variant_number)) && isEqual(payload?.question_id, String(b?.id)))
-        const handleEdit = () => setPayload({
-          question: String(b?.question?.question || b?.question),
-          variant_number: String(d?.variant_number),
-          question_id: String(b?.id),
-        })
-        return (
-          <Collapse
-            accordion
-            items={[{
-              key: b?.id,
-              label: (<div className='!w-full flex justify-between items-center gap-5'>
-                <p hidden={isEdit} className='text-base font-normal text-[#010101]'>{Number(b?.id)+1}. {String(b?.question?.question || b?.question)}</p>
-                <Button hidden={isEdit} onClick={handleEdit} title='Edit Question' type='text' icon={<TbEdit className='text-xl' />} />
-                <Input hidden={!isEdit} value={payload?.question} onChange={({target:{value:question}}) => setPayload({...payload, question})} size='large' placeholder='Enter question' className='w-full' bordered={false} />
-                <Button hidden={!isEdit} loading={putQBankLoad} onClick={handleSubmit} title='Save Changes' type='text' icon={<FaRegSave className='text-xl' />} />
-                <Button hidden={!isEdit} onClick={handleClear} title='Cancel' type='text' icon={<AiTwotoneCloseCircle className='text-xl' />} />
-              </div>),
-              children: (<div className='space-y-2'>
-                <p className=''>Options:</p>
-                <ul className=''>
-                  {Object.values(b?.question?.options || {})?.map(([k, v]: any) => <li>{String(k)}. {String(v)}</li>)}
-                </ul>
-                <p className=''>Answer: {Object.entries(b?.question?.answer || {})?.map(([k, v]) => <span>{String(k)}. {String(v)}</span>)}</p>
-              </div>),
-            }]}
-          />
-        )
-      })}
-    </div>)
-  })), [getQBankData, payload, putQBankLoad])
-
   return (
-    <Spin spinning={getQBankLoad}>
-      <div className="w-full p-5 md:px-10 space-y-5">
-        <div className="w-full p-5 md:p-10 bg-white rounded-lg space-y-5">
-          <div className='flex items-center gap-5'>
-            <Button onClick={goBack} className='!p-0 !m-0 !bg-transparent' type='text' size='large' icon={<FaArrowLeft />} />
-            <p className='text-xl font-semibold text-[#414141]'>{getQBankData?.data?.title}</p>
-          </div>
-          <p className='text-sm font-normal text-[#1B1B1B]'>Here are the multiple versions of questions generated</p>
-          <Tabs items={tabs} />
-        </div>
+    <div className='w-full space-y-5'>
+      <Breadcrumb
+        items={[
+          { title: 'Question Bank', href: "/question-bank" },
+          { title: 'Algebra 101 Questions' },
+        ]}
+        separator="/"
+      />
+
+      <div className='w-full'>
+        <p className='text-2xl font-bold text-[#161617]'>Algebra 101 Questions</p>
+        <p className='text-sm font-semibold text-[#57585A]'>Here are some multiple variants of questions generated.</p>
       </div>
-    </Spin>
+
+      <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-5'>
+        <Tabs
+          items={Array.from(Array(10).keys()).map(d => ({
+            key: "variant-".concat(String(d)),
+            label: "Variant ".concat(String(d + 1)),
+            children: (<BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='space-y-5 p-5'>
+              <p className='text-xl font-bold text-[#161617]'>Questions</p>
+              
+              {Array.from(Array(10).keys())?.map((b: any) => {
+                const isEdit = isEqual(payload?.id, b)
+                const handleEdit = () => setPayload({
+                  question: String(b?.question?.question || b?.question),
+                  variant_number: String(b?.variant_number),
+                  // question_id: String(b?.id),
+                  id: b,
+                })
+                const handleCancel = () => setPayload({})
+                return (
+                  <Collapse
+                    accordion
+                    size='small'
+                    expandIconPosition='right'
+                    expandIcon={({ isActive }) => <div className='w-full h-full flex items-center'>
+                      <Button onClick={handleEdit} hidden={!isActive || isEdit} type='text'>Edit</Button>
+                      <Button onClick={handleCancel} hidden={!isEdit} type='text'>Save</Button>
+                      <Button onClick={handleCancel} hidden={!isEdit} type='text' danger>Cancel</Button>
+                      <AiOutlineDownCircle className='!text-xl' />
+                    </div>}
+                    items={[{
+                      key: b,
+                      label: (<div className='!w-full flex justify-between items-center gap-5'>
+                        <p hidden={isEdit} className='text-sm font-semibold text-[#161617]'>{b+1}. What is the main inspiration for the proposed mobile app design?</p>
+                        <Input hidden={!isEdit} value={b} onChange={({target:{value:question}}) => setPayload({...payload, question})} size='small' placeholder='Enter question' className='w-full' bordered={false} />
+                      </div>),
+                      children: (<div className='space-y-3'>
+                        <div className='space-y-2'>
+                          <p className='text-sm font-bold text-[#161617]'>Options:</p>
+                          <ul className='text-sm font-normal text-[#161617]'>
+                            {[
+                              "A popular e-commerce website",
+                              "A social media platform",
+                              "A ride-hailing service",
+                              "A home-sharing and experience platform"
+                            ].map((d, idx) => <li>{idx + 1}. {d}</li>)}
+                            {/* {Object.values(b?.question?.options || {})?.map(([k, v]: any) => <li>{String(k)}. {String(v)}</li>)} */}
+                          </ul>
+                        </div>
+
+                        <div className='space-y-2'>
+                          <p className='text-sm font-bold text-[#161617]'>Answer:</p>
+                          <p className='text-sm font-normal text-[#161617]'>A home-sharing and experience platform</p>
+                        </div>
+                      </div>),
+                    }]}
+                  />
+                )
+              })}
+            </BorderHOC>)
+          }))}
+        />
+      </BorderHOC>
+    </div>
   )
 }
 
