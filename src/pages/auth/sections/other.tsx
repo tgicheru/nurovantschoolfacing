@@ -1,13 +1,15 @@
 import { Button, Form, Select } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router'
-import { grades, states, subjects } from '../../../constants'
+import { grades, subjects } from '../../../constants'
+import { useGetUSStates } from '../../../hooks/otherhooks'
 
 function OtherSection() {
   const navigate = useNavigate()
   const [form] = Form.useForm()
-
+  
   const handleSubmit = () => navigate("/")
+  const { isLoading: getStatesLoad, data: getStatesData } = useGetUSStates()
   return (
     <div className='w-full space-y-5'>
       <div className="w-full">
@@ -17,7 +19,7 @@ function OtherSection() {
 
       <Form form={form} onFinish={handleSubmit} layout="vertical">
         <Form.Item label="State" name="state" >
-          <Select placeholder="Select state" className='!h-[50px]' size="large" options={states} />
+          <Select placeholder="Select state" className='!h-[50px]' size="large" options={getStatesData?.data?.map((d: any) => ({label: d, value: d}))} loading={getStatesLoad} />
         </Form.Item>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
           <Form.Item label="Grade Level" name="grade_level" >

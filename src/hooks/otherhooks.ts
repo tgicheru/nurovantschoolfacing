@@ -5,9 +5,10 @@ import { useMutation, useQuery } from "react-query";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import authAtom from "../atoms/auth/auth.atom";
 import createLecturesAtom from "../atoms/other/createLectures.atom";
-import { removeSpacesFromPdfName } from "../context/utils";
 import axios, { AxiosInstance } from "axios";
 import { getRequest } from "../context/requestTypes";
+import { useContext } from "react";
+import { AxiosContext } from "../context/AxiosContext";
 
 export const fileTypes = (key: string, idx?: number) => {
   const ext = key?.split("/")?.[idx || 1];
@@ -270,5 +271,25 @@ export function useGetJurisdiction(successAction?: any) {
     //         : "something went wrong please check internet connection.",
     //     }),
     // }
+  );
+}
+
+export function useGetUSStates() {
+  const axios = useContext(AxiosContext);
+  const url = "/teacher_api/data/get_states";
+  return useQuery(
+    ["get-us-states"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
   );
 }

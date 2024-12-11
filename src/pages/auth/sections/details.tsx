@@ -2,8 +2,9 @@ import React from 'react'
 import { Link } from "react-router-dom"
 import OAuth from '../components/oauth';
 import { Button, Divider, Form, Input, Select } from 'antd';
-import { genders, grades, states, subjects } from '../../../constants';
+import { genders, grades, subjects } from '../../../constants';
 import { useForget as useResend, useRegister } from '../../../hooks/auth/authentications';
+import { useGetUSStates } from '../../../hooks/otherhooks';
 
 type Props = {
   handleSection: any
@@ -15,6 +16,7 @@ function DetailsSection({ handleSection }: Props) {
     handleSection("", {email, type: "VERIFY_USER"})
   });
 
+  const { isLoading: getStatesLoad, data: getStatesData } = useGetUSStates()
   const { mutate, isLoading } = useRegister(({user: {email}}: any) => resendAction({email, otp_type: "VERIFY_USER"}))
 
   const actionLoad = (isLoading || resendLoad)
@@ -57,7 +59,7 @@ function DetailsSection({ handleSection }: Props) {
             <Select placeholder="Select gender" className='!h-[50px]' size="large" options={genders} />
           </Form.Item>
           <Form.Item label="State" name="state" >
-            <Select placeholder="Select state" className='!h-[50px]' size="large" options={states} />
+            <Select placeholder="Select state" className='!h-[50px]' size="large" options={getStatesData?.data?.map((d: any) => ({label: d, value: d}))} loading={getStatesLoad} />
           </Form.Item>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-x-5'>
