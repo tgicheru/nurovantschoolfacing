@@ -60,7 +60,7 @@ const CreateCourseDrawer = ({
     curriculum_url: "",
     state: "",
     grade: "",
-    institution: "Springfield High School",
+    institution: "",
     learning_standard_url: "",
     learning_standards: [],
   });
@@ -476,6 +476,7 @@ progress effectively`
                   course_title: e.target.value,
                 }));
               }}
+              value={initialValues.course_title}
             />
           </div>
 
@@ -577,13 +578,17 @@ progress effectively`
 
           <div className="flex flex-col gap-[6px] w-full">
             <h4 className="text-sm font-bold text-neutral-900">Institution</h4>
-            <Select
-              placeholder="Select institution"
-              className=" placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px] !border-none !outline-none !focus:outline-none h-[48px]"
-              options={[
-                { label: "Lagos", value: "lagos" },
-                { label: "Abuja", value: "abuja" },
-              ]}
+            <input
+              type="text"
+              placeholder="Enter Institution here"
+              className="px-5 py-[14px] placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px]"
+              onChange={(e: any) => {
+                setInitialValues((prev) => ({
+                  ...prev,
+                  institution: e.target.value,
+                }));
+              }}
+              value={initialValues.institution}
             />
           </div>
 
