@@ -6,7 +6,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import authAtom from "../atoms/auth/auth.atom";
 import createLecturesAtom from "../atoms/other/createLectures.atom";
 import axios, { AxiosInstance } from "axios";
-import { getRequest } from "../context/requestTypes";
+import { getRequest, postRequest } from "../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../context/AxiosContext";
 
@@ -251,7 +251,8 @@ export function useStripePay(successAction?: any) {
 }
 
 export function useGetJurisdiction(successAction?: any) {
-  const url = "http://api.commonstandardsproject.com/api/v1/jurisdictions/";
+  const url = "/teacher_api/commonstandards/get_jurisdictions";
+  const axios = useContext(AxiosContext);
   return useQuery(
     ["get-jurisdiction"],
     () =>
@@ -260,6 +261,90 @@ export function useGetJurisdiction(successAction?: any) {
           "Api-Key": `${process.env["REACT_APP_COMMON_WEALTH_API_KEY"]}`,
         },
       })
+    // {
+    //   onError: (error: any) =>
+    //     notification.error({
+    //       message: "Error!",
+    //       description: error?.message
+    //         ? Object.entries(error?.errors || { key: [error?.message] })
+    //             ?.map(([, value]) => (value as any)?.join(", "))
+    //             ?.join(", ")
+    //         : "something went wrong please check internet connection.",
+    //     }),
+    // }
+  );
+}
+
+export function usePostSingleJurisdiction(successAction?: any) {
+  const url = "/teacher_api/commonstandards/get_jurisdictions_detail";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        console.log("jurisdiction details response", response);
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+export function useGetSingleJurisdiction(id: string) {
+  const url = `/teacher_api/commonstandards/get_jurisdictions_detail?id=${id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get-single-jurisdiction"],
+    () =>
+      getRequest(axios as unknown as AxiosInstance, url, {
+        headers: {
+          "Api-Key": `${process.env["REACT_APP_COMMON_WEALTH_API_KEY"]}`,
+        },
+      }),
+    {
+      enabled: !!id,
+    }
+    // {
+    //   onError: (error: any) =>
+    //     notification.error({
+    //       message: "Error!",
+    //       description: error?.message
+    //         ? Object.entries(error?.errors || { key: [error?.message] })
+    //             ?.map(([, value]) => (value as any)?.join(", "))
+    //             ?.join(", ")
+    //         : "something went wrong please check internet connection.",
+    //     }),
+    // }
+  );
+}
+
+export function useGetStandardSet(id: string) {
+  const url = `/teacher_api/commonstandards/get_standard_set?id=${id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get-standard_set"],
+    () =>
+      getRequest(axios as unknown as AxiosInstance, url, {
+        headers: {
+          "Api-Key": `${process.env["REACT_APP_COMMON_WEALTH_API_KEY"]}`,
+        },
+      }),
+    {
+      enabled: !!id,
+    }
     // {
     //   onError: (error: any) =>
     //     notification.error({
