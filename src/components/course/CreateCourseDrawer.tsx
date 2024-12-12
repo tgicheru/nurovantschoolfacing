@@ -15,13 +15,20 @@ import { PiBookOpenText } from "react-icons/pi";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { MdOutlineArrowBackIos } from "react-icons/md";
 import DummyCoursePic from "../../assets/dummyCourse.svg";
+import DeleteIcon from "../../assets/trash.svg";
 import AWS from "aws-sdk";
 import { grades, states } from "../../constants";
 import axios from "axios";
-import { useGetJurisdiction } from "../../hooks/otherhooks";
+import {
+  useGetJurisdiction,
+  useGetSingleJurisdiction,
+  useGetStandardSet,
+  usePostSingleJurisdiction,
+} from "../../hooks/otherhooks";
 import { useCreateCourse } from "../../hooks/courses/courses";
 import { useRecoilValue } from "recoil";
 import authAtom from "../../atoms/auth/auth.atom";
+import SearchableSelect from "../SearchableSelect";
 // import { LoadingOutlined } from "@ant-design/icons";
 
 type CreateCourseDrawerProps = {
@@ -53,17 +60,6 @@ const CreateCourseDrawer = ({
 }: CreateCourseDrawerProps) => {
   const width = window.innerWidth;
   const { user } = useRecoilValue(authAtom);
-
-  const [initialValues, setInitialValues] = useState<InitialValuesTypes>({
-    course_title: "",
-    course_image: "",
-    curriculum_url: "",
-    state: "",
-    grade: "",
-    institution: "",
-    learning_standard_url: "",
-    learning_standards: [],
-  });
 
   const [steps, setSteps] = useState(0);
   const [upldFile, setUpldFile] = useState<any>({});
@@ -268,36 +264,44 @@ const CreateCourseDrawer = ({
     },
   };
 
-  // const getAllInstitutions = async () => {
-  //   const response = await axios.get(
-  //     "http://api.commonstandardsproject.com/api/v1/jurisdictions/",
-  //     {
-  //       headers: {
-  //         "Api-Key": `${process.env["REACT_APP_COMMON_STANDARDS_API_KEY"]}`,
-  //       },
-  //     }
-  //   );
-
-  //   console.log({ response });
-  // };
-
-  // useEffect(() => {
-  //   getAllInstitutions();
-  // }, []);
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState("");
+  const [selectedJurisdictionDetail, setSelectedJurisdictionDetail] =
+    useState("");
 
   const { data: jurisdictionData } = useGetJurisdiction();
+  const { data: singleJurisdictionData } =
+    useGetSingleJurisdiction(selectedJurisdiction);
+
+  const { data: standardSet } = useGetStandardSet(selectedJurisdictionDetail);
   const { mutate: createCourse, isLoading: createCourseLoad } = useCreateCourse(
     () => {
       onClose();
       refetch();
     }
   );
-  console.log({ jurisdictionData });
 
+  console.log({ standardSet });
+
+  const [initialValues, setInitialValues] = useState<InitialValuesTypes>({
+    course_title: "",
+    course_image: "",
+    curriculum_url: "",
+    state: "",
+    grade: "",
+    institution: "",
+    learning_standard_url: "",
+    learning_standards: [standardSet?.data],
+  });
+
+  // useEffect(() => {
+  //   postSingleJurisdication({
+  //     id: selectedJurisdition,
+  //   });
+  // }, [selectedJurisdition, postSingleJurisdication]);
   const handleStep1 = () => {
     // check if course_name, course_image, curriculum is set
     // if not, return
-    console.log({ initialValues });
+    // console.log({ initialValues });
 
     if (
       !initialValues.course_title ||
@@ -322,6 +326,7 @@ const CreateCourseDrawer = ({
       return;
     } else {
       createCourse(initialValues);
+      // console.log("initialValues", initialValues);
     }
   };
 
@@ -592,7 +597,66 @@ progress effectively`
             />
           </div>
 
-          <Divider className="border-light">Or</Divider>
+          <div className="flex flex-col gap-[6px] w-full">
+            <h4 className="text-sm font-bold text-neutral-900">
+              Select your preferred learning standard
+            </h4>
+            <SearchableSelect
+              items={jurisdictionData?.data}
+              placeholder="Select preferred learning standard"
+              className="!h-[50px]"
+              onSelect={(value: string) => {
+                console.log("value", value);
+                setSelectedJurisdiction(value);
+                // postSingleJurisdication({
+                //   id: value,
+                // });
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-[6px] w-full">
+            <h4 className="text-sm font-bold text-neutral-900">
+              Select your preferred jurisdiction
+            </h4>
+            <SearchableSelect
+              items={singleJurisdictionData?.data?.standardSets}
+              placeholder="Select preferred jurisdiction"
+              className="!h-[50px]"
+              onSelect={(value: string) => {
+                console.log("value", value);
+                setSelectedJurisdictionDetail(value);
+              }}
+              disabled={!selectedJurisdiction.length}
+            />
+          </div>
+
+          {selectedJurisdictionDetail?.length > 0 && standardSet?.data && (
+            <div className="w-full rounded-[10px]">
+              <BorderHOC
+                className="rounded-[10px]"
+                childClass="!overflow-hidden"
+              >
+                <div className="px-5 py-[17px] rounded-[10px] overflow-hidden flex items-center justify-between w-full">
+                  <span className="text-sm font-bold text-neutral-900">
+                    {standardSet?.data?.title}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setSelectedJurisdictionDetail("");
+                    }}
+                  >
+                    <img
+                      src={DeleteIcon}
+                      alt="delete-icon"
+                      className="w-[16px]"
+                    />
+                  </button>
+                </div>
+              </BorderHOC>
+            </div>
+          )}
+
+          {/* <Divider className="border-light">Or</Divider>
 
           <div className="flex flex-col gap-[6px] w-full">
             <h4 className="text-sm font-bold text-neutral-900">
@@ -627,7 +691,7 @@ progress effectively`
                 )}
               </p>
             </Upload.Dragger>
-          </div>
+          </div> */}
           <Button
             // disabled={!upldFile?.file}
 
