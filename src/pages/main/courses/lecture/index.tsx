@@ -152,13 +152,13 @@ const LectureDetail = () => {
         content: <RecapContent data={data} isGridView={isGridView} />,
       },
       {
-        key: "discuss",
+        key: "analysis",
         // column: discussColumns,
         data: data,
         label: (isActive: boolean) => (
           <LabelComponent
             isActive={isActive}
-            label="Discuss"
+            label="Chat Bot Analysis"
             icon={
               <IoChatboxEllipsesOutline
                 className={`${isActive ? "text-primary" : "text-neutral-400"}`}
@@ -167,7 +167,7 @@ const LectureDetail = () => {
             length={data?.length}
           />
         ),
-        content: <DiscussContent data={data} isGridView={isGridView} />,
+        content: <DiscussContent data={data} />,
       },
     ],
     [data, isGridView]
