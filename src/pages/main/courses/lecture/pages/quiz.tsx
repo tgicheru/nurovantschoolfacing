@@ -6,6 +6,7 @@ import { LabelComponent } from "../";
 import { useSearchParams } from "react-router-dom";
 import QuizQuestions from "../components/Quiz/QuizQuestions";
 import Participants from "../components/Quiz/Participants";
+import DiscussContent from "../components/DiscussContent";
 
 const QuizPage = () => {
   const [param, setParam] = useSearchParams();
@@ -14,7 +15,7 @@ const QuizPage = () => {
     param.get("tab") || "quiz-question"
   );
 
-  const data: any[] = [];
+  const data: any[] = ["Well"];
 
   const handleTab = (tab: string) => {
     setParam({ tab });
@@ -48,6 +49,19 @@ const QuizPage = () => {
           />
         ),
         content: <Participants />,
+      },
+      {
+        key: "analysis",
+        // column: quizColumns,
+        data: data,
+        label: (isActive: boolean) => (
+          <LabelComponent
+            isActive={isActive}
+            label="Result Analysis"
+            length={data?.length}
+          />
+        ),
+        content: <DiscussContent data={data} />,
       },
     ],
     []
