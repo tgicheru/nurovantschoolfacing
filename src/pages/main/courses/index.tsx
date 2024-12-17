@@ -12,6 +12,7 @@ import { PiDotsThreeOutlineDuotone } from "react-icons/pi";
 import { useGetCourses } from "../../../hooks/courses/courses";
 import DefaultBanner from "../../../assets/default_banner.png";
 import CreateCourseDrawer from "../../../components/course/CreateCourseDrawer";
+import StudentsContainer from "../../../components/course/StudentsContainer";
 
 const Home = () => {
   const width = window.innerWidth;
@@ -40,10 +41,15 @@ const Home = () => {
   return (
     <Spin spinning={getCoursesLoad}>
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
-        <ContentHeader
-          headerText={`Courses 📚`}
-          subText={`Organize and manage your lecture materials.`}
-        />
+        <div className="w-full flex items-center justify-between">
+          <ContentHeader
+            headerText={`Courses 📚`}
+            subText={`Organize and manage your course materials.`}
+            marginBottom="mb-[0px]"
+          />
+
+          <StudentsContainer />
+        </div>
 
         <BorderHOC className="" rounded="rounded-[10px]">
           <div className="w-full px-[15px] pt-[15px]">
@@ -204,7 +210,7 @@ const Home = () => {
                           <div className="flex items-center gap-4 px-4 py-[10px]">
                             <div className="w-[98px] rounded-[10px] overflow-hidden">
                               <img
-                                src={course.image}
+                                src={course.course_image}
                                 onLoadStart={() => {
                                   setIsLoadingImage(true);
                                 }}
