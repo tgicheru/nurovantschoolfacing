@@ -121,12 +121,12 @@ export default function CourseTable() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="max-w-7xl mx-auto p-4">
       <div className="mb-4 text-sm">
         <span>{selectedRowKeys.length}/9 Selected</span>
         <button
           onClick={() => setSelectedRowKeys([])}
-          className="text-blue-600 hover:text-blue-800 ml-2"
+          className="text-primary hover:text-primary ml-2"
         >
           Clear selection
         </button>
@@ -136,7 +136,7 @@ export default function CourseTable() {
         columns={columns}
         dataSource={data}
         pagination={false}
-        className="[&_.ant-table-thead]:bg-[#E6E9FF]"
+        className="[&_.ant-table-thead]:bg-[#E1E7FF]"
       />
     </div>
   );

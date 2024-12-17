@@ -2,9 +2,14 @@ import React from "react";
 import CourseTable from "../../../../components/course/CourseTable";
 import { BorderHOC } from "../../../../components";
 import { MdOutlineArrowBackIos } from "react-icons/md";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
+import ReviewImportModal from "./components/ReviewImportModal";
+import MappingSuccessModal from "./components/MappingSuccessModal";
 
 const CourseImport = () => {
+  const [showReview, setShowReview] = React.useState(false);
+  const [showSuccess, setShowSuccess] = React.useState(false);
+
   return (
     <div>
       <div className="w-full flex flex-col gap-[25px]">
@@ -31,6 +36,7 @@ const CourseImport = () => {
         // loading={createCourseLoad}
         onClick={() => {
           // navigate("/courses/import");
+          setShowReview(true);
         }}
         className="bg-primary !w-[144px] !h-[48px] "
         type="primary"
@@ -39,6 +45,21 @@ const CourseImport = () => {
       >
         Continue
       </Button>
+
+      <ReviewImportModal
+        isOpen={showReview}
+        onClose={() => {
+          setShowReview(false);
+        }}
+        setShowSuccess={setShowSuccess}
+      />
+
+      <MappingSuccessModal
+        isOpen={showSuccess}
+        onClose={() => {
+          setShowSuccess(false);
+        }}
+      />
     </div>
   );
 };

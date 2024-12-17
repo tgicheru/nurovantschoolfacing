@@ -13,9 +13,15 @@ import { useGetCourses } from "../../../hooks/courses/courses";
 import DefaultBanner from "../../../assets/default_banner.png";
 import CreateCourseDrawer from "../../../components/course/CreateCourseDrawer";
 import StudentsContainer from "../../../components/course/StudentsContainer";
+import { useSearchParams } from "react-router-dom";
+import { LiaShareAltSolid } from "react-icons/lia";
 
 const Home = () => {
   const width = window.innerWidth;
+  const [param, setParam] = useSearchParams();
+
+  const [activeType, setActiveType] = useState(param.get("type") || "normal");
+
   const navigate = useNavigate();
 
   const [page, setPage] = useState(1);
@@ -43,12 +49,32 @@ const Home = () => {
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
         <div className="w-full flex items-center justify-between">
           <ContentHeader
-            headerText={`Courses 📚`}
+            headerText={`Courses 📚 ${
+              activeType !== "normal" ? "(Mapped)" : ""
+            }`}
             subText={`Organize and manage your course materials.`}
             marginBottom="mb-[0px]"
           />
 
-          <StudentsContainer />
+          <div className="flex items-center gap-5">
+            <Button
+              // disabled={!upldFile?.file}
+
+              // loading={createCourseLoad}
+              onClick={() => {
+                onClose();
+                navigate("/courses?type=mapped");
+              }}
+              className="bg-[#E1E7FF] !w-[154px] !h-[40px] flex items-center justify-center gap-2"
+              type="primary"
+              size="large"
+              shape="round"
+            >
+              <span className="text-primary">Share Course</span>
+              <LiaShareAltSolid className="text-primary text-[20px] flex-shrink-0" />
+            </Button>
+            <StudentsContainer />
+          </div>
         </div>
 
         <BorderHOC className="" rounded="rounded-[10px]">
