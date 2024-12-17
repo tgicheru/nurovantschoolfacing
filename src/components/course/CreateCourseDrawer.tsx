@@ -29,6 +29,7 @@ import { useCreateCourse } from "../../hooks/courses/courses";
 import { useRecoilValue } from "recoil";
 import authAtom from "../../atoms/auth/auth.atom";
 import SearchableSelect from "../SearchableSelect";
+import { useNavigate, useNavigation } from "react-router";
 // import { LoadingOutlined } from "@ant-design/icons";
 
 type CreateCourseDrawerProps = {
@@ -58,6 +59,7 @@ const CreateCourseDrawer = ({
   onClose,
   refetch,
 }: CreateCourseDrawerProps) => {
+  const navigate = useNavigate();
   const width = window.innerWidth;
   const { user } = useRecoilValue(authAtom);
 
@@ -280,8 +282,6 @@ const CreateCourseDrawer = ({
     }
   );
 
-  console.log({ standardSet });
-
   const [initialValues, setInitialValues] = useState<InitialValuesTypes>({
     course_title: "",
     course_image: "",
@@ -325,8 +325,11 @@ const CreateCourseDrawer = ({
     ) {
       return;
     } else {
-      createCourse(initialValues);
-      // console.log("initialValues", initialValues);
+      const newInitialValues = {
+        ...initialValues,
+        learning_standards: [standardSet?.data],
+      };
+      createCourse(newInitialValues);
     }
   };
 
@@ -362,7 +365,11 @@ const CreateCourseDrawer = ({
           {steps !== 0 && (
             <button
               onClick={() => {
-                setSteps((prev) => prev - 1);
+                if (steps === 3) {
+                  setSteps(1);
+                } else {
+                  setSteps((prev) => prev - 1);
+                }
               }}
               className="flex items-start pt-1"
             >
@@ -372,7 +379,11 @@ const CreateCourseDrawer = ({
 
           <div className="flex flex-col gap-[5px]">
             <h3 className="text-[24px] leading-[32px] font-bold text-neutral-900">
-              {steps === 2 ? "One more thing!" : "Create Course"}
+              {steps === 2
+                ? "One more thing!"
+                : steps === 3
+                ? "Import from LMS"
+                : "Create Course"}
             </h3>
             <p className="text-sm font-semibold text-neutral-600 max-w-[293px">
               {steps === 1
@@ -380,6 +391,8 @@ const CreateCourseDrawer = ({
                 : steps === 2
                 ? `Set clear goals to guide and measure student 
 progress effectively`
+                : steps === 3
+                ? "Kindly select the LMS platform of  choice."
                 : `Let's get you all set up by creating your first class.`}
             </p>
           </div>
@@ -413,7 +426,12 @@ progress effectively`
           </BorderHOC>
 
           <BorderHOC rounded="rounded-[10px]">
-            <div className="px-5 py-[19px] gap-[9px] cursor-pointer">
+            <div
+              className="px-5 py-[19px] gap-[9px] cursor-pointer"
+              onClick={() => {
+                setSteps(3);
+              }}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-[30px] h-[30px] rounded-[7px] bg-[#F79009] flex items-center justify-center">
                   <FiUploadCloud className="text-white" />
@@ -705,6 +723,123 @@ progress effectively`
             shape="round"
           >
             Create Course
+          </Button>
+        </div>
+      )}
+
+      {steps === 3 && (
+        <div className="w-full pt-[50px] flex flex-col gap-4">
+          <BorderHOC rounded="rounded-[10px]">
+            <div
+              className="px-5 py-[19px] gap-[9px] cursor-pointer"
+              onClick={() => {
+                setSteps(1);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-[30px] h-[30px] rounded-[7px] bg-primary flex items-center justify-center">
+                  <PiBookOpenText className="text-[18px] text-white transform scale-x-[-1]" />
+                </div>
+                <h5 className="text-base font-bold text-neutral-900">
+                  Canvas LMS
+                </h5>
+              </div>
+              <p className="text-sm font-semibold text-neutral-600 mt-2">
+                Connect to your Canvas account to access courses
+              </p>
+            </div>
+          </BorderHOC>
+
+          <BorderHOC rounded="rounded-[10px]">
+            <div
+              className="px-5 py-[19px] gap-[9px] cursor-pointer"
+              onClick={() => {
+                setSteps(3);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-[30px] h-[30px] rounded-[7px] bg-[#17B26A] flex items-center justify-center">
+                  <FiUploadCloud className="text-white" />
+                </div>
+                <h5 className="text-base font-bold text-neutral-900">
+                  Moddle LMS
+                </h5>
+              </div>
+              <p className="text-sm font-semibold text-neutral-600 mt-2">
+                Connect to your moddle account to access courses
+              </p>
+            </div>
+          </BorderHOC>
+
+          <BorderHOC rounded="rounded-[10px]">
+            <div
+              className="px-5 py-[19px] gap-[9px] cursor-pointer"
+              onClick={() => {
+                setSteps(1);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-[30px] h-[30px] rounded-[7px] bg-[#FABA15] flex items-center justify-center">
+                  <PiBookOpenText className="text-[18px] text-white transform scale-x-[-1]" />
+                </div>
+                <h5 className="text-base font-bold text-neutral-900">
+                  Blackboard LMS
+                </h5>
+              </div>
+              <p className="text-sm font-semibold text-neutral-600 mt-2">
+                Connect to your blackboard account to access courses
+              </p>
+            </div>
+          </BorderHOC>
+
+          <Divider className="border-light">Or</Divider>
+
+          <div className="flex flex-col gap-[6px] w-full">
+            <h4 className="text-sm font-bold text-neutral-900">Import LMS</h4>
+            <Upload.Dragger {...uploadProps} className="w-full">
+              <p className="ant-upload-drag-icon">
+                <LuUploadCloud className="text-black text-2xl bg-light mx-auto" />
+              </p>
+              <p className="ant-upload-text">
+                {initialValues.learning_standard_url.length ? (
+                  "Your file has been uploaded"
+                ) : (
+                  <>
+                    <span className="text-primary">Click to upload</span> or
+                    drag and drop
+                  </>
+                )}
+              </p>
+              <p className="ant-upload-hint">
+                {initialValues.learning_standard_url.length ? (
+                  <Button
+                    onClick={() => handleUpldFileClr("learning_standard_url")}
+                    type="text"
+                    danger
+                    size="large"
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  "SVG, PNG, JPG or GIF (max. 800x400px)"
+                )}
+              </p>
+            </Upload.Dragger>
+          </div>
+
+          <Button
+            // disabled={!upldFile?.file}
+
+            // loading={createCourseLoad}
+            onClick={() => {
+              navigate("/courses/import");
+            }}
+            className="bg-primary !w-full !h-[48px]"
+            type="primary"
+            size="large"
+            shape="round"
+          >
+            Continue
           </Button>
         </div>
       )}
