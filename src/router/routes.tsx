@@ -22,6 +22,7 @@ const Courses = lazy(() => import("../pages/main/courses/index"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
 const LectureDetails = lazy(() => import("../pages/main/courses/lecture"));
 const StudentsDetails = lazy(() => import("../pages/main/courses/students"));
+const CourseImport = lazy(() => import("../pages/main/courses/import"));
 const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
 const FlashCardPage = lazy(
   () => import("../pages/main/courses/lecture/pages/flashcards")
@@ -69,6 +70,11 @@ export const routes = [
     path: "/courses/students",
     label: "Courses Students",
     component: <StudentsDetails />,
+  },
+  {
+    path: "/courses/import",
+    label: "Courses Students",
+    component: <CourseImport />,
   },
   {
     path: "/courses/lecture/quiz",
