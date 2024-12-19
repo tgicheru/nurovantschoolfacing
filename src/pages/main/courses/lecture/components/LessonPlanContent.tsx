@@ -1,14 +1,36 @@
-import { Button } from "antd";
-import React from "react";
-import { WiStars } from "react-icons/wi";
+import { Card, Tabs, Typography, Descriptions, Table } from "antd";
+import { useState, useMemo } from "react";
 import { BorderHOC } from "../../../../../components";
-import { PiBookOpenText, PiDotsThreeOutlineDuotone } from "react-icons/pi";
-import { TbCards, TbMessageQuestion } from "react-icons/tb";
-import { BsRepeat } from "react-icons/bs";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { useNavigate } from "react-router";
-import EmptyState from "../../../../../assets/EmptyState.svg";
-import { IoDocumentTextOutline } from "react-icons/io5";
+import { useSearchParams } from "react-router-dom";
+
+const { Title, Text } = Typography;
+
+// Sample data for each tab content
+const lessonObjectives = [
+  "Identify the properties of electric charges and their interactions.",
+  "Explain the concept of magnetic fields and their effects on moving charges.",
+  "Assemble a basic circuit to demonstrate the flow of electricity.",
+  "Predict the direction of a compass needle when placed near a magnet",
+];
+
+const materialsNeeded = [
+  "Batteries",
+  "Wires",
+  "LED bulbs",
+  "Magnets",
+  "Compass",
+  "Circuit boards",
+];
+
+const homework = {
+  assignment: "Complete worksheet on electric circuits",
+  dueDate: "Next class",
+  requirements: [
+    "Draw circuit diagrams",
+    "Calculate current in series circuits",
+    "Explain magnetic field effects",
+  ],
+};
 
 const LessonPlanContent = ({
   isGridView,
@@ -17,138 +39,382 @@ const LessonPlanContent = ({
   isGridView: boolean;
   data: any[];
 }) => {
-  const navigate = useNavigate();
+  const [param, setParam] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(
+    param.get("subTab") || "lesson-objectives"
+  );
+  const handleTab = (tab: string) => {
+    setParam({ subTab: tab });
+    setActiveTab(tab);
+  };
+
+  const tabs = useMemo(
+    () => [
+      {
+        key: "lesson-objectives",
+        // column: lectureColumns,
+        data: [],
+        label: "Lesson Objectives",
+        children: <LessonObjectivesContent />,
+      },
+      {
+        key: "materials-needed",
+        // column: quizColumns,
+        data: data,
+        label: "Materials Needed",
+        children: <MaterialsContent />,
+      },
+      {
+        key: "homework",
+        // column: flashcardColumns,
+        data: data,
+        label: "Homework",
+        children: <HomeworkContent />,
+      },
+      {
+        key: "teachers-note",
+        // column: recapColumns,
+        data: data,
+        label: "Teachers Note",
+        children: <TeachersNoteContent />,
+      },
+      {
+        key: "rubic",
+        // column: discussColumns,
+        data: data,
+        label: "Rubric and Scoring Guide",
+        children: <RubricContent />,
+      },
+      {
+        key: "activities",
+        // column: discussColumns,
+        data: data,
+        label: "Activities",
+        children: <ActivitiesContent />,
+      },
+    ],
+    [data, isGridView]
+  );
+
   return (
-    <div>
-      {data.length ? (
-        <div className="w-full flex flex-col">
-          {isGridView ? (
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.map((lecture: any, idx) => (
-                <div
-                  className="w-full cursor-pointer"
-                  key={idx}
-                  onClick={() => {
-                    navigate("/courses/lecture/lesson-plan");
-                  }}
-                >
-                  <BorderHOC className="" rounded="rounded-[10px]">
-                    <div className=" p-4 w-full flex flex-col gap-4 ">
-                      <div className="flex w-full items-center justify-between">
-                        <div className="h-[50px] w-[50px]">
-                          <BorderHOC rounded="rounded-[10px]">
-                            <div className="h-[50px] w-[50px] flex-shrink-0 bg-[#FDDBDB] rounded-[10px] flex items-center justify-center">
-                              <h5 className="text-[24px] leading-[30px] font-bold text-black">
-                                <IoDocumentTextOutline className="text-[]" />
-                              </h5>
-                            </div>
-                          </BorderHOC>
-                        </div>
-
-                        <button className="flex items-center justify-center">
-                          <PiDotsThreeOutlineDuotone className="text-[20px]" />
-                        </button>
-                      </div>
-                      <div className="flex flex-col">
-                        <h2 className="text-sm text-neutral-900 font-bold">
-                          {"Algebra 101 Lesson Plan"}
-                        </h2>
-                        <p className="text-[12px] leading-[18px] text-neutral-600">
-                          {lecture.createdAt}
-                        </p>
-                      </div>
-                    </div>
-                  </BorderHOC>
-                </div>
-              ))}
+    <div className="max-w-7xl mx-auto p-4">
+      {/* Header Card */}
+      <Card className="mb-4" style={{ backgroundColor: "#E1E7FF" }}>
+        <div className="flex items-center justify-between flex-1 gap-4">
+          <div className="flex items-center flex-1 justify-between">
+            <div className="flex flex-col gap-[5px]">
+              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                {"Created"}
+              </h2>
+              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                11 Nov. 2024 · 12:09PM
+              </p>
             </div>
-          ) : (
-            <div className="flex flex-col w-full gap-3 p-4">
-              {data.map((lecture: any, idx) => (
-                <div
-                  className="w-full cursor-pointer"
-                  key={idx}
-                  onClick={() => {
-                    navigate("/courses/lecture/lesson-plan");
-                  }}
-                >
-                  <BorderHOC className="w-full" rounded="rounded-[10px]">
-                    <div className="flex items-center gap-4 px-4 py-[10px]">
-                      <div className="h-[50px] w-[50px]">
-                        <BorderHOC rounded="rounded-[10px]">
-                          <div className="h-[50px] flex-shrink-0 bg-[#FDDBDB] rounded-[10px] flex items-center justify-center">
-                            <h5 className="text-[24px] leading-[30px] font-bold text-black">
-                              <IoDocumentTextOutline className="text-[]" />
-                            </h5>
-                          </div>
-                        </BorderHOC>
-                      </div>
-                      <div className="flex items-center justify-between flex-1 gap-4">
-                        <div className="flex flex-col gap-[5px]">
-                          <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                            {"Algebra 101 Lesson Plan"}
-                          </h2>
-                          <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                            {lecture.createdAt}
-                          </p>
-                        </div>
-
-                        <button className="flex items-center justify-center">
-                          <PiDotsThreeOutlineDuotone className="text-[20px]" />
-                        </button>
-                      </div>
-                    </div>
-                  </BorderHOC>
-                </div>
-              ))}
+            <div className="flex flex-col gap-[5px]">
+              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                {"Subject"}
+              </h2>
+              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                Physics
+              </p>
             </div>
-          )}
-          {/* <BorderHOC className="mt-[10px]" />
-          <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
-            <p className="text-sm text-neutral-900">Page 1 of 10</p>
-            <div className="flex items-center gap-4">
-              <button className="">
-                <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                  <div className="py-[10px] w-[106px] flex items-center justify-center">
-                    <span className="text-[#344054] text-sm">Previous</span>
-                  </div>
-                </BorderHOC>
-              </button>
-
-              <button className="">
-                <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                  <div className="py-[10px] w-[80px] flex items-center justify-center">
-                    <span className="text-[#344054] text-sm">Next</span>
-                  </div>
-                </BorderHOC>
-              </button>
-            </div>
-          </div> */}
-        </div>
-      ) : (
-        <div className="w-full flex items-center justify-center py-[72px]">
-          <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
-            <div className="flex flex-col items-center justify-center">
-              <img src={EmptyState} alt="empty courses" />
-              <span className="text-base font-bold text-neutral-900 text-center">
-                You do not have any lesson plan created yet
-              </span>
+            <div className="flex flex-col gap-[5px]">
+              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                Grade Level
+              </h2>
+              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                Grade 8
+              </p>
             </div>
 
-            <Button
-              onClick={() => {}}
-              className="bg-primary !rounded-[1000px]"
-              type="primary"
-              size="large"
-              icon={<WiStars className="text-[34px]" />}
-            >
-              Generate Lesson plan
-            </Button>
+            <div className="flex flex-col gap-[5px]">
+              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                Unit Name
+              </h2>
+              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                Electricity and Magnetism
+              </p>
+            </div>
+            <div className="flex flex-col gap-[5px]">
+              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                Lesson Duration
+              </h2>
+              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                45 Mins
+              </p>
+            </div>
           </div>
         </div>
-      )}
+      </Card>
+
+      {/* Main Content */}
+      {/* <div className="flex gap-4">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          tabPosition="left"
+          className="min-w-[200px]"
+          items={[
+            {
+              key: "1",
+              label: "Lesson Objectives",
+              children: <LessonObjectivesContent />,
+            },
+            {
+              key: "2",
+              label: "Materials Needed",
+              children: <MaterialsContent />,
+            },
+            {
+              key: "3",
+              label: "Homework",
+              children: <HomeworkContent />,
+            },
+            {
+              key: "4",
+              label: "Teachers Note",
+              children: <TeachersNoteContent />,
+            },
+            {
+              key: "5",
+              label: "Rubric and Scoring Guide",
+              children: <RubricContent />,
+            },
+            {
+              key: "6",
+              label: "Activities",
+              children: <ActivitiesContent />,
+            },
+          ]}
+        />
+      </div> */}
+
+      <div className="w-full flex flex-col lg:flex-row gap-5">
+        <div className="w-full lg:w-[294px]">
+          <BorderHOC className="" rounded="rounded-[10px]">
+            <div className="w-full  p-4">
+              <Title level={4}>Lesson Objectives</Title>
+              <ul className="list-disc pl-6 space-y-2">
+                {tabs.map((tab) => (
+                  <li
+                    key={tab.key}
+                    className={`cursor-pointer text-sm ${
+                      activeTab === tab.key
+                        ? "text-primary"
+                        : "text-neutral-900"
+                    }`}
+                    onClick={() => handleTab(tab.key)}
+                  >
+                    {tab.label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </BorderHOC>
+        </div>
+
+        <div className="w-full h-full">
+          <BorderHOC className="" rounded="rounded-[10px]">
+            <div className="w-full p-4">
+              {tabs.find((tab) => tab.key === activeTab)?.children}
+            </div>
+          </BorderHOC>
+        </div>
+      </div>
     </div>
   );
 };
+
+function LessonObjectivesContent() {
+  return (
+    <div className="p-4">
+      <Title level={5} className="!text-primary mb-4">
+        By the end of this lesson, students will be able to
+      </Title>
+      <ul className="list-disc pl-6 space-y-2">
+        {lessonObjectives.map((objective, index) => (
+          <li key={index}>{objective}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function MaterialsContent() {
+  return (
+    <div className="p-4">
+      <Title level={5} className="!text-primary">
+        For the Teacher
+      </Title>
+      <ul className="list-disc pl-6 space-y-2">
+        {[
+          "PowerPoint presentation with key concepts",
+          "Interactive whiteboard or projector for visuals",
+        ].map((material, index) => (
+          <li key={index}>{material}</li>
+        ))}
+      </ul>
+      <Title level={5} className="mt-4 !text-primary">
+        For Student Activities
+      </Title>
+      <ul className="list-disc pl-6 space-y-2">
+        {[
+          "Magnets (one per group).",
+          "Wires (5 pieces per group)",
+          "Batteries (AA size, one per group)",
+          "Lightbulbs (small, one per group).",
+          "Compasses (one per group)",
+        ].map((material, index) => (
+          <li key={index}>{material}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function HomeworkContent() {
+  return (
+    <div className="p-4">
+      <Title level={5} className="mt-4">
+        Complete the Electricity and Magnetism Worksheet:
+      </Title>
+      <ul className="list-disc pl-6 space-y-2">
+        {[
+          "Define electric charges and their interactions",
+          "Draw and label a simple circuit.",
+          "Describe how a compass reacts to a nearby magnet",
+        ].map((req, index) => (
+          <li key={index}>{req}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TeachersNoteContent() {
+  return (
+    <div className="p-4">
+      <ul className="list-disc pl-6 space-y-2">
+        {[
+          "Check all demo materials before class.",
+          "Offer hints to students struggling with circuit-building.",
+          "Collect homework to review next lesson.",
+        ].map((req, index) => (
+          <li key={index}>{req}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function RubricContent() {
+  return (
+    <div className="p-4">
+      <Title level={4}>Rubric and Scoring Guide</Title>
+      <Table
+        dataSource={[
+          {
+            key: "1",
+            criteria: "Participation",
+            points: 5,
+            description: "Actively engages in discussions and activities",
+          },
+          {
+            key: "2",
+            criteria: "Understanding",
+            points: 5,
+            description: "Correctly explains key concepts",
+          },
+          {
+            key: "3",
+            criteria: "Practical Skills",
+            points: 5,
+            description: "Successfully builds a working circuit.",
+          },
+          {
+            key: "4",
+            criteria: "Completeness",
+            points: 5,
+            description: "Finishes all components of the worksheet.",
+          },
+        ]}
+        columns={[
+          {
+            title: "Criteria",
+            dataIndex: "criteria",
+            key: "criteria",
+            width: "25%",
+          },
+          {
+            title: "Points",
+            dataIndex: "points",
+            key: "points",
+            width: "15%",
+          },
+          {
+            title: "Description",
+            dataIndex: "description",
+            key: "description",
+          },
+        ]}
+        pagination={false}
+        bordered
+      />
+    </div>
+  );
+}
+
+function ActivitiesContent() {
+  return (
+    <div className="p-4">
+      <Title level={4}>Class Activities</Title>
+      <Table
+        dataSource={[
+          {
+            key: "1",
+            time: "8:00 - 8:05",
+            activity: "Introduction: Demo with magnet/compass",
+          },
+          {
+            key: "2",
+            time: "8:05 - 8:20",
+            activity: "Lecture: Electric charges",
+          },
+          {
+            key: "3",
+            time: "8:20 - 8:40",
+            activity: "Group activity: Build a circuit",
+          },
+          {
+            key: "4",
+            time: "8:40 - 8:50",
+            activity: "Class discussion: Magnetic fields",
+          },
+          {
+            key: "5",
+            time: "8:50 - 9:00",
+            activity: "Closure: Exit ticket review",
+          },
+        ]}
+        columns={[
+          {
+            title: "Time",
+            dataIndex: "time",
+            key: "time",
+            width: "30%",
+          },
+          {
+            title: "Activity",
+            dataIndex: "activity",
+            key: "activity",
+          },
+        ]}
+        pagination={false}
+        bordered
+        className="[&_.ant-table-thead_.ant-table-cell]:bg-gray-50"
+      />
+    </div>
+  );
+}
 
 export default LessonPlanContent;
