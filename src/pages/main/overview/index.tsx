@@ -9,6 +9,7 @@ import {
   QuickActions,
 } from "../../../components";
 import { BsArrowDown } from "react-icons/bs";
+import CurriculumMaps from "../../../components/overview/CurriculumMaps";
 
 const OverviewPage = () => {
   const { user } = useRecoilValue(authAtom);
@@ -67,6 +68,8 @@ const OverviewPage = () => {
             </div>
           ))}
         </div>
+
+        <CurriculumMaps />
 
         <AdaptiveLearningOverview />
 

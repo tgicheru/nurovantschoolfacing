@@ -1,32 +1,28 @@
-import { Button, Spin } from "antd";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa6";
-import { BorderHOC, ContentHeader } from "../../../components";
-import { TbFilterSearch } from "react-icons/tb";
-import { RiSearch2Line } from "react-icons/ri";
+import DefaultBanner from "../../assets/default_banner.png";
+import EmptyState from "../../assets/EmptyState.svg";
+
+import CreateCourseDrawer from "../course/CreateCourseDrawer";
+import { BorderHOC } from "../BorderHOC";
+import { useGetCourses } from "../../hooks/courses/courses";
 import { RxDashboard } from "react-icons/rx";
 import { GoRows } from "react-icons/go";
+import { Button } from "antd";
+import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import EmptyState from "../../../assets/EmptyState.svg";
 import { PiDotsThreeOutlineDuotone } from "react-icons/pi";
-import { useGetCourses } from "../../../hooks/courses/courses";
-import DefaultBanner from "../../../assets/default_banner.png";
-import CreateCourseDrawer from "../../../components/course/CreateCourseDrawer";
-import StudentsContainer from "../../../components/course/StudentsContainer";
-import { useSearchParams } from "react-router-dom";
-import { LiaShareAltSolid } from "react-icons/lia";
-import ShareCourseButton from "../../../components/course/ShareCourseButton";
 
-const Home = () => {
-  const width = window.innerWidth;
-  const [param, setParam] = useSearchParams();
-
-  const [activeType, setActiveType] = useState(param.get("type") || "normal");
-
+const CurriculumMaps = () => {
   const navigate = useNavigate();
+  const course = {
+    title: "Understanding Mathematics",
+    createdAt: "11 Nov, 2024 • 12:09PM",
+    institution: "St. Calton High School",
+    state: "Alabama",
+    grade: "3-5 (Middle School)",
+    image: DefaultBanner,
+  };
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);
@@ -37,7 +33,7 @@ const Home = () => {
     data: getCoursesData,
     refetch: getCoursesFetch,
     isLoading: getCoursesLoad,
-  } = useGetCourses({ limit, page });
+  } = useGetCourses({});
   // console.log(getCoursesData);
 
   const onOpen = () => setIsOpen(true);
@@ -46,119 +42,70 @@ const Home = () => {
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   return (
-    <Spin spinning={getCoursesLoad}>
-      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
-        <div className="w-full flex items-center justify-between">
-          <ContentHeader
-            headerText={`Courses 📚 ${
-              activeType !== "normal" ? "(Mapped)" : ""
-            }`}
-            subText={`Organize and manage your course materials.`}
-            marginBottom="mb-[0px]"
-          />
-
-          <div className="flex items-center gap-5">
-            <Button
-              // disabled={!upldFile?.file}
-
-              // loading={createCourseLoad}
-              onClick={() => {
-                // navigate("/courses?type=mapped");
-              }}
-              className="bg-[#E1E7FF] hover:!bg-[#E1E7FF] !w-[154px] !h-[40px] flex items-center justify-center gap-2"
-              type="primary"
-              size="large"
-              shape="round"
-            >
-              <span className="text-primary">Feedback</span>
-              {/* <LiaShareAltSolid className="text-primary text-[20px] flex-shrink-0" /> */}
-            </Button>
-            <StudentsContainer />
-          </div>
-        </div>
-
-        <BorderHOC className="" rounded="rounded-[10px]">
-          <div className="w-full px-[15px] pt-[15px]">
-            <div className="w-full pb-[10px]">
-              <div className="w-full flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <h1 className="text-neutral-900 text-[24px] leading-[32px] font-bold">
-                    {getCoursesData?.data?.length}
-                  </h1>
-                  <p className="text-sm font-semibold text-neutral-600">
-                    Course
-                  </p>
-                </div>
-                <div className="flex items-center gap-[10px] h-[40px]">
-                  <div
-                    className="h-full flex items-center py-[8px] gap-[7px] px-3 cursor-pointer"
-                    onClick={() => {}}
-                  >
-                    <TbFilterSearch className="text-neutral-900 text-[24px]" />
-                    <p className="text-sm font-bold text-neutral-900">Filter</p>
-                  </div>
-                  <ShareCourseButton />
-
-                  <BorderHOC className="h-full !w-[1px]" />
-                  <div className="w-[40px] flex items-center justify-center h-full">
-                    <RiSearch2Line className="text-[24px]" />
-                  </div>
-                  <BorderHOC className="h-full !w-[1px]" />
-                  <div className="flex items-center gap-[5px] h-full">
-                    <div
-                      className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
-                        getCoursesData?.data?.length &&
-                        isGridView &&
-                        "bg-[#E7E7E7]"
-                      }`}
-                      onClick={() => {
-                        setIsGridView(true);
-                      }}
-                    >
-                      <RxDashboard className="text-[24px]" />
-                    </div>
-                    <div
-                      className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
-                        getCoursesData?.data?.length &&
-                        isGridView === false &&
-                        "bg-[#E7E7E7]"
-                      }`}
-                      onClick={() => {
-                        setIsGridView(false);
-                      }}
-                    >
-                      <GoRows className="text-[24px]" />
-                    </div>
-                  </div>
-                  <BorderHOC className="h-full !w-[1px]" />
-                  <Button
-                    onClick={onOpen}
-                    className="bg-primary !rounded-[1000px]"
-                    type="primary"
-                    size="large"
-                    icon={<FaPlus />}
-                  >
-                    Create course
-                  </Button>
-                </div>
+    <div>
+      <BorderHOC className="" rounded="rounded-[10px]">
+        <div className="w-full px-[15px] py-[15px]">
+          <div className="w-full pb-[10px]">
+            <div className="w-full flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <p className="text-sm font-semibold text-neutral-600">
+                  Curriculum Maps
+                </p>
               </div>
-              <BorderHOC className="mt-[10px]" />
+              <div className="flex items-center gap-[10px] h-[40px]">
+                <div className="flex items-center gap-[5px] h-full">
+                  <div
+                    className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
+                      getCoursesData?.data?.length &&
+                      isGridView &&
+                      "bg-[#E7E7E7]"
+                    }`}
+                    onClick={() => {
+                      setIsGridView(true);
+                    }}
+                  >
+                    <RxDashboard className="text-[24px]" />
+                  </div>
+                  <div
+                    className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
+                      getCoursesData?.data?.length &&
+                      isGridView === false &&
+                      "bg-[#E7E7E7]"
+                    }`}
+                    onClick={() => {
+                      setIsGridView(false);
+                    }}
+                  >
+                    <GoRows className="text-[24px]" />
+                  </div>
+                </div>
+                <BorderHOC className="h-full !w-[1px]" />
+                <Button
+                  onClick={onOpen}
+                  className="bg-primary !rounded-[1000px]"
+                  type="primary"
+                  size="large"
+                  icon={<FaPlus />}
+                >
+                  Create course
+                </Button>
+              </div>
             </div>
+            <BorderHOC className="mt-[10px]" />
+          </div>
 
-            {getCoursesData?.data?.length ? (
-              <div className="w-full flex flex-col">
-                {isGridView ? (
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {getCoursesData?.data?.map((course: any, idx: number) => (
+          {getCoursesData?.data?.length ? (
+            <div className="w-full flex flex-col">
+              {isGridView ? (
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {getCoursesData?.data
+                    ?.slice(0, 3)
+                    .map((course: any, idx: number) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
                         onClick={() => {
-                          if (activeType !== "normal") {
-                            navigate(`/courses/details?type=mapped`);
-                          } else {
-                            navigate(`/courses/details`);
-                          }
+                          navigate(`/courses/details?type=mapped`);
                         }}
                       >
                         <BorderHOC className="" rounded="rounded-[10px]">
@@ -227,10 +174,12 @@ const Home = () => {
                         </BorderHOC>
                       </div>
                     ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-col w-full gap-3 p-4">
-                    {getCoursesData?.data?.map((course: any, idx: number) => (
+                </div>
+              ) : (
+                <div className="flex flex-col w-full gap-3 p-4">
+                  {getCoursesData?.data
+                    ?.slice(0, 3)
+                    ?.map((course: any, idx: number) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
@@ -305,66 +254,42 @@ const Home = () => {
                         </BorderHOC>
                       </div>
                     ))}
-                  </div>
-                )}
-                <BorderHOC className="mt-[10px]" />
-                <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
-                  <p className="text-sm text-neutral-900">Page 1 of 10</p>
-                  <div className="flex items-center gap-4">
-                    <button className="">
-                      <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                        <div className="py-[10px] w-[106px] flex items-center justify-center">
-                          <span className="text-[#344054] text-sm">
-                            Previous
-                          </span>
-                        </div>
-                      </BorderHOC>
-                    </button>
-
-                    <button className="">
-                      <BorderHOC className="w-full" rounded="rounded-[1000px]">
-                        <div className="py-[10px] w-[80px] flex items-center justify-center">
-                          <span className="text-[#344054] text-sm">Next</span>
-                        </div>
-                      </BorderHOC>
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="w-full flex items-center justify-center py-[72px]">
-                <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
-                  <div className="flex flex-col items-center justify-center">
-                    <img src={EmptyState} alt="empty courses" />
-                    <span className="text-base font-bold text-neutral-900 text-center">
-                      You don’t have any course created yet
-                    </span>
-                  </div>
-
-                  <Button
-                    onClick={onOpen}
-                    className="bg-primary !rounded-[1000px]"
-                    type="primary"
-                    size="large"
-                    icon={<FaPlus />}
-                  >
-                    Create course
-                  </Button>
+              )}
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center py-[72px]">
+              <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+                <div className="flex flex-col items-center justify-center">
+                  <img src={EmptyState} alt="empty courses" />
+                  <span className="text-base font-bold text-neutral-900 text-center">
+                    You don’t have any course created yet
+                  </span>
                 </div>
-              </div>
-            )}
-          </div>
-        </BorderHOC>
 
-        {/* Create Course Drawer >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-        <CreateCourseDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          refetch={getCoursesFetch}
-        />
-      </div>
-    </Spin>
+                <Button
+                  onClick={onOpen}
+                  className="bg-primary !rounded-[1000px]"
+                  type="primary"
+                  size="large"
+                  icon={<FaPlus />}
+                >
+                  Create course
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </BorderHOC>
+
+      {/* Create Course Drawer >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+      <CreateCourseDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        refetch={getCoursesFetch}
+      />
+    </div>
   );
 };
 
-export default Home;
+export default CurriculumMaps;
