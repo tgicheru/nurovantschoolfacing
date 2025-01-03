@@ -2,6 +2,7 @@ import {
   Button,
   Divider,
   Drawer,
+  Input,
   Select,
   Spin,
   Upload,
@@ -219,9 +220,8 @@ const MappedCoursesDrawer = ({
           <SearchableSelect
             items={jurisdictionData?.data}
             placeholder="Select preferred learning standard"
-            className="!h-[50px]"
+            className="!h-[50px] !w-full"
             onSelect={(value: string) => {
-              console.log("value", value);
               setSelectedJurisdiction(value);
               const selected = jurisdictionData?.data.find(
                 (item: { id: string; title: string }) => item.id === value
@@ -236,7 +236,11 @@ const MappedCoursesDrawer = ({
             }}
           />
 
-          <div className="flex flex-wrap gap-2 items-center mt-6 max-h-32 overflow-y-auto">
+          <div
+            className={`flex flex-wrap gap-2 items-center min-w-0 max-h-32 overflow-y-auto ${
+              stateStandards.length > 0 ? "mt-6" : ""
+            }`}
+          >
             {stateStandards.map((standard, i) => (
               <div
                 key={i}
@@ -252,7 +256,12 @@ const MappedCoursesDrawer = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[6px] w-full mt-7">
+        <div className="flex flex-col gap-[6px] w-full">
+          <h4 className="text-sm font-bold text-neutral-900">Code</h4>
+          <Input className="h-[48px]" />
+        </div>
+
+        <div className="flex flex-col gap-[6px] w-full">
           <h4 className="text-sm font-bold text-neutral-900">
             Additional Notes (Optional)
           </h4>

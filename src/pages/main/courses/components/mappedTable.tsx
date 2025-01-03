@@ -10,6 +10,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import { GoDotFill } from "react-icons/go";
 
 interface StandardData {
   name: string;
@@ -19,6 +20,7 @@ interface StandardData {
 
 interface DataType {
   key: string;
+  code: number;
   courseName: string;
   standards: StandardData[];
   recommendations?: string[];
@@ -31,25 +33,48 @@ const SegmentedProgress = ({ percent }: { percent: number }) => {
 
   return (
     <div className="flex gap-[2px]">
+      <span className="ml-2 text-sm text-gray-600 mr-1">{percent}% </span>
+
       {Array.from({ length: totalBlocks }).map((_, i) => (
         <div
           key={i}
-          className={`h-4 w-8 rounded-sm ${
+          className={`h-4 w-[6px] rounded-sm ${
             i < filledBlocks ? "bg-blue-500" : "bg-gray-200"
           }`}
         />
       ))}
-      <span className="ml-2 text-sm text-gray-600">{percent}%</span>
     </div>
   );
 };
 
 const columns: ColumnsType<DataType> = [
   {
-    title: "Course Name",
+    title: "Code",
+    dataIndex: "code",
+    key: "code",
+    width: 200,
+  },
+  {
+    title: "Code Interpretation",
     dataIndex: "courseName",
     key: "courseName",
-    width: 200,
+    width: 300,
+  },
+  {
+    title: "Standard",
+    dataIndex: "standards",
+    key: "standards",
+    width: 300,
+    render: (standards: StandardData[]) => (
+      <div className="space-y-6">
+        {standards?.map((standard, index) => (
+          <div key={index} className="flex gap-2 items-center">
+            <GoDotFill className="text-[#6D6E71] h-2 w-2 shrink-0" />
+            <div className="text-sm text-gray-600">{standard.name}</div>
+          </div>
+        ))}
+      </div>
+    ),
   },
   {
     title: "Coverage %",
@@ -58,9 +83,8 @@ const columns: ColumnsType<DataType> = [
     width: 300,
     render: (standards: StandardData[]) => (
       <div className="space-y-6">
-        {standards.map((standard, index) => (
+        {standards?.map((standard, index) => (
           <div key={index} className="space-y-1">
-            <div className="text-sm text-gray-600">{standard.name}</div>
             <SegmentedProgress percent={standard.coverage} />
           </div>
         ))}
@@ -68,7 +92,7 @@ const columns: ColumnsType<DataType> = [
     ),
   },
   {
-    title: "Status",
+    title: "Alignment",
     dataIndex: "standards",
     key: "status",
     width: 150,
@@ -94,11 +118,12 @@ const columns: ColumnsType<DataType> = [
     title: "Recommendation",
     dataIndex: "recommendations",
     key: "recommendations",
+    width: 400,
     render: (recommendations: string[]) =>
       recommendations ? (
-        <ul className="list-disc pl-4">
+        <ul className="list-disc pl-4 min-w-fit">
           {recommendations.map((rec, index) => (
-            <li key={index} className="text-gray-600">
+            <li key={index} className="text-[#57585A] text-sm">
               {rec}
             </li>
           ))}
@@ -152,6 +177,7 @@ const columns: ColumnsType<DataType> = [
 const data: DataType[] = [
   {
     key: "1",
+    code: 101.5,
     courseName: "Algebraic Equations",
     standards: [
       {
@@ -178,6 +204,7 @@ const data: DataType[] = [
   },
   {
     key: "2",
+    code: 102.5,
     courseName: "Algebraic Equations",
     standards: [
       {
@@ -199,6 +226,7 @@ const data: DataType[] = [
   },
   {
     key: "3",
+    code: 103.5,
     courseName: "Linear Functions",
     standards: [
       {
@@ -219,6 +247,7 @@ const data: DataType[] = [
   },
   {
     key: "4",
+    code: 105,
     courseName: "Geometry Basics",
     standards: [
       {
@@ -266,6 +295,7 @@ export default function CourseStandardsTable() {
               <th
                 {...restProps}
                 style={{ ...restProps.style, backgroundColor: "#E1E7FF" }}
+                className="font-fustat font-bold text-base"
               >
                 {children}
               </th>
