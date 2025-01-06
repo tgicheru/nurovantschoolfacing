@@ -92,6 +92,11 @@ const MainLayout = ({ children }: Props) => {
       label: "Question Bank",
       icon: "",
     },
+    {
+      key: "/review-report",
+      label: "Review & Report",
+      icon: "",
+    },
     // {
     //   key: "/proofreader",
     //   label: "Proof Reader",

@@ -40,6 +40,7 @@ const Settings = lazy(() => import("../pages/main/settings"));
 const ProofReader = lazy(() => import("../pages/main/proofreader"));
 const SpeechRate = lazy(() => import("../pages/main/speechrate"));
 const QuestionBank = lazy(() => import("../pages/main/questionbank"));
+const ReviewReport = lazy(() => import("../pages/main/reviewreport"));
 const GPTZero = lazy(() => import("../pages/main/gptzero"));
 const AdaptiveLearning = lazy(() => import("../pages/main/adaptivelearning"));
 const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
@@ -125,6 +126,11 @@ export const routes = [
     path: "/question-bank",
     label: "Question Bank",
     component: <QuestionBank />,
+  },
+  {
+    path: "/review-report",
+    label: "Review & Report",
+    component: <ReviewReport />,
   },
   {
     path: "/gpt-zero",

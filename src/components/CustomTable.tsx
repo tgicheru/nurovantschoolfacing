@@ -14,6 +14,7 @@ type Props = {
   loading?: boolean,
   position?: string,
   pagination?: any,
+  bordered?: boolean,
   rowSelection?: any,
 }
 function CustomTable({
@@ -26,6 +27,7 @@ function CustomTable({
   pagination,
   rowSelection,
   hidden=false,
+  bordered=false,
 }: Props) {
   const altColumn: ColumnsType<any> = [
     {
@@ -89,6 +91,7 @@ function CustomTable({
         key={rowKey}
         rowKey={rowKey}
         loading={loading}
+        bordered={bordered}
         showHeader={!noHeader}
         rowSelection={rowSelection}
         className='min-w-full relative'
