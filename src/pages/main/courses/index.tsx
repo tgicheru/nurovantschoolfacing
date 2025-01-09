@@ -16,6 +16,7 @@ import StudentsContainer from "../../../components/course/StudentsContainer";
 import { useSearchParams } from "react-router-dom";
 import { LiaShareAltSolid } from "react-icons/lia";
 import ShareCourseButton from "../../../components/course/ShareCourseButton";
+import MappedCourseTable from "./components/mappedTable";
 
 const Home = () => {
   const width = window.innerWidth;
@@ -50,9 +51,7 @@ const Home = () => {
       <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
         <div className="w-full flex items-center justify-between">
           <ContentHeader
-            headerText={`Courses 📚 ${
-              activeType !== "normal" ? "(Mapped)" : ""
-            }`}
+            headerText={`Courses 📚 ${activeType !== "normal" ? "" : ""}`}
             subText={`Organize and manage your course materials.`}
             marginBottom="mb-[0px]"
           />
@@ -118,11 +117,11 @@ const Home = () => {
                       <RxDashboard className="text-[24px]" />
                     </div>
                     <div
-                      className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
+                      className={`w-[40px]  items-center justify-center h-full rounded-[1000px] cursor-pointer ${
                         getCoursesData?.data?.length &&
                         isGridView === false &&
                         "bg-[#E7E7E7]"
-                      }`}
+                      } ${activeType !== "normal" ? "hidden" : "flex"}`}
                       onClick={() => {
                         setIsGridView(false);
                       }}
@@ -145,7 +144,7 @@ const Home = () => {
               <BorderHOC className="mt-[10px]" />
             </div>
 
-            {getCoursesData?.data?.length ? (
+            {activeType === "normal" && getCoursesData?.data?.length ? (
               <div className="w-full flex flex-col">
                 {isGridView ? (
                   <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -332,27 +331,31 @@ const Home = () => {
                 </div>
               </div>
             ) : (
-              <div className="w-full flex items-center justify-center py-[72px]">
-                <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
-                  <div className="flex flex-col items-center justify-center">
-                    <img src={EmptyState} alt="empty courses" />
-                    <span className="text-base font-bold text-neutral-900 text-center">
-                      You don’t have any course created yet
-                    </span>
-                  </div>
+              activeType === "normal" && (
+                <div className="w-full flex items-center justify-center py-[72px]">
+                  <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+                    <div className="flex flex-col items-center justify-center">
+                      <img src={EmptyState} alt="empty courses" />
+                      <span className="text-base font-bold text-neutral-900 text-center">
+                        You don’t have any course created yet
+                      </span>
+                    </div>
 
-                  <Button
-                    onClick={onOpen}
-                    className="bg-primary !rounded-[1000px]"
-                    type="primary"
-                    size="large"
-                    icon={<FaPlus />}
-                  >
-                    Create course
-                  </Button>
+                    <Button
+                      onClick={onOpen}
+                      className="bg-primary !rounded-[1000px]"
+                      type="primary"
+                      size="large"
+                      icon={<FaPlus />}
+                    >
+                      Create course
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )
             )}
+
+            {activeType !== "normal" && <MappedCourseTable />}
           </div>
         </BorderHOC>
 

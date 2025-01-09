@@ -5,6 +5,7 @@ import { MdOutlineArrowBackIos } from "react-icons/md";
 import { Button, Modal } from "antd";
 import ReviewImportModal from "./components/ReviewImportModal";
 import MappingSuccessModal from "./components/MappingSuccessModal";
+import MappedCoursesDrawer from "./components/mappedCoursesModal";
 
 const CourseImport = () => {
   const [showReview, setShowReview] = React.useState(false);
@@ -46,12 +47,21 @@ const CourseImport = () => {
         Continue
       </Button>
 
-      <ReviewImportModal
+      {/* <ReviewImportModal
         isOpen={showReview}
         onClose={() => {
           setShowReview(false);
         }}
         setShowSuccess={setShowSuccess}
+      /> */}
+
+      <MappedCoursesDrawer
+        isOpen={showReview}
+        onClose={() => {
+          setShowReview(false);
+        }}
+        setShowSuccess={setShowSuccess}
+        refetch={() => {}}
       />
 
       <MappingSuccessModal
