@@ -4,6 +4,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import {
   Avatar,
   Button,
+  Checkbox,
   Form,
   Input,
   Menu,
@@ -27,14 +28,14 @@ import VideoRecordIcon from "../../../assets/icons/videorecordicon";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
-import { BiTestTube } from "react-icons/bi";
+import { BiInfoCircle, BiTestTube } from "react-icons/bi";
 import { isEqual } from "../../../context/utils";
 import { AiOutlineMessage } from "react-icons/ai";
 import { IoMailOutline } from "react-icons/io5";
 import QuizSection from "./sections/quiz";
 import FlashcardSection from "./sections/flashcard";
 import modalAtom from "../../../atoms/modal/modal.atom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import InviteModal from "../../../components/modals/InviteModal";
 import AWS from "aws-sdk";
 import authAtom from "../../../atoms/auth/auth.atom";
@@ -85,6 +86,16 @@ function Home() {
   const [isInvite, setIsInvite] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [isLoadOpen, setIsLoadOpen] = useState(false);
+
+  const [selectedLevels, setSelectedLevels] = useState<string[]>(["on"]);
+  // const handleSelectedChange = (level: string) => {
+  //   setSelectedLevels((prev) => {
+  //     if (prev.includes(level)) {
+  //       return prev.filter((l) => l !== level);
+  //     }
+  //     return [...prev, level];
+  //   });
+  // };
 
   const onLoadClose = () => setIsLoadOpen(false);
   const onLoadOpen = () => setIsLoadOpen(true);
@@ -985,6 +996,7 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: paramId,
+      selected_grade_level: selectedLevels,
     };
     postQuizAction(payload);
   };
@@ -1103,6 +1115,34 @@ function Home() {
                   ))}
                 </div>
               </Form.Item>
+              <div className="p-6 w-full flex flex-col items-start">
+                <h2 className="text-[14px] leading-[21px] font-medium mb-6">
+                  Grade Level
+                </h2>
+
+                <div className="bg-gray-50 rounded-lg">
+                  <div className="flex flex-col gap-4">
+                    <Checkbox.Group
+                      options={[
+                        { label: "Above Grade Level", value: "above" },
+                        { label: "On Grade Level", value: "on" },
+                        { label: "Below Grade Level", value: "below" },
+                      ]}
+                      defaultValue={["on"]}
+                      onChange={(value) => {
+                        setSelectedLevels(value);
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-x-2 mt-4 text-gray-500">
+                  <BiInfoCircle className="text-base" />
+                  <span>Multiple Selection</span>
+                </div>
+
+                {/* This style tag is needed to override some Ant Design defaults */}
+              </div>
               <Button
                 className="bg-primary !w-full"
                 loading={isActionLoad}
@@ -1550,6 +1590,7 @@ function Home() {
               {activeAction}
             </p>
             <p className="text-sm font-normal text-secondary capitalize">{`Create ${activeAction} from this content`}</p>
+
             <Button
               onClick={onCreOpen}
               loading={isActionLoad}
