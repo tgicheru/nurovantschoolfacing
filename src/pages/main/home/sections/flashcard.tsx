@@ -9,10 +9,10 @@ import {
   Spin,
   Tag,
 } from "antd";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MdCancel } from "react-icons/md";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { isEqual } from "../../../../context/utils";
+import { handleCapitalize, isEqual } from "../../../../context/utils";
 import { useRecoilValue } from "recoil";
 import authAtom from "../../../../atoms/auth/auth.atom";
 
@@ -20,14 +20,35 @@ const FlashcardSection = () => {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const id = params.get("id");
+  const level = params.get("level");
+  const section = params.get("section");
   const [activeQuest, setActiveQuest] = useState(0);
   const [showMeaning, setShowMeaning] = useState(false);
+  const [refechValue, setRefetchValue] = useState(false);
+  const [levelValue, setLevelValue] = useState(null);
 
   const resetQuest = () => setActiveQuest(0);
   const goBack = () => navigate("/");
 
-  const { data: getFlashcardData, isLoading: getFlashcardLoad } =
-    useGetFlashcard(id!);
+  useEffect(() => {
+    refetch();
+  }, [level, refechValue]);
+
+  const {
+    data: getFlashcardData,
+    isLoading: getFlashcardLoad,
+    refetch,
+    isRefetching: getFlashcardRefetch,
+  } = useGetFlashcard(
+    id!,
+    level !== "on" || level !== null
+      ? {
+          grade_level: handleCapitalize(
+            (level as string) || (levelValue as unknown as string)
+          ),
+        }
+      : {}
+  );
   console.log(getFlashcardData?.data?.flashCards);
 
   const handleSubmit = () => {};
@@ -38,8 +59,40 @@ const FlashcardSection = () => {
   );
 
   return (
-    <Spin spinning={getFlashcardLoad}>
+    <Spin spinning={getFlashcardLoad || getFlashcardRefetch}>
       <div className="w-full md:min-h-[95vh] flex flex-col justify-between items-center md:py-5 space-y-5 bg-white">
+        <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg">
+          {[...(getFlashcardData?.data?.selected_grade_level || ["on"])].map(
+            (d: any) => (
+              <Tag
+                className={`${
+                  level === null && d === "on"
+                    ? "!bg-primary text-white"
+                    : level !== null && level === d
+                    ? "!bg-primary text-white"
+                    : "text-black bg-lit"
+                } !border-0 font-montserrat !mr-0 cursor-pointer`}
+                key={d}
+                style={{ padding: "5px 10px" }}
+                onClick={() => {
+                  if (d !== "on") {
+                    setParams({ section: section!, id: id!, level: d });
+                    setLevelValue(d);
+                  } else {
+                    setParams({ section: section!, id: id! });
+                    setLevelValue(null);
+                  }
+                  setRefetchValue(!refechValue);
+                  refetch().then(() => {
+                    refetch();
+                  });
+                }}
+              >
+                {d === "on" ? "" : handleCapitalize(d)} Grade Level
+              </Tag>
+            )
+          )}
+        </div>
         <div className="w-full flex items-center px-5 md:px-10 gap-5">
           <MdCancel className="cursor-pointer text-3xl" onClick={goBack} />
           <div className="w-full pb-1 flex flex-nowrap items-center gap-3 overflow-x-auto">

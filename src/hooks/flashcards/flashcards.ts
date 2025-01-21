@@ -29,12 +29,12 @@ export function useGetAllFlashcards(params?: any) {
   );
 }
 
-export function useGetFlashcard(id: string) {
+export function useGetFlashcard(id: string, params?: any) {
   const url = "/api_backend/flashcards/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_flashcard"],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    () => getRequest(axios as unknown as AxiosInstance, url + id, params),
     {
       onError: (error: any) =>
         notification.error({

@@ -36,13 +36,15 @@ function QuizSection({}: Props) {
   const id = params.get("id");
   const level = params.get("level");
   const section = params.get("section");
+  const [levelValue, setLevelValue] = useState<string | null>(null);
+  const [refechValue, setRefetchValue] = useState<boolean>(false);
 
   console.log(params);
 
   useEffect(() => {
     console.log("level", level);
     refetch();
-  }, [id, level, params]);
+  }, [id, level, params, refechValue]);
 
   const {
     data: getQuizData,
@@ -50,9 +52,14 @@ function QuizSection({}: Props) {
     refetch,
     isRefetching: getQuizRefetch,
   } = useGetQuiz(
-    level !== null && level !== "on"
-      ? `${id}?grade_level=${handleCapitalize(level)}`
-      : id!
+    id!,
+    level !== "on" || level !== null
+      ? {
+          grade_level: handleCapitalize(
+            (level as string) || (levelValue as string)
+          ),
+        }
+      : {}
   );
 
   const { data: getQuizPartData, isLoading: getQuizPartLoad } =
@@ -187,8 +194,17 @@ function QuizSection({}: Props) {
                     key={d}
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      setParams({ section: section!, id: id!, level: d });
-                      refetch();
+                      if (d !== "on") {
+                        setParams({ section: section!, id: id!, level: d });
+                        setLevelValue(d);
+                      } else {
+                        setParams({ section: section!, id: id! });
+                        setLevelValue(null);
+                      }
+                      setRefetchValue(!refechValue);
+                      refetch().then(() => {
+                        refetch();
+                      });
                     }}
                   >
                     {d === "on" ? "" : handleCapitalize(d)} Grade Level
@@ -260,7 +276,7 @@ function QuizSection({}: Props) {
         ),
       },
     ],
-    [getQuizData, getQuizPartData, level, refetch]
+    [getQuizData, getQuizPartData, level]
   );
 
   const CurrentTab = useMemo(

@@ -1002,7 +1002,6 @@ function Home() {
       lecture_id: paramId,
       selected_grade_level: selectedLevels,
     };
-    console.log("payload", payload);
     postQuizAction(payload);
   };
 
@@ -1017,6 +1016,7 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: paramId,
+      selected_grade_level: selectedLevels,
     };
     postFlashcardAction(payload);
   };
@@ -1032,6 +1032,7 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: paramId,
+      selected_grade_level: selectedLevels,
     };
     postRecapAction(payload);
   };
@@ -1206,6 +1207,68 @@ function Home() {
                   size="large"
                 />
               </Form.Item>
+              <div className="pb-6 w-full flex flex-col items-start">
+                <h2 className="text-[14px] leading-[21px] font-medium mb-6">
+                  Grade Level
+                </h2>
+
+                <div className="bg-gray-50 rounded-lg">
+                  <div className="flex flex-col gap-4">
+                    {[
+                      { label: "Above Grade Level", value: "above" },
+                      { label: "On Grade Level", value: "on" },
+                      { label: "Below Grade Level", value: "below" },
+                    ].map((d) => (
+                      <div
+                        className="flex items-center gap-2"
+                        // checked={selectedGradeLevel.selectedLevels.includes(
+                        //   d.value
+                        // )}
+                        onClick={() => {
+                          if (selectedLevels.includes(d.value)) {
+                            setSelectedGradeLevel({
+                              selectedLevels: selectedLevels.filter(
+                                (level: any) => !isEqual(level, d.value)
+                              ),
+                            });
+                            return;
+                          } else {
+                            setSelectedGradeLevel({
+                              selectedLevels: [...selectedLevels, d.value],
+                            });
+                          }
+                        }}
+                      >
+                        <div className="w-4 h-4 border rounded-md">
+                          <span>
+                            {selectedLevels.includes(d.value) && (
+                              <BiCheck className="text-primary" />
+                            )}
+                          </span>
+                        </div>
+                        <span>{d.label}</span>
+                      </div>
+                    ))}
+                    {/* <Checkbox.Group
+                      options={}
+                      // defaultValue={["on"]}
+                      onChange={(value) => {
+                        console.log(value);
+                        setSelectedGradeLevel({
+                          selectedLevels: value,
+                        });
+                      }}
+                    /> */}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-x-2 mt-4 text-gray-500">
+                  <BiInfoCircle className="text-base" />
+                  <span>Multiple Selection</span>
+                </div>
+
+                {/* This style tag is needed to override some Ant Design defaults */}
+              </div>
               <Button
                 className="bg-primary !w-full"
                 loading={isActionLoad}
@@ -1230,6 +1293,68 @@ function Home() {
                   size="large"
                 />
               </Form.Item>
+              <div className="pb-6 w-full flex flex-col items-start">
+                <h2 className="text-[14px] leading-[21px] font-medium mb-6">
+                  Grade Level
+                </h2>
+
+                <div className="bg-gray-50 rounded-lg">
+                  <div className="flex flex-col gap-4">
+                    {[
+                      { label: "Above Grade Level", value: "above" },
+                      { label: "On Grade Level", value: "on" },
+                      { label: "Below Grade Level", value: "below" },
+                    ].map((d) => (
+                      <div
+                        className="flex items-center gap-2"
+                        // checked={selectedGradeLevel.selectedLevels.includes(
+                        //   d.value
+                        // )}
+                        onClick={() => {
+                          if (selectedLevels.includes(d.value)) {
+                            setSelectedGradeLevel({
+                              selectedLevels: selectedLevels.filter(
+                                (level: any) => !isEqual(level, d.value)
+                              ),
+                            });
+                            return;
+                          } else {
+                            setSelectedGradeLevel({
+                              selectedLevels: [...selectedLevels, d.value],
+                            });
+                          }
+                        }}
+                      >
+                        <div className="w-4 h-4 border rounded-md">
+                          <span>
+                            {selectedLevels.includes(d.value) && (
+                              <BiCheck className="text-primary" />
+                            )}
+                          </span>
+                        </div>
+                        <span>{d.label}</span>
+                      </div>
+                    ))}
+                    {/* <Checkbox.Group
+                      options={}
+                      // defaultValue={["on"]}
+                      onChange={(value) => {
+                        console.log(value);
+                        setSelectedGradeLevel({
+                          selectedLevels: value,
+                        });
+                      }}
+                    /> */}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-x-2 mt-4 text-gray-500">
+                  <BiInfoCircle className="text-base" />
+                  <span>Multiple Selection</span>
+                </div>
+
+                {/* This style tag is needed to override some Ant Design defaults */}
+              </div>
               <Button
                 className="bg-primary !w-full"
                 loading={isActionLoad}
