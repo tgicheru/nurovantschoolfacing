@@ -9,12 +9,12 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-export function useGetRecap(id: string) {
+export function useGetRecap(id: string, params?: any) {
   const url = "/api_backend/recaps/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_recap"],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    () => getRequest(axios as unknown as AxiosInstance, url + id, params),
     {
       onError: (error: any) =>
         notification.error({

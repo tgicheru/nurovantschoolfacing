@@ -1,25 +1,48 @@
-import { Button, Card, Divider, Spin, Tabs, message } from "antd";
+import { Button, Card, Divider, Spin, Tabs, Tag, message } from "antd";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGetRecap } from "../../../../hooks/recap/recap";
 import { RiArrowGoBackFill } from "react-icons/ri";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaChevronRight, FaClipboard } from "react-icons/fa";
-import { isEqual } from "../../../../context/utils";
+import { handleCapitalize, isEqual } from "../../../../context/utils";
 import Loading from "../../../../components/loading";
 import { IoCopyOutline } from "react-icons/io5";
 import { ImQuotesLeft } from "react-icons/im";
 
 const RecapSection = () => {
   const navigate = useNavigate();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState("mini_reflections");
   const [miniViewList, setMiniViewList] = useState<number[]>([]);
 
   const id = params.get("id");
+  const level = params.get("level");
+  const section = params.get("section");
+
+  const [refechValue, setRefetchValue] = useState(false);
+  const [levelValue, setLevelValue] = useState(null);
+
+  useEffect(() => {
+    refetch();
+  }, [level, refechValue]);
 
   const goBack = () => navigate("/?tab=recaps");
 
-  const { data: getRecapData, isLoading: getRecapLoad } = useGetRecap(id!);
+  const {
+    data: getRecapData,
+    isLoading: getRecapLoad,
+    refetch,
+    isRefetching: getRecapRefetch,
+  } = useGetRecap(
+    id!,
+    level !== "on" || level !== null
+      ? {
+          grade_level: handleCapitalize(
+            (level as string) || (levelValue as unknown as string)
+          ),
+        }
+      : {}
+  );
 
   const tabs = useMemo(
     () =>
@@ -119,8 +142,8 @@ const RecapSection = () => {
       </div>
     );
   return (
-    <Spin spinning={getRecapLoad}>
-      <div className="w-full min-h-[95vh] flex flex-col items-center md:py-5 space-y-5">
+    <Spin spinning={getRecapLoad || getRecapRefetch}>
+      <div className="w-full min-h-[95vh] flex flex-col items-center md:py-5 space-y-5 bg-white">
         <div className="w-full">
           <div className="w-full flex items-center px-5 md:px-10 gap-5">
             <RiArrowGoBackFill
@@ -136,6 +159,38 @@ const RecapSection = () => {
         </div>
 
         <div className="w-full flex flex-col gap-5 px-5 lg:px-10">
+          <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg">
+            {[...(getRecapData?.data?.selected_grade_level || ["on"])].map(
+              (d: any) => (
+                <Tag
+                  className={`${
+                    level === null && d === "on"
+                      ? "!bg-primary text-white"
+                      : level !== null && level === d
+                      ? "!bg-primary text-white"
+                      : "text-black bg-lit"
+                  } !border-0 font-montserrat !mr-0 cursor-pointer`}
+                  key={d}
+                  style={{ padding: "5px 10px" }}
+                  onClick={() => {
+                    if (d !== "on") {
+                      setParams({ section: section!, id: id!, level: d });
+                      setLevelValue(d);
+                    } else {
+                      setParams({ section: section!, id: id! });
+                      setLevelValue(null);
+                    }
+                    setRefetchValue(!refechValue);
+                    refetch().then(() => {
+                      refetch();
+                    });
+                  }}
+                >
+                  {d === "on" ? "" : handleCapitalize(d)} Grade Level
+                </Tag>
+              )
+            )}
+          </div>
           <div className="space-y-1">
             {/* {tabs.map(({ description, key, label }) => {
               const isAct = isEqual(key, activeTab);

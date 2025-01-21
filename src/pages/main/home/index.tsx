@@ -1429,7 +1429,7 @@ function Home() {
           component: <QuizQuestionsSection />,
         },
       ].find((d) => isEqual(d.key, activeSection))?.component,
-    [activeSection]
+    [activeSection, tabs]
   );
 
   function removeSpacesFromPdfName(pdfName: string) {
