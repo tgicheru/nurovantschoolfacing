@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Collapse, Divider, Drawer, Spin, Tabs, Tag } from "antd";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import CustomPagination from "../../../../components/CustomPagination";
 import CustomTable from "../../../../components/CustomTable";
@@ -39,12 +39,16 @@ function QuizSection({}: Props) {
 
   console.log(params);
 
-  console.log("level", level);
+  useEffect(() => {
+    console.log("level", level);
+    refetch();
+  }, [id, level, params]);
 
   const {
     data: getQuizData,
     isLoading: getQuizLoad,
     refetch,
+    isRefetching: getQuizRefetch,
   } = useGetQuiz(
     level !== null && level !== "on"
       ? `${id}?grade_level=${handleCapitalize(level)}`
@@ -256,7 +260,7 @@ function QuizSection({}: Props) {
         ),
       },
     ],
-    [getQuizData, getQuizPartData, level]
+    [getQuizData, getQuizPartData, level, refetch]
   );
 
   const CurrentTab = useMemo(
@@ -264,7 +268,7 @@ function QuizSection({}: Props) {
     [activeTab, tabs]
   );
 
-  const isLoading = getQuizLoad || getQuizPartLoad;
+  const isLoading = getQuizLoad || getQuizPartLoad || getQuizRefetch;
   return (
     <Spin spinning={isLoading}>
       <div className="w-full h-full md:py-5 space-y-5">

@@ -28,7 +28,7 @@ import VideoRecordIcon from "../../../assets/icons/videorecordicon";
 import CustomPagination from "../../../components/CustomPagination";
 import CustomTable from "../../../components/CustomTable";
 import { ColumnsType } from "antd/es/table";
-import { BiInfoCircle, BiTestTube } from "react-icons/bi";
+import { BiCheck, BiInfoCircle, BiTestTube } from "react-icons/bi";
 import { isEqual } from "../../../context/utils";
 import { AiOutlineMessage } from "react-icons/ai";
 import { IoMailOutline } from "react-icons/io5";
@@ -87,11 +87,11 @@ function Home() {
   const [isInvite, setIsInvite] = useState(false);
   const [isCreate, setIsCreate] = useState(false);
   const [isLoadOpen, setIsLoadOpen] = useState(false);
+  const setSelectedGradeLevel = useSetRecoilState(selectedGradeLevelsAtom);
 
   // const [selectedLevels, setSelectedLevels] = useState<string[]>(["on"]);
-  const [selectedGradeLevel, setSelectedGradeLevel] = useRecoilState(
-    selectedGradeLevelsAtom
-  );
+  const { selectedLevels } = useRecoilValue(selectedGradeLevelsAtom);
+  console.log("selectedGradeLevel", selectedLevels);
   // const handleSelectedChange = (level: string) => {
   //   setSelectedLevels((prev) => {
   //     if (prev.includes(level)) {
@@ -1000,7 +1000,7 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: paramId,
-      selected_grade_level: selectedGradeLevel.selectedLevels,
+      selected_grade_level: selectedLevels,
     };
     console.log("payload", payload);
     postQuizAction(payload);
@@ -1127,13 +1127,43 @@ function Home() {
 
                 <div className="bg-gray-50 rounded-lg">
                   <div className="flex flex-col gap-4">
-                    <Checkbox.Group
-                      options={[
-                        { label: "Above Grade Level", value: "above" },
-                        { label: "On Grade Level", value: "on" },
-                        { label: "Below Grade Level", value: "below" },
-                      ]}
-                      value={selectedGradeLevel.selectedLevels}
+                    {[
+                      { label: "Above Grade Level", value: "above" },
+                      { label: "On Grade Level", value: "on" },
+                      { label: "Below Grade Level", value: "below" },
+                    ].map((d) => (
+                      <div
+                        className="flex items-center gap-2"
+                        // checked={selectedGradeLevel.selectedLevels.includes(
+                        //   d.value
+                        // )}
+                        onClick={() => {
+                          if (selectedLevels.includes(d.value)) {
+                            setSelectedGradeLevel({
+                              selectedLevels: selectedLevels.filter(
+                                (level: any) => !isEqual(level, d.value)
+                              ),
+                            });
+                            return;
+                          } else {
+                            setSelectedGradeLevel({
+                              selectedLevels: [...selectedLevels, d.value],
+                            });
+                          }
+                        }}
+                      >
+                        <div className="w-4 h-4 border rounded-md">
+                          <span>
+                            {selectedLevels.includes(d.value) && (
+                              <BiCheck className="text-primary" />
+                            )}
+                          </span>
+                        </div>
+                        <span>{d.label}</span>
+                      </div>
+                    ))}
+                    {/* <Checkbox.Group
+                      options={}
                       // defaultValue={["on"]}
                       onChange={(value) => {
                         console.log(value);
@@ -1141,7 +1171,7 @@ function Home() {
                           selectedLevels: value,
                         });
                       }}
-                    />
+                    /> */}
                   </div>
                 </div>
 
@@ -1246,6 +1276,7 @@ function Home() {
       getAllQuizData,
       getAllRecapData,
       getAllFlashcardData,
+      selectedLevels,
     ]
   );
 
