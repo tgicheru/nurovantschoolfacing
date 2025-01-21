@@ -72,6 +72,7 @@ import { ReactMic } from "react-mic";
 import Logo from "../../../assets/newLogo.svg";
 import { extractAvatar } from "../../../constants";
 import { FaChevronDown } from "react-icons/fa6";
+import selectedGradeLevelsAtom from "../../../atoms/other/selectedGradeLevels.atom";
 
 function Home() {
   const [page, setPage] = useState(1);
@@ -87,7 +88,10 @@ function Home() {
   const [isCreate, setIsCreate] = useState(false);
   const [isLoadOpen, setIsLoadOpen] = useState(false);
 
-  const [selectedLevels, setSelectedLevels] = useState<string[]>(["on"]);
+  // const [selectedLevels, setSelectedLevels] = useState<string[]>(["on"]);
+  const [selectedGradeLevel, setSelectedGradeLevel] = useRecoilState(
+    selectedGradeLevelsAtom
+  );
   // const handleSelectedChange = (level: string) => {
   //   setSelectedLevels((prev) => {
   //     if (prev.includes(level)) {
@@ -996,8 +1000,9 @@ function Home() {
       file_type: lecture?.contentType,
       file_name: lecture?.lecture_title,
       lecture_id: paramId,
-      selected_grade_level: selectedLevels,
+      selected_grade_level: selectedGradeLevel.selectedLevels,
     };
+    console.log("payload", payload);
     postQuizAction(payload);
   };
 
@@ -1115,7 +1120,7 @@ function Home() {
                   ))}
                 </div>
               </Form.Item>
-              <div className="p-6 w-full flex flex-col items-start">
+              <div className="pb-6 w-full flex flex-col items-start">
                 <h2 className="text-[14px] leading-[21px] font-medium mb-6">
                   Grade Level
                 </h2>
@@ -1128,9 +1133,13 @@ function Home() {
                         { label: "On Grade Level", value: "on" },
                         { label: "Below Grade Level", value: "below" },
                       ]}
-                      defaultValue={["on"]}
+                      value={selectedGradeLevel.selectedLevels}
+                      // defaultValue={["on"]}
                       onChange={(value) => {
-                        setSelectedLevels(value);
+                        console.log(value);
+                        setSelectedGradeLevel({
+                          selectedLevels: value,
+                        });
                       }}
                     />
                   </div>

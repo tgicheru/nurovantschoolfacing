@@ -1,20 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Collapse, Divider, Drawer, Spin, Tabs, Tag } from 'antd'
-import React, { useMemo, useState } from 'react'
-import { FaPlus } from 'react-icons/fa6'
-import CustomPagination from '../../../../components/CustomPagination';
-import CustomTable from '../../../../components/CustomTable';
-import { isEqual, statusType } from '../../../../context/utils';
-import { ColumnsType } from 'antd/es/table';
-import InviteModal from '../../../../components/modals/InviteModal';
-import { PiCaretDownBold, PiCaretUpBold } from 'react-icons/pi';
-import { LuTrash } from 'react-icons/lu';
-import { useSearchParams } from 'react-router-dom';
-import { useGetQuiz, useGetQuizParticipants } from '../../../../hooks/quiz/quiz';
-import { BsEye } from 'react-icons/bs';
+import { Button, Collapse, Divider, Drawer, Spin, Tabs, Tag } from "antd";
+import React, { useMemo, useState } from "react";
+import { FaPlus } from "react-icons/fa6";
+import CustomPagination from "../../../../components/CustomPagination";
+import CustomTable from "../../../../components/CustomTable";
+import {
+  handleCapitalize,
+  isEqual,
+  statusType,
+} from "../../../../context/utils";
+import { ColumnsType } from "antd/es/table";
+import InviteModal from "../../../../components/modals/InviteModal";
+import { PiCaretDownBold, PiCaretUpBold } from "react-icons/pi";
+import { LuTrash } from "react-icons/lu";
+import { useSearchParams } from "react-router-dom";
+import {
+  useGetQuiz,
+  useGetQuizParticipants,
+} from "../../../../hooks/quiz/quiz";
+import { BsEye } from "react-icons/bs";
 
-type Props = {
-}
+type Props = {};
 function QuizSection({}: Props) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -28,16 +34,25 @@ function QuizSection({}: Props) {
   const onPreOpen = () => setIsPreview(true);
   const onInvOpen = () => setIsInvite(true);
   const id = params.get("id");
+  const level = params.get("level");
+  const section = params.get("section");
+
+  console.log(params);
+
+  console.log("level", level);
 
   const {
     data: getQuizData,
     isLoading: getQuizLoad,
-  } = useGetQuiz(id!)
+    refetch,
+  } = useGetQuiz(
+    level !== null && level !== "on"
+      ? `${id}?grade_level=${handleCapitalize(level)}`
+      : id!
+  );
 
-  const {
-    data: getQuizPartData,
-    isLoading: getQuizPartLoad,
-  } = useGetQuizParticipants(id!)
+  const { data: getQuizPartData, isLoading: getQuizPartLoad } =
+    useGetQuizParticipants(id!);
 
   const handleResult = (result?: any, quests?: any) => {
     const res = Number(result || selected?.score || 0);
@@ -45,13 +60,16 @@ function QuizSection({}: Props) {
     const percentage = Number(((res / len) * 100).toFixed() || 0);
     const pass = percentage >= 50;
     const title = pass ? "Well Done!" : "More Studying Required!";
-    const context = pass ? "Nuro is proud of you (´•‿•`)" : "Better Score Next Time (´•╭╮•`)";
+    const context = pass
+      ? "Nuro is proud of you (´•‿•`)"
+      : "Better Score Next Time (´•╭╮•`)";
     const score = `${res}/${len}`;
     return { score, percentage, context, pass, title };
   };
 
-  const { pass: isPreviewPass } = handleResult()
-  const previewStatus = statusType?.[String(isPreviewPass) as keyof typeof statusType]
+  const { pass: isPreviewPass } = handleResult();
+  const previewStatus =
+    statusType?.[String(isPreviewPass) as keyof typeof statusType];
 
   // const handlePreview = (data: any) => {
   //   setSelected(data)
@@ -71,14 +89,24 @@ function QuizSection({}: Props) {
     },
     {
       title: "Score",
-      render: (d) => <p>{d?.score || 0} / {d?.result?.length}</p>,
+      render: (d) => (
+        <p>
+          {d?.score || 0} / {d?.result?.length}
+        </p>
+      ),
     },
     {
       title: "Status",
       render: (d) => {
-        const { pass } = handleResult(d?.score, d?.result?.length)
-        const status = statusType?.[String(pass) as keyof typeof statusType]
-        return <Tag className={`${status?.col} ${status?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}>{pass ? "Pass" : "Fail"}</Tag>
+        const { pass } = handleResult(d?.score, d?.result?.length);
+        const status = statusType?.[String(pass) as keyof typeof statusType];
+        return (
+          <Tag
+            className={`${status?.col} ${status?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}
+          >
+            {pass ? "Pass" : "Fail"}
+          </Tag>
+        );
       },
     },
     // {
@@ -87,7 +115,7 @@ function QuizSection({}: Props) {
     // },
   ];
 
-  const handleDelete = () => alert("delete this")
+  const handleDelete = () => alert("delete this");
 
   const tabs = useMemo(
     () => [
@@ -96,60 +124,139 @@ function QuizSection({}: Props) {
         label: (
           <div className="flex items-center gap-3">
             <p>Participants</p>
-            <Tag className="!bg-lit !border-0">{getQuizPartData?.data?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {getQuizPartData?.data?.length}
+            </Tag>
           </div>
         ),
-        component: (<CustomTable column={participantColumns} data={getQuizPartData?.data} pagination={false} />)
+        component: (
+          <div className="px-6">
+            {/* <div className="w-fit h-[62px] flex items-center py-[9px] px-[8px] gap-[14px]">
+              {[...(getQuizData?.data?.selected_grade_level || ["on"])].map(
+                (d: any) => (
+                  <Tag
+                    className="!bg-lit !border-0"
+                    key={d}
+                    style={{ padding: "5px 10px" }}
+                  >
+                    {d}
+                  </Tag>
+                )
+              )}
+            </div> */}
+            <CustomTable
+              column={participantColumns}
+              data={getQuizPartData?.data}
+              pagination={false}
+            />
+          </div>
+        ),
       },
       {
         key: "questions",
         label: (
           <div className="flex items-center gap-3">
             <p>Questions</p>
-            <Tag className="!bg-lit !border-0">{[...(getQuizData?.data?.questions||[]), ...(getQuizData?.data?.oeq||[])]?.length}</Tag>
+            <Tag className="!bg-lit !border-0">
+              {
+                [
+                  ...(getQuizData?.data?.questions || []),
+                  ...(getQuizData?.data?.oeq || []),
+                ]?.length
+              }
+            </Tag>
           </div>
         ),
         component: (
-          <div className='w-full h-full p-5 grid grid-cols-1 md:grid-cols-3 gap-5 md:divide-x divide-black'>
-            <div className='w-full space-y-5'>
-              <p className='text-xl font-semibold text-dark'>Meta Data / Key Topics</p>
-              <ul className='space-y-2 !list-disc px-5'>
-                {getQuizData?.data?.metadata?.map((d: any) => (
-                  <li className='text-base font-medium text-gray'>{d}</li>
-                ))}
-              </ul>
+          <div className="w-full h-full px-6 py-4">
+            <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg">
+              {[...(getQuizData?.data?.selected_grade_level || ["on"])].map(
+                (d: any) => (
+                  <Tag
+                    className={`${
+                      level === null && d === "on"
+                        ? "!bg-primary text-white"
+                        : level !== null && level === d
+                        ? "!bg-primary text-white"
+                        : "text-black bg-lit"
+                    } !border-0 font-montserrat !mr-0 cursor-pointer`}
+                    key={d}
+                    style={{ padding: "5px 10px" }}
+                    onClick={() => {
+                      setParams({ section: section!, id: id!, level: d });
+                      refetch();
+                    }}
+                  >
+                    {d === "on" ? "" : handleCapitalize(d)} Grade Level
+                  </Tag>
+                )
+              )}
             </div>
-            <Collapse
-              accordion
-              bordered={false}
-              defaultActiveKey={['1']}
-              className='md:col-span-2'
-              expandIconPosition='right'
-              style={{ background: "#fff" }}
-              expandIcon={({ isActive }) => (isActive ? <PiCaretUpBold className='text-lg' /> : <PiCaretDownBold className='text-lg' />)}
-              items={[...(getQuizData?.data?.questions||[]), ...(getQuizData?.data?.oeq||[])]?.map((d: any, idx: number) => ({
-                key: d?.question,
-                children: <div className='space-y-3'>
-                  <p>Options</p>
-                  <ol className='px-5 list-decimal'>
-                    {d?.options?.map((o: string) => <li>{o}</li>)}
-                  </ol>
-                  <p>Answer: {d?.answer}</p>
-                </div>,
-                label: `${idx+1}, ${d?.question}`,
-                extra: <Button onClick={handleDelete} hidden className='!m-0 !p-0' type='text' icon={<LuTrash />} />,
-                style: {
-                  marginBottom: 20,
-                  border: '1px solid #E6E9ED',
-                  borderRadius: "10px",
-                },
-              }))}
-            />
+
+            <div className="w-full h-full p-5 grid grid-cols-1 md:grid-cols-3 gap-5 md:divide-x divide-black">
+              <div className="w-full space-y-5">
+                <p className="text-xl font-semibold text-dark">
+                  Meta Data / Key Topics
+                </p>
+                <ul className="space-y-2 !list-disc px-5">
+                  {getQuizData?.data?.metadata?.map((d: any) => (
+                    <li className="text-base font-medium text-gray">{d}</li>
+                  ))}
+                </ul>
+              </div>
+              <Collapse
+                accordion
+                bordered={false}
+                defaultActiveKey={["1"]}
+                className="md:col-span-2"
+                expandIconPosition="right"
+                style={{ background: "#fff" }}
+                expandIcon={({ isActive }) =>
+                  isActive ? (
+                    <PiCaretUpBold className="text-lg" />
+                  ) : (
+                    <PiCaretDownBold className="text-lg" />
+                  )
+                }
+                items={[
+                  ...(getQuizData?.data?.questions || []),
+                  ...(getQuizData?.data?.oeq || []),
+                ]?.map((d: any, idx: number) => ({
+                  key: d?.question,
+                  children: (
+                    <div className="space-y-3">
+                      <p>Options</p>
+                      <ol className="px-5 list-decimal">
+                        {d?.options?.map((o: string) => (
+                          <li>{o}</li>
+                        ))}
+                      </ol>
+                      <p>Answer: {d?.answer}</p>
+                    </div>
+                  ),
+                  label: `${idx + 1}, ${d?.question}`,
+                  extra: (
+                    <Button
+                      onClick={handleDelete}
+                      hidden
+                      className="!m-0 !p-0"
+                      type="text"
+                      icon={<LuTrash />}
+                    />
+                  ),
+                  style: {
+                    marginBottom: 20,
+                    border: "1px solid #E6E9ED",
+                    borderRadius: "10px",
+                  },
+                }))}
+              />
+            </div>
           </div>
-        )
+        ),
       },
     ],
-    [getQuizData, getQuizPartData]
+    [getQuizData, getQuizPartData, level]
   );
 
   const CurrentTab = useMemo(
@@ -157,7 +264,7 @@ function QuizSection({}: Props) {
     [activeTab, tabs]
   );
 
-  const isLoading = (getQuizLoad || getQuizPartLoad)
+  const isLoading = getQuizLoad || getQuizPartLoad;
   return (
     <Spin spinning={isLoading}>
       <div className="w-full h-full md:py-5 space-y-5">
@@ -171,10 +278,12 @@ function QuizSection({}: Props) {
             onClick={onInvOpen}
             className="bg-primary !rounded-2xl"
             icon={<FaPlus />}
-          >Invite Member</Button>
+          >
+            Invite Member
+          </Button>
         </div>
 
-        <div className="w-full">
+        <div className="w-full bg-white">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:px-5 md:px-10">
             <Tabs
               defaultActiveKey={activeTab}
@@ -193,15 +302,15 @@ function QuizSection({}: Props) {
               onChange={setPage}
             />
           </div>
-          <Divider className='md:m-0 md:p-0' />
-          <div className='bg-white'>{CurrentTab?.component}</div>
+          <Divider className="md:m-0 md:p-0" />
+          <div className="bg-white">{CurrentTab?.component}</div>
         </div>
 
         {/* invite modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
         <InviteModal
           onClose={onInvClose}
           isOpen={isInvite}
-          type='quiz'
+          type="quiz"
           value={id!}
         />
 
@@ -211,16 +320,24 @@ function QuizSection({}: Props) {
           open={isPreview}
           closeIcon={false}
           onClose={onPreClose}
-          title={<div className='flex justify-between items-center gap-5'>
-            <p className='text-xl font-semibold text-[#414141] capitalize'>{selected?.user_name || "NIL"}</p>
-            <Tag className={`${previewStatus?.col} ${previewStatus?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}>{isPreviewPass ? "Pass" : "Fail"}</Tag>
-        </div>}
+          title={
+            <div className="flex justify-between items-center gap-5">
+              <p className="text-xl font-semibold text-[#414141] capitalize">
+                {selected?.user_name || "NIL"}
+              </p>
+              <Tag
+                className={`${previewStatus?.col} ${previewStatus?.bg} rounded-xl text-sm font-medium p-1 px-5 border-0`}
+              >
+                {isPreviewPass ? "Pass" : "Fail"}
+              </Tag>
+            </div>
+          }
         >
           {"hello"}
         </Drawer>
       </div>
     </Spin>
-  )
+  );
 }
 
-export default QuizSection
+export default QuizSection;
