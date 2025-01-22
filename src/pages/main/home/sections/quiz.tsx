@@ -44,6 +44,7 @@ function QuizSection({}: Props) {
   useEffect(() => {
     // console.log("level", level);
     refetch();
+    getQuizPartRefetch();
   }, [id, level, params, refechValue]);
 
   const {
@@ -64,18 +65,21 @@ function QuizSection({}: Props) {
 
   console.log("getQuizData", getQuizData);
 
-  const { data: getQuizPartData, isLoading: getQuizPartLoad } =
-    useGetQuizParticipants(
-      id!,
-      level !== "on" || level !== null
-        ? {
-            grade_level: handleCapitalize(
-              (level as string) || (levelValue as string)
-            ),
-            lecture_id: getQuizData?.data?.lecture,
-          }
-        : {}
-    );
+  const {
+    data: getQuizPartData,
+    isLoading: getQuizPartLoad,
+    refetch: getQuizPartRefetch,
+  } = useGetQuizParticipants(
+    id!,
+    level !== "on" || level !== null
+      ? {
+          grade_level: handleCapitalize(
+            (level as string) || (levelValue as string)
+          ),
+          lecture_id: getQuizData?.data?.lecture,
+        }
+      : {}
+  );
 
   const handleResult = (result?: any, quests?: any) => {
     const res = Number(result || selected?.score || 0);
@@ -145,7 +149,13 @@ function QuizSection({}: Props) {
       {
         key: "participants",
         label: (
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3"
+            // onClick={() => {
+            //   setParams({ section: section!, id: id! });
+            //   setLevelValue(null);
+            // }}
+          >
             <p>Participants</p>
             <Tag className="!bg-lit !border-0">
               {getQuizPartData?.data?.length}
@@ -176,8 +186,8 @@ function QuizSection({}: Props) {
                         setLevelValue(null);
                       }
                       setRefetchValue(!refechValue);
-                      refetch().then(() => {
-                        refetch();
+                      getQuizPartRefetch().then(() => {
+                        getQuizPartRefetch();
                       });
                     }}
                   >
@@ -197,7 +207,13 @@ function QuizSection({}: Props) {
       {
         key: "questions",
         label: (
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3"
+            // onClick={() => {
+            //   setParams({ section: section!, id: id! });
+            //   setLevelValue(null);
+            // }}
+          >
             <p>Questions</p>
             <Tag className="!bg-lit !border-0">
               {
@@ -307,7 +323,7 @@ function QuizSection({}: Props) {
         ),
       },
     ],
-    [getQuizData, getQuizPartData, level]
+    [getQuizData, getQuizPartData, level, levelValue]
   );
 
   const CurrentTab = useMemo(
