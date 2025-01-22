@@ -154,7 +154,7 @@ function QuizSection({}: Props) {
         ),
         component: (
           <div className="px-6">
-            <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg">
+            <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg my-4">
               {[...(getQuizData?.data?.selected_grade_level || ["on"])].map(
                 (d: any) => (
                   <Tag
