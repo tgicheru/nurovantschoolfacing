@@ -11,7 +11,7 @@ import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
 export function useGetQuestionTracker(params?: any) {
-  const url = `/api_backend/proof_reader/question_tracker`;
+  const url = `/teacher_api/question_tracker/?feature_type=question_tracker`;
   // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
@@ -32,7 +32,8 @@ export function useGetQuestionTracker(params?: any) {
 }
 
 export function usePostQuestionTracker(successAction?: any) {
-  const url = "/api_backend/proof_reader/question_tracker";
+  // const url = "/api_backend/proof_reader/question_tracker";
+  const url = "/teacher_api/question_tracker/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -58,37 +59,37 @@ export function usePostQuestionTracker(successAction?: any) {
   );
 }
 
-// export function useDeleteQuestionTracker(
-//   successAction?: any,
-//   errorAction?: any
-// ) {
-//   const url = "/api_backend/proof_reader/delete/";
-//   const axios = useContext(AxiosContext);
-//   return useMutation(
-//     async (id: any) =>
-//       deleteRequest(axios as unknown as AxiosInstance, url + id),
-//     {
-//       onSuccess: (response: any) => {
-//         successAction?.(response);
-//         notification.success({
-//           message: "Success!",
-//           description: response?.message || "action successful.",
-//         });
-//       },
-//       onError: (error: any) => {
-//         errorAction?.();
-//         notification.error({
-//           message: "Error!",
-//           description: error?.message
-//             ? Object.entries(error?.errors || { key: [error?.message] })
-//                 ?.map(([, value]) => (value as any)?.join(", "))
-//                 ?.join(", ")
-//             : "something went wrong please check internet connection.",
-//         });
-//       },
-//     }
-//   );
-// }
+export function useDeleteQuestionTracker(
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/api_backend/proof_reader/delete/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
 
 export function useEditQuestionTracker(
   id: any,
