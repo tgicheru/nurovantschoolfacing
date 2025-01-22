@@ -26,6 +26,9 @@ const QuestionBank = lazy(() => import("../pages/main/questionbank"));
 const GPTZero = lazy(() => import("../pages/main/gptzero"));
 const AdaptiveLearning = lazy(() => import("../pages/main/adaptivelearning"));
 const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
+const AssignStudents = lazy(
+  () => import("../pages/main/home/sections/assignStudents")
+);
 
 export const routes = [
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -33,6 +36,11 @@ export const routes = [
     path: "/",
     label: "Home",
     component: <Home />,
+  },
+  {
+    path: "/assign-students",
+    label: "Assign Students",
+    component: <AssignStudents />,
   },
   {
     label: "Adaptive Learning",

@@ -106,45 +106,48 @@ export function useAWSUpload(
   });
   // Create an S3 service object
   const s3 = new AWS.S3();
-  const handleFormat = (value: string) => value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_")
-  return useMutation(
-    async (payload: any) => {
-      const uploadParams = {
-        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id || "user"}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
-        Bucket: buckets?.[(type || "content") as keyof typeof buckets],
-        Body: payload as unknown as Body,
-        ContentType: payload?.type,
-      };
-      return new Promise((resolve, reject) => {
-        const upload = s3.upload(uploadParams);
+  const handleFormat = (value: string) =>
+    value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_");
+  return useMutation(async (payload: any) => {
+    const uploadParams = {
+      Key: handleFormat(
+        `${new Date().toISOString().replaceAll(".", "_")}_${
+          user?.info?._id || "user"
+        }_${
+          payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`
+        }`
+      ),
+      Bucket: buckets?.[(type || "content") as keyof typeof buckets],
+      Body: payload as unknown as Body,
+      ContentType: payload?.type,
+    };
+    return new Promise((resolve, reject) => {
+      const upload = s3.upload(uploadParams);
 
-        // Track progress of the chunk upload
-        upload.on("httpUploadProgress", (progress) => {
-          const uploadedBytes = progress.loaded;
-          const totalBytes = progress.total;
-          const percentProgress = Math.round(((uploadedBytes / totalBytes) * 100));
+      // Track progress of the chunk upload
+      upload.on("httpUploadProgress", (progress) => {
+        const uploadedBytes = progress.loaded;
+        const totalBytes = progress.total;
+        const percentProgress = Math.round((uploadedBytes / totalBytes) * 100);
 
-          // console.log(`Uploaded ${percentProgress}%`);
-          setLectureState((prev) => ({...prev,
-            progressBar: percentProgress,
-          }));
-        });
-
-        upload.send((err, data) => {
-          if (err) {
-            reject(err);
-            message.error("File upload failed!");
-            console.error(err);
-            errorAction?.();
-          } else {
-            console.log("AWS DATA", data);
-            resolve(data);
-            successAction?.(data);
-          }
-        });
+        // console.log(`Uploaded ${percentProgress}%`);
+        setLectureState((prev) => ({ ...prev, progressBar: percentProgress }));
       });
-    },
-  );
+
+      upload.send((err, data) => {
+        if (err) {
+          reject(err);
+          message.error("File upload failed!");
+          console.error(err);
+          errorAction?.();
+        } else {
+          console.log("AWS DATA", data);
+          resolve(data);
+          successAction?.(data);
+        }
+      });
+    });
+  });
 }
 
 export function useAWSUploadALS(
@@ -170,45 +173,48 @@ export function useAWSUploadALS(
   });
   // Create an S3 service object
   const s3 = new AWS.S3();
-  const handleFormat = (value: string) => value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_")
-  return useMutation(
-    async (payload: any) => {
-      const uploadParams = {
-        Key: handleFormat(`${new Date().toISOString().replaceAll(".","_")}_${user?.info?._id || "user"}_${payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`}`), 
-        Bucket: buckets?.[(type || "content") as keyof typeof buckets],
-        Body: payload as unknown as Body,
-        ContentType: payload?.type,
-      };
-      return new Promise((resolve, reject) => {
-        const upload = s3.upload(uploadParams);
+  const handleFormat = (value: string) =>
+    value?.replaceAll(" ", "_")?.replaceAll("-", "_")?.replaceAll(":", "_");
+  return useMutation(async (payload: any) => {
+    const uploadParams = {
+      Key: handleFormat(
+        `${new Date().toISOString().replaceAll(".", "_")}_${
+          user?.info?._id || "user"
+        }_${
+          payload.name || `document.${payload?.type?.split("/")?.[1] || "wav"}`
+        }`
+      ),
+      Bucket: buckets?.[(type || "content") as keyof typeof buckets],
+      Body: payload as unknown as Body,
+      ContentType: payload?.type,
+    };
+    return new Promise((resolve, reject) => {
+      const upload = s3.upload(uploadParams);
 
-        // Track progress of the chunk upload
-        upload.on("httpUploadProgress", (progress) => {
-          const uploadedBytes = progress.loaded;
-          const totalBytes = progress.total;
-          const percentProgress = Math.round(((uploadedBytes / totalBytes) * 100));
+      // Track progress of the chunk upload
+      upload.on("httpUploadProgress", (progress) => {
+        const uploadedBytes = progress.loaded;
+        const totalBytes = progress.total;
+        const percentProgress = Math.round((uploadedBytes / totalBytes) * 100);
 
-          // console.log(`Uploaded ${percentProgress}%`);
-          setLectureState((prev) => ({...prev,
-            progressBar: percentProgress,
-          }));
-        });
-
-        upload.send((err, data) => {
-          if (err) {
-            reject(err);
-            message.error("File upload failed!");
-            console.error(err);
-            errorAction?.();
-          } else {
-            console.log("AWS DATA", data);
-            resolve(data);
-            successAction?.(data);
-          }
-        });
+        // console.log(`Uploaded ${percentProgress}%`);
+        setLectureState((prev) => ({ ...prev, progressBar: percentProgress }));
       });
-    },
-  );
+
+      upload.send((err, data) => {
+        if (err) {
+          reject(err);
+          message.error("File upload failed!");
+          console.error(err);
+          errorAction?.();
+        } else {
+          console.log("AWS DATA", data);
+          resolve(data);
+          successAction?.(data);
+        }
+      });
+    });
+  });
 }
 
 export function useStripePay(successAction?: any) {

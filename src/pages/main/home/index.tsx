@@ -861,7 +861,7 @@ function Home() {
     [activeTab, tabs]
   );
 
-  const successAction = () => {
+  const successAction = (res: any) => {
     handleUpldFileClr();
     setLoading(false);
     onClose();
@@ -874,7 +874,9 @@ function Home() {
       showModal: true,
       message: "Lecture generated successfully",
       action: "View",
+      path: `/assign-students?id=${res?.data?._id}`,
     });
+    navigate(`/assign-students?id=${res?.data?._id}`);
   };
 
   const quizSuccessAction = (res: any) => {

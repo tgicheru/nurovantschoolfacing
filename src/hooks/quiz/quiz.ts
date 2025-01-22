@@ -49,12 +49,12 @@ export function useGetQuiz(id: string, params?: any) {
   );
 }
 
-export function useGetQuizParticipants(id: string) {
+export function useGetQuizParticipants(id: string, params?: any) {
   const url = "/api_backend/quiz/get_all_results/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:quiz_participants"],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    () => getRequest(axios as unknown as AxiosInstance, url + id, params),
     {
       onError: (error: any) =>
         notification.error({
