@@ -347,6 +347,7 @@ export function useUpdateStudentsGradeLevel(id: string) {
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        navigate(`/`);
       },
       onError: (error: any) =>
         notification.error({

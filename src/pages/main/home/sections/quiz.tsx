@@ -42,7 +42,7 @@ function QuizSection({}: Props) {
   console.log(params);
 
   useEffect(() => {
-    console.log("level", level);
+    // console.log("level", level);
     refetch();
   }, [id, level, params, refechValue]);
 
@@ -62,8 +62,20 @@ function QuizSection({}: Props) {
       : {}
   );
 
+  console.log("getQuizData", getQuizData);
+
   const { data: getQuizPartData, isLoading: getQuizPartLoad } =
-    useGetQuizParticipants(id!);
+    useGetQuizParticipants(
+      id!,
+      level !== "on" || level !== null
+        ? {
+            grade_level: handleCapitalize(
+              (level as string) || (levelValue as string)
+            ),
+            lecture_id: getQuizData?.data?.lecture,
+          }
+        : {}
+    );
 
   const handleResult = (result?: any, quests?: any) => {
     const res = Number(result || selected?.score || 0);
@@ -142,19 +154,38 @@ function QuizSection({}: Props) {
         ),
         component: (
           <div className="px-6">
-            {/* <div className="w-fit h-[62px] flex items-center py-[9px] px-[8px] gap-[14px]">
+            <div className="w-fit flex items-center px-[8px] py-[9px] gap-[14px] bg-lit rounded-lg">
               {[...(getQuizData?.data?.selected_grade_level || ["on"])].map(
                 (d: any) => (
                   <Tag
-                    className="!bg-lit !border-0"
+                    className={`${
+                      level === null && d === "on"
+                        ? "!bg-primary text-white"
+                        : level !== null && level === d
+                        ? "!bg-primary text-white"
+                        : "text-black bg-lit"
+                    } !border-0 font-montserrat !mr-0 cursor-pointer`}
                     key={d}
                     style={{ padding: "5px 10px" }}
+                    onClick={() => {
+                      if (d !== "on") {
+                        setParams({ section: section!, id: id!, level: d });
+                        setLevelValue(d);
+                      } else {
+                        setParams({ section: section!, id: id! });
+                        setLevelValue(null);
+                      }
+                      setRefetchValue(!refechValue);
+                      refetch().then(() => {
+                        refetch();
+                      });
+                    }}
                   >
-                    {d}
+                    {d === "on" ? "" : handleCapitalize(d)} Grade Level
                   </Tag>
                 )
               )}
-            </div> */}
+            </div>
             <CustomTable
               column={participantColumns}
               data={getQuizPartData?.data}
