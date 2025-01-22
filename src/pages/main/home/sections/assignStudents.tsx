@@ -138,7 +138,7 @@ export default function StudentAssignment() {
       width: "35%",
     },
     {
-      title: "Reflectly Code",
+      title: "Nurovant Code",
       dataIndex: "reflectly_code",
       key: "reflectly_code",
       width: "25%",
