@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BorderHOC } from '../../../components'
-import { Button, Divider, Drawer, Form, Input, Modal, Upload } from 'antd'
+import { Button, Divider, Drawer, Dropdown, Form, Input, Modal, Tag, Upload } from 'antd'
 import { LuPlus, LuSearch, LuUploadCloud } from 'react-icons/lu'
 import { RxDashboard } from 'react-icons/rx'
 import { GoRows } from 'react-icons/go'
@@ -14,14 +14,17 @@ import { useAWSUpload } from '../../../hooks/otherhooks'
 import { ImSpinner } from 'react-icons/im'
 import { useSearchParams } from 'react-router-dom'
 import DetailsSection from './sections/details'
-import { useGetQuestionTracker, usePostQuestionTracker } from '../../../hooks/questiontracker/questiontracker'
+import { useDeleteQuestionTracker, useGetQuestionTrackers, usePostQuestionTracker } from '../../../hooks/questiontracker/questiontracker'
+import RecordSection from './sections/record'
 
 type IconProp = {
   className?: string
 }
 function QuestionTracker() {
+  const [isRecOpen, setIsRecOpen] = useState(false)
   const [payload, setPayload] = useState<any>()
   const [params, setParams] = useSearchParams()
+  const onRecClose = () => setIsRecOpen(false)
   const [isOpen, setIsOpen] = useState(false)
   const [list, setList] = useState("grid")
   const onClose = () => setIsOpen(false)
@@ -31,13 +34,13 @@ function QuestionTracker() {
   const id = params.get("id")
 
   const handleOption = (e: any) => e?.stopPropagation()
-  const handleView = () => setParams({id: "bytubytiyygvutfgbytty"})
+  const handleView = (id: string) => setParams({id})
 
   const {
-    isLoading: getQuestTrackLoad,
-    refetch: getQuestTrackFetch,
     data: getQuestTrackData,
-  } = useGetQuestionTracker()
+    refetch: getQuestTrackFetch,
+    isLoading: getQuestTrackLoad,
+  } = useGetQuestionTrackers({}, (res: any) => setIsRecOpen(res && !res?.is_voice_recorded))
 
   const {
     mutate: postQuestTrackAction,
@@ -45,8 +48,14 @@ function QuestionTracker() {
   } = usePostQuestionTracker(() => {
     getQuestTrackFetch()
     form.resetFields()
+    setPayload({})
     onClose()
   })
+
+  const {
+    mutate: deleteQuestTrackAction,
+    isLoading: deleteQuestTrackLoad,
+  } = useDeleteQuestionTracker(getQuestTrackFetch)
 
   const lists = [
     { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
@@ -72,7 +81,7 @@ function QuestionTracker() {
 
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
-  if (id) return <DetailsSection />
+  if (id) return <DetailsSection id={id} />
   return (
     <div className='w-full py-5 space-y-5'>
       <div className='w-full'>
@@ -110,36 +119,65 @@ function QuestionTracker() {
           <div hidden={!getQuestTrackData?.data?.length} className='w-full'>
             <div hidden={!isEqual(list, "grid")} className='w-full h-full'>
               <div className='w-full grid sm:grid-cols-2 md:grid-cols-3 gap-5'>
-                <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-3 space-y-3 cursor-pointer' onClick={handleView}>
-                  <div className='flex justify-between items-center gap-5'>
-                    <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
-                      <BsSoundwave className='text-xl p-0.5 border rounded-full' />
-                    </BorderHOC>
-                    <Button onClick={handleOption} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
-                  </div>
+                {getQuestTrackData?.data?.map((d: any) => {
+                  const isReady = isEqual(d?.status?.toLowerCase(), "success")
+                  const onView = () => (isReady ? handleView(d?._id) : {}) 
+                  const onDelete = (e: any) => {e?.stopPropagation?.(); deleteQuestTrackAction(d?._id)} 
+                  return (
+                    <BorderHOC key={d?._id} rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-3 space-y-3'>
+                      <div className='flex justify-between items-center gap-5'>
+                        <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
+                          <BsSoundwave className='text-xl p-0.5 border rounded-full' />
+                        </BorderHOC>
+                        <Dropdown menu={{ items: [
+                          { key: "view", label: "View", onClick: onView, disabled: !isReady },
+                          { key: "delete", label: "Delete", onClick: onDelete },
+                        ] }}>
+                          <Button onClick={handleOption} loading={deleteQuestTrackLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                        </Dropdown>
+                      </div>
 
-                  <div className='md:col-span-2 space-y-1'>
-                    <p className='text-sm font-bold text-[#161617]'>Algebra 101 Question Tracker</p>
-                    <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
-                  </div>
-                </BorderHOC>
+                      <div className='w-full flex justify-between items-end'>
+                        <div className='md:col-span-2 space-y-1'>
+                          <p className='text-sm font-bold text-[#161617]'>{d?.name}</p>
+                          <p className='text-xs font-medium text-[#57585A]'>Created . {moment(d?.createdAt).format("ll")} . {moment(d?.createdAt).format("LT")}</p>
+                        </div>
+                        <Tag color={d?.status?.toLowerCase()}>{d?.status}</Tag>
+                      </div>
+                    </BorderHOC>
+                )})}
               </div>
             </div>
 
             <div hidden={!isEqual(list, "row")} className='w-full h-full'>
               <div className='w-full space-y-5 overflow-x-auto'>
-                <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5overflow-x-auto cursor-pointer' onClick={handleView}>
-                  <div className='w-full flex items-center gap-10'>
-                    <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
-                      <BsSoundwave className='text-xl p-0.5 border rounded-full' />
-                      </BorderHOC>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold text-[#161617]'>Algebra 101 Questions</p>
-                      <p className='text-xs font-medium text-[#57585A]'>Created . {moment().format("ll")} . {moment().format("LT")}</p>
-                    </div>
-                  </div>
-                  <Button onClick={handleOption} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
-                </BorderHOC>
+                {getQuestTrackData?.data?.map((d: any) => {
+                  const isReady = isEqual(d?.status?.toLowerCase(), "success")
+                  const onView = () => (isReady ? handleView(d?._id) : {}) 
+                  const onDelete = (e: any) => {e?.stopPropagation?.(); deleteQuestTrackAction(d?._id)} 
+                  return (
+                    <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5overflow-x-auto'>
+                      <div className='w-full flex items-center gap-10'>
+                        <BorderHOC rounded='rounded-xl' childClass='p-3 bg-[#E1E7FF]' className='!w-auto'>
+                          <BsSoundwave className='text-xl p-0.5 border rounded-full' />
+                          </BorderHOC>
+                        <div className='space-y-1'>
+                          <p className='text-sm font-bold text-[#161617]'>{d?.name}</p>
+                          <p className='text-xs font-medium text-[#57585A]'>Created . {moment(d?.createdAt).format("ll")} . {moment(d?.createdAt).format("LT")}</p>
+                        </div>
+                      </div>
+                      <div className='flex justify-end items-center'>
+                        <Tag color={d?.status?.toLowerCase()}>{d?.status}</Tag>
+                        <Dropdown menu={{ items: [
+                          { key: "view", label: "View", onClick: onView, disabled: !isReady },
+                          { key: "delete", label: "Delete", onClick: onDelete },
+                        ] }}>
+                          <Button onClick={handleOption} loading={deleteQuestTrackLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                        </Dropdown>
+                      </div>
+                    </BorderHOC>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -182,9 +220,13 @@ function QuestionTracker() {
         </div>
       </Drawer>
 
-      {/* <Modal>
-
-      </Modal> */}
+      <Modal
+        footer={false}
+        open={isRecOpen}
+        onCancel={onRecClose}
+      >
+        <RecordSection successAction={getQuestTrackFetch} />
+      </Modal>
     </div>
   )
 }
