@@ -1,22 +1,24 @@
 import { notification } from "antd";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   deleteRequest,
   getRequest,
   postRequest,
+  putRequest,
 } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 import { handleObjToParam } from "../../context/utils";
 
-export function useGetAllAdaptiveLearning(params?: any) {
-  const url = "/teacher_api/als";
+export function useGetSpeechRates(params?: any, successAction?: any) {
+  const url = `/teacher_api/question_tracker/?feature_type=speech_rate`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:all_als"],
+    ["get:user_speech_rates"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
+      onSuccess: (res: any) => successAction?.(res),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -30,21 +32,15 @@ export function useGetAllAdaptiveLearning(params?: any) {
   );
 }
 
-export function useGetAdaptiveLearning(
-  id: string,
-  successAction?: any,
-  errorAction?: any
-) {
-  const url = "/teacher_api/als/als_lecture/";
+export function useGetSpeechRate(params?: any, successAction?: any) {
+  const url = `/teacher_api/question_tracker/`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:single_als", id],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    ["get:user_speech_rate", params],
+    () => getRequest(axios as unknown as AxiosInstance, url + handleObjToParam(params)),
     {
-      enabled: Boolean(id),
-      onSuccess: () => successAction?.(),
-      onError: (error: any) => {
-        errorAction?.();
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
         notification.error({
           message: "Error!",
           description: error?.message
@@ -52,14 +48,13 @@ export function useGetAdaptiveLearning(
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        });
-      },
+        }),
     }
   );
 }
 
-export function usePostAdaptiveLearning(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/als";
+export function usePostSpeechRate(successAction?: any) {
+  const url = "/teacher_api/question_tracker/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -72,8 +67,7 @@ export function usePostAdaptiveLearning(successAction?: any, errorAction?: any) 
           description: response?.message || "action successful.",
         });
       },
-      onError: (error: any) => {
-        errorAction?.();
+      onError: (error: any) =>
         notification.error({
           message: "Error!",
           description: error?.message
@@ -81,88 +75,33 @@ export function usePostAdaptiveLearning(successAction?: any, errorAction?: any) 
                 ?.map(([, value]) => (value as any)?.join(", "))
                 ?.join(", ")
             : "something went wrong please check internet connection.",
-        });
-      },
+        }),
     }
   );
 }
 
-export function useDeleteAdaptiveLearning(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/als/";
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    async (id: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ als_id: id })),
-    {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
-
-
-
-// quiz questions section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-export function useGetALQuiz(
-  id: string,
+export function usePutSpeechRate(
+  params: any,
   successAction?: any,
   errorAction?: any
 ) {
-  const url = "/teacher_api/als/als_quiz/";
+  const url = `/teacher_api/speech_rate/`;
   const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:single_als_quiz", id],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
-    {
-      enabled: Boolean(id),
-      onSuccess: () => successAction?.(),
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
-
-export function usePostALQuiz(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/als/create_quiz/";
-  const axios = useContext(AxiosContext);
+  const queryClient = useQueryClient();
   return useMutation(
-    async (id: any) =>
-      getRequest(axios as unknown as AxiosInstance, url + id),
+    (payload: any) =>
+      putRequest(axios as unknown as AxiosInstance, url + handleObjToParam(params), payload),
     {
-      onSuccess: (response: any) => {
-        successAction?.(response);
+      onSuccess: (response) => {
+        successAction?.();
         notification.success({
+          key: "updateable",
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        queryClient.invalidateQueries("get:user_speech_rate");
       },
       onError: (error: any) => {
-        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -171,48 +110,21 @@ export function usePostALQuiz(successAction?: any, errorAction?: any) {
                 ?.join(", ")
             : "something went wrong please check internet connection.",
         });
+        errorAction?.(error);
       },
     }
   );
 }
 
-
-
-// quiz participants section >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-export function useGetALQuizParticipants(
-  id: string,
+export function useDeleteSpeechRate(
   successAction?: any,
   errorAction?: any
 ) {
-  const url = "/teacher_api/als/all_quiz_results/";
-  const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:single_als_quiz_participants", id],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
-    {
-      enabled: Boolean(id),
-      onSuccess: () => successAction?.(),
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
-
-export function usePostGenerateALReport(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/als/generate_csv/";
+  const url = "/teacher_api/question_tracker/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (id: any) =>
-      getRequest(axios as unknown as AxiosInstance, url + id),
+      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ question_tracker_id: id })),
     {
       onSuccess: (response: any) => {
         successAction?.(response);
@@ -236,22 +148,28 @@ export function usePostGenerateALReport(successAction?: any, errorAction?: any) 
   );
 }
 
-export function usePostUploadALReport(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/als/upload_csv/";
+export function useEditSpeechRate(
+  id: any,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = `/api_backend/proof_reader/speech_rate/${id}`;
   const axios = useContext(AxiosContext);
+  const queryClient = useQueryClient();
   return useMutation(
-    async (id: any) =>
-      getRequest(axios as unknown as AxiosInstance, url + id),
+    (payload: any) =>
+      putRequest(axios as unknown as AxiosInstance, url, payload),
     {
-      onSuccess: (response: any) => {
-        successAction?.(response);
+      onSuccess: (response) => {
+        successAction?.();
         notification.success({
+          key: "updateable",
           message: "Success!",
-          description: response?.message || "action successful.",
+          description: response?.message || "profile set successfully.",
         });
+        queryClient.invalidateQueries("get:user_speech_rate");
       },
       onError: (error: any) => {
-        errorAction?.();
         notification.error({
           message: "Error!",
           description: error?.message
@@ -260,7 +178,35 @@ export function usePostUploadALReport(successAction?: any, errorAction?: any) {
                 ?.join(", ")
             : "something went wrong please check internet connection.",
         });
+        errorAction?.(error);
       },
+    }
+  );
+}
+
+export function usePostVoiceTracker(successAction?: any) {
+  const url = "/teacher_api/speech_rate/add_voice";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
     }
   );
 }
