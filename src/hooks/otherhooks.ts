@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "react-query";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import authAtom from "../atoms/auth/auth.atom";
 import createLecturesAtom from "../atoms/other/createLectures.atom";
-import axios, { AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import { getRequest, postRequest } from "../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../context/AxiosContext";
