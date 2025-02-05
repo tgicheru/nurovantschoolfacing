@@ -35,11 +35,11 @@ export function useGetAdaptiveLearning(
   successAction?: any,
   errorAction?: any
 ) {
-  const url = "/teacher_api/als/als_lecture/";
+  const url = "/teacher_api/als/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_als", id],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    () => getRequest(axios as unknown as AxiosInstance, url + handleObjToParam({id})),
     {
       enabled: Boolean(id),
       onSuccess: () => successAction?.(),
@@ -184,10 +184,38 @@ export function useGetALQuizParticipants(
   successAction?: any,
   errorAction?: any
 ) {
-  const url = "/teacher_api/als/all_quiz_results/";
+  const url = "/teacher_api/als/results/";
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_als_quiz_participants", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + handleObjToParam({id})),
+    {
+      enabled: Boolean(id),
+      onSuccess: () => successAction?.(),
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function useGetALQuizParticipant(
+  id: string,
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/teacher_api/als/results/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_als_quiz_participant", id],
     () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
       enabled: Boolean(id),

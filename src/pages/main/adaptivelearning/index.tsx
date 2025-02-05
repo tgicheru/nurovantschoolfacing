@@ -10,7 +10,7 @@ import { PiDotsThreeOutline } from 'react-icons/pi'
 import moment from 'moment'
 import { CgNotes } from "react-icons/cg"
 import { AiOutlineCloseCircle } from 'react-icons/ai'
-import { useAWSUpload } from '../../../hooks/otherhooks'
+import { useAWSUploadALS } from '../../../hooks/otherhooks'
 import { ImSpinner } from 'react-icons/im'
 import { useSearchParams } from 'react-router-dom'
 import DetailsSection from './sections/details'
@@ -40,7 +40,8 @@ function AdaptiveLearning() {
   const id = params.get("id")
 
   const handleOption = (e: any) => e?.stopPropagation()
-  const handleView = (key?: any, other?: any) => setParams({id: key?.id || id || "bytubytiyygvutfgbytty", ...(other || {})})
+  const handleView = (id?: any, other?: any) => setParams({id, ...(other || {})})
+  const inviteURL = "https://app.nurovant.com/als?section=quiz&id=".concat(id || "")
 
   const lists = [
     { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
@@ -60,7 +61,7 @@ function AdaptiveLearning() {
   const {
     isLoading: postUplLoad,
     mutateAsync: postUplAction,
-  } = useAWSUpload()
+  } = useAWSUploadALS()
 
   const {
     data: getAllALSData,
@@ -88,7 +89,7 @@ function AdaptiveLearning() {
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
 
   if (result) return <ResultSection id={id} result={result} handleSection={handleView} />
-  if (id) return <DetailsSection id={id} tab={tab} handleSection={handleView} />
+  if (id) return <DetailsSection id={id} tab={tab} handleSection={handleView} inviteURL={inviteURL} />
   return (
     <div className='w-full py-5 space-y-5'>
       <div className='w-full'>
@@ -131,6 +132,7 @@ function AdaptiveLearning() {
                 {getAllALSData?.data?.map((d: any) => {
                   const onView = () => handleView(d?._id)
                   const onDelete = () => deleteALSAction(d?._id)  
+                  const isReady = isEqual(d?.status, "quizResult_saved")
                   return (
                   <BorderHOC key={d?._id} rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-3 space-y-3'>
                     <div className='flex justify-between items-center gap-5'>
@@ -138,8 +140,8 @@ function AdaptiveLearning() {
                         <CgNotes className='text-xl' />
                       </BorderHOC>
                       <Dropdown menu={{ items: [
-                        { key: "view", label: "View", onClick: onView },
-                        { key: "delete", label: "Delete", onClick: onDelete },
+                      { key: "view", label: "View", onClick: onView, disabled: !isReady },
+                      { key: "delete", label: "Delete", onClick: onDelete },
                       ] }}>
                         <Button onClick={handleOption} loading={deleteALSLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
                       </Dropdown>
@@ -160,9 +162,10 @@ function AdaptiveLearning() {
             <div hidden={!isEqual(list, "row")} className='w-full h-full'>
               <div className='w-full space-y-5 overflow-x-auto'>
                 {getAllALSData?.data?.map((d: any) => {
+                  const url = inviteURL.concat(d?._id)
                   const onView = () => handleView(d?._id)
                   const onDelete = () => deleteALSAction(d?._id)  
-                  const url = "https://app.nurovant.com/page/quiz/?id=".concat(d?._id)
+                  const isReady = isEqual(d?.status, "quizResult_saved")
                   const onCopy = (e: any) => {handleOption(e); handleCopy(url)}
                   return (
                   <BorderHOC rounded='rounded-xl' className='w-full h-full' childClass='p-2 flex flex-nowrap justify-between items-center gap-5overflow-x-auto'>
@@ -181,14 +184,14 @@ function AdaptiveLearning() {
                       <div className=''>
                         <p className='text-sm font-bold text-[#161617]'>Invitation Link</p>
                         <div className='flex items-center gap-2'>
-                          <Input value={url} readOnly className='pr-0 rounded-md' size='small' suffix={<Button onClick={onCopy} className='rounded-r-md' size='small' icon={<LuCopy />}>copy</Button>} />
-                          <Button onClick={(e) => {handleOption(e); onScan()}} className='rounded-md' size='small' icon={<BiQrScan />} />
+                          <Input value={url} readOnly className='pr-0 rounded-md' size='small' suffix={<Button onClick={onCopy} disabled={!isReady} className='rounded-r-md' size='small' icon={<LuCopy />}>copy</Button>} />
+                          <Button onClick={(e) => {setPayload({...payload, id: d?._id}); onScan()}} disabled={!isReady} className='rounded-md' size='small' icon={<BiQrScan />} />
                         </div>
                       </div>
                     </div>
                     <Tag>{d?.status}</Tag>
                     <Dropdown menu={{ items: [
-                      { key: "view", label: "View", onClick: onView },
+                      { key: "view", label: "View", onClick: onView, disabled: !isReady },
                       { key: "delete", label: "Delete", onClick: onDelete },
                     ] }}>
                       <Button onClick={handleOption} loading={deleteALSLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
@@ -247,7 +250,7 @@ function AdaptiveLearning() {
         </div>
       </Drawer>
 
-      <InviteModal isOpen={isScan} onClose={unScan} otherValue="https://app.nurovant.com/page/quiz/?id=673b06f088793a2c42ede9ec" />
+      <InviteModal isOpen={isScan} onClose={unScan} otherValue={inviteURL.concat(payload?.id)} />
     </div>
   )
 }

@@ -93,6 +93,37 @@ export function useLogin(successAction?: any) {
   );
 }
 
+export function useOAuthLogin(successAction?: any) {
+  const url = "/teacher_api/auth/social_sign_in";
+  const axios = useContext(AxiosContext);
+  const [auth, setAuth] = useRecoilState(authAtom);
+
+  return useMutation(
+    (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        setAuth({
+          ...auth,
+          isLoggedIn: true,
+          user: response?.user,
+          token: response?.token,
+        });
+        successAction?.(response);
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message,
+        }),
+    }
+  );
+}
+
 export function useForget(successAction?: any) {
   const url = "/teacher_api/auth/send_otp";
   const axios = useContext(AxiosContext);
