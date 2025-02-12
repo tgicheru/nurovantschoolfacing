@@ -24,6 +24,9 @@ const LectureDetails = lazy(() => import("../pages/main/courses/lecture"));
 const StudentsDetails = lazy(() => import("../pages/main/courses/students"));
 const CourseImport = lazy(() => import("../pages/main/courses/import"));
 const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
+const GamingPage = lazy(() => import("../pages/main/courses/gaming"));
+
+
 const FlashCardPage = lazy(
   () => import("../pages/main/courses/lecture/pages/flashcards")
 );
@@ -32,6 +35,25 @@ const RecapsPage = lazy(
 );
 const RecapsDetailsPage = lazy(
   () => import("../pages/main/courses/lecture/pages/recapDetails")
+);
+
+const AnalyzeLesson = lazy(
+  () => import("../pages/main/courses/lecture/pages/analyze")
+);
+const ContinuousFeedback = lazy(
+  () => import("../pages/main/courses/lecture/pages/continuousFeedback")
+);
+const LmsPage = lazy(
+  () => import("../pages/main/courses/lecture/pages/lmsIntegration")
+);
+const GroupActivity = lazy(
+  () => import("../pages/main/courses/lecture/pages/groupActivity")
+);
+const GroupAnalysis = lazy(
+  () => import("../pages/main/courses/lecture/pages/groupAnalysis")
+);
+const CurriculumAlignment = lazy(
+  () => import("../pages/main/courses/lecture/pages/curriculumAlignment")
 );
 const DiscussPage = lazy(
   () => import("../pages/main/courses/lecture/pages/discuss")
@@ -56,6 +78,41 @@ export const routes = [
     path: "/courses",
     label: "Courses",
     component: <Courses />,
+  },
+  {
+    path: "/courses/gaming",
+    label: "gaming",
+    component: <GamingPage />,
+  },
+   {
+    path: "/courses/lecture/analyze",
+    label: "analyze",
+    component: <AnalyzeLesson />,
+  },
+  {
+    path: "/courses/lecture/continuousFeedback",
+    label: "Continuous Feedback",
+    component: <ContinuousFeedback />,
+  },
+  {
+    path: "/courses/lecture/lmsIntegration",
+    label: "Lms Integration",
+    component: <LmsPage />,
+  },
+  {
+    path: "/courses/lecture/groupAnalysis",
+    label: "Group Analysis",
+    component: <GroupAnalysis />,
+  },
+  {
+    path: "/courses/lecture/groupActivity",
+    label: "Group Activity",
+    component: <GroupActivity />,
+  },
+  {
+    path: "/courses/lecture/curriculumAlignment",
+    label: "Curriculum Alignment",
+    component: <CurriculumAlignment />,
   },
   {
     path: "/courses/details",

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import OAuth from '../components/oauth';
 import { Button, Divider, Form, Input, Select } from 'antd';
 import { genders, grades, subjects } from '../../../constants';
@@ -16,6 +16,9 @@ function DetailsSection({ handleSection }: Props) {
     handleSection("", {email, type: "VERIFY_USER"})
   });
 
+  const navigate = useNavigate()
+  // () => handleSection("other")
+  const toHome = () => navigate("/")
   const { isLoading: getStatesLoad, data: getStatesData } = useGetUSStates()
   const { mutate, isLoading } = useRegister(({user: {email}}: any) => resendAction({email, otp_type: "VERIFY_USER"}))
 
@@ -27,7 +30,7 @@ function DetailsSection({ handleSection }: Props) {
         <p className="text-sm font-semibold text-[#57585A]">Fill in these details to get your account running.</p>
       </div>
 
-      <OAuth successAction={() => handleSection("other")} />
+      <OAuth successAction={toHome} />
 
       <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
 

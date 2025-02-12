@@ -1,5 +1,5 @@
 import { notification } from "antd";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   deleteRequest,
   getRequest,
@@ -11,14 +11,14 @@ import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 import { handleObjToParam } from "../../context/utils";
 
-export function useGetQuestionBanks(params?: any) {
-  const url = `/teacher_api/question_bank/my_questions`;
+export function useGetReviewReports(params?: any, successAction?: any) {
+  const url = `/teacher_api/review`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:user_question_banks", params],
+    ["get:review_reports"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
-      refetchInterval: 60000,
+      onSuccess: (res: any) => successAction?.(res),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -32,13 +32,14 @@ export function useGetQuestionBanks(params?: any) {
   );
 }
 
-export function useGetQuestionBank(params?: any) {
-  const url = `/teacher_api/question_bank/`;
+export function useGetReviewReport(params?: any, successAction?: any) {
+  const url = `/teacher_api/review/`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:user_question_bank", params],
+    ["get:review_report", params],
     () => getRequest(axios as unknown as AxiosInstance, url + handleObjToParam(params)),
     {
+      onSuccess: (res: any) => successAction?.(res),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -52,8 +53,8 @@ export function useGetQuestionBank(params?: any) {
   );
 }
 
-export function usePostQuestionBank(successAction?: any) {
-  const url = "/teacher_api/question_bank";
+export function usePostReviewReport(successAction?: any) {
+  const url = "/teacher_api/review/create_report";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -79,12 +80,12 @@ export function usePostQuestionBank(successAction?: any) {
   );
 }
 
-export function usePostQuestionBankVariant(id: string, successAction?: any) {
-  const url = "/teacher_api/question_bank/add_variant";
+export function usePostReviewReportCreate(successAction?: any) {
+  const url = "/teacher_api/review/create_custom_report";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
-      postRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ id }), payload),
+      postRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response: any) => {
         successAction?.(response);
@@ -106,43 +107,17 @@ export function usePostQuestionBankVariant(id: string, successAction?: any) {
   );
 }
 
-export function usePostQuestionBankQuestion(id: string, successAction?: any) {
-  const url = "/teacher_api/question_bank/add_va_question";
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    async (payload: any) =>
-      postRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ id }), payload),
-    {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      onError: (error: any) =>
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        }),
-    }
-  );
-}
-
-export function usePutQuestionBank(
-  id: any,
+export function usePutReviewReport(
+  params: any,
   successAction?: any,
   errorAction?: any
 ) {
-  const url = `/teacher_api/question_bank/`;
+  const url = `/teacher_api/speech_rate/`;
   const axios = useContext(AxiosContext);
+  const queryClient = useQueryClient();
   return useMutation(
     (payload: any) =>
-      putRequest(axios as unknown as AxiosInstance, url + handleObjToParam({id}), payload),
+      putRequest(axios as unknown as AxiosInstance, url + handleObjToParam(params), payload),
     {
       onSuccess: (response) => {
         successAction?.();
@@ -151,6 +126,7 @@ export function usePutQuestionBank(
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        queryClient.invalidateQueries("get:user_speech_rate");
       },
       onError: (error: any) => {
         notification.error({
@@ -167,70 +143,15 @@ export function usePutQuestionBank(
   );
 }
 
-export function useDeleteQuestionBank(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/question_bank/";
+export function useDeleteReviewReport(
+  successAction?: any,
+  errorAction?: any
+) {
+  const url = "/teacher_api/review/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (id: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ question_bank_id: id })),
-    {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
-
-export function useDeleteQuestionBankVariant(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/question_bank/delete_variant/";
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    async (data: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam(data)),
-    {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      onError: (error: any) => {
-        errorAction?.();
-        notification.error({
-          message: "Error!",
-          description: error?.message
-            ? Object.entries(error?.errors || { key: [error?.message] })
-                ?.map(([, value]) => (value as any)?.join(", "))
-                ?.join(", ")
-            : "something went wrong please check internet connection.",
-        });
-      },
-    }
-  );
-}
-
-export function useDeleteQuestionBankQuestion(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/question_bank/delete_question_variant";
-  const axios = useContext(AxiosContext);
-  return useMutation(
-    async (data: any) =>
-      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam(data)),
+      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam({ review_id: id })),
     {
       onSuccess: (response: any) => {
         successAction?.(response);

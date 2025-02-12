@@ -1,3 +1,4 @@
+import { message } from "antd";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 
@@ -103,3 +104,7 @@ export const handleTableSelect = (data: any, setData: any, key: string) => ({
     setData(arr);
   },
 });
+
+export const handleObjToParam = (data: any) => "?".concat(Object.entries(data || {}).map(([k, v]) => String(k).concat("=", String(v))).join("&"))
+
+export const handleCopy = (data: any) => navigator.clipboard.writeText(data).then(res => message.success("Copied to clipboard!")).catch(err => message.error("Error, please retry"))

@@ -4,22 +4,32 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from 'react-icons/fa';
 import { signInWithPopup } from 'firebase/auth';
 import { appleProvider, auth, provider } from '../../../firebaseAuth/config';
+import { useOAuthLogin } from '../../../hooks/auth/authentications';
 
 type Props = {
   isLoading?: boolean,
   successAction?: any,
 }
-function OAuth({ isLoading, successAction }: Props) {
+function OAuth({ successAction }: Props) {
+
+  const { mutate, isLoading } = useOAuthLogin(successAction)
+
+  const handleSubmit = (data: any) => mutate({
+    first_name: data?.displayName?.split(" ")?.at(0),
+    last_name: data?.displayName?.split(" ")?.at(1),
+    accessToken: data?.accessToken,
+    email: data?.email,
+  })
 
   const handleGoogleLogin = () => signInWithPopup(auth, provider)
-    .then((res) => successAction?.({
+    .then((res) => handleSubmit({
       ...(res?.user || {}),
         sign_up_type: "google",
       } as unknown as void))
     .catch((err) => notification.error({message: "Error!", description: err?.message}));
 
   const handleAppleLogin = () => signInWithPopup(auth, appleProvider)
-    .then((res) => successAction?.({
+    .then((res) => handleSubmit({
         ...(res?.user || {}),
         sign_up_type: "apple",
       } as unknown as void))
