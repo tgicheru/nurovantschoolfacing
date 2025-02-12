@@ -39,7 +39,6 @@ const Home = () => {
     refetch: getCoursesFetch,
     isLoading: getCoursesLoad,
   } = useGetCourses({ limit, page });
-  // console.log(getCoursesData);
 
   const onOpen = () => setIsOpen(true);
 
@@ -154,9 +153,11 @@ const Home = () => {
                         key={idx}
                         onClick={() => {
                           if (activeType !== "normal") {
-                            navigate(`/courses/details?type=mapped`);
+                            navigate(
+                              `/courses/details?id=${course?._id}&type=mapped`
+                            );
                           } else {
-                            navigate(`/courses/details`);
+                            navigate(`/courses/details?id=${course?._id}`);
                           }
                         }}
                       >
@@ -234,7 +235,13 @@ const Home = () => {
                         className="w-full cursor-pointer"
                         key={idx}
                         onClick={() => {
-                          navigate("/courses/details");
+                          if (activeType !== "normal") {
+                            navigate(
+                              `/courses/details?id=${course?._id}&type=mapped`
+                            );
+                          } else {
+                            navigate(`/courses/details?id=${course?._id}`);
+                          }
                         }}
                       >
                         <BorderHOC className="w-full" rounded="rounded-[10px]">
