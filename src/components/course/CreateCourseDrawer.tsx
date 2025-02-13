@@ -293,6 +293,23 @@ const CreateCourseDrawer = ({
     learning_standards: [standardSet?.data],
   });
 
+  function getCurrentAndFutureDate(): { start_date: string; end_date: string } {
+    const formatDate = (date: Date): string => {
+      return date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    };
+
+    const currentDate = new Date();
+    const futureDate = new Date();
+    futureDate.setMonth(futureDate.getMonth() + 3);
+
+    return {
+      start_date: formatDate(currentDate),
+      end_date: formatDate(futureDate),
+    };
+  }
+
+  console.log(getCurrentAndFutureDate());
+
   // useEffect(() => {
   //   postSingleJurisdication({
   //     id: selectedJurisdition,
@@ -327,6 +344,7 @@ const CreateCourseDrawer = ({
     } else {
       const newInitialValues = {
         ...initialValues,
+        ...getCurrentAndFutureDate(),
         learning_standards: [standardSet?.data],
       };
       createCourse(newInitialValues);
