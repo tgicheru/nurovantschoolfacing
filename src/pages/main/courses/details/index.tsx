@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Modal } from "antd";
+import { Breadcrumb, Button, Modal, Spin } from "antd";
 import DefaultBanner from "../../../../assets/default_banner.png";
 import EmptyState from "../../../../assets/EmptyState.svg";
 import React, { useState } from "react";
@@ -15,11 +15,23 @@ import { TbMessageQuestion, TbCards, TbFilterSearch } from "react-icons/tb";
 import { BsRepeat } from "react-icons/bs";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { useSearchParams } from "react-router-dom";
+import { useGetCourseById } from "../../../../hooks/courses/courses";
+import { format, parseISO } from "date-fns";
 
 const CourseDetails = () => {
   const navigate = useNavigate();
 
   const [param, setParam] = useSearchParams();
+
+  const id = param.get("id");
+
+  const {
+    data: getCourseData,
+    refetch: getCourseFetch,
+    isLoading: getCourseLoad,
+  } = useGetCourseById({ course_id: id });
+
+  console.log(getCourseData);
 
   const [activeType, setActiveType] = useState(param.get("type") || "normal");
 
@@ -40,6 +52,14 @@ const CourseDetails = () => {
     setIsOpen(false);
   };
 
+  if (getCourseLoad) {
+    return (
+      <div className="w-full flex items-center justify-center h-[70vh]">
+        <Spin />
+      </div>
+    );
+  }
+
   return (
     <div className={`w-full ${activeType === "mapped" ? "flex gap-4" : ""}`}>
       <div className="w-full flex flex-col gap-5">
@@ -53,14 +73,16 @@ const CourseDetails = () => {
               ),
             },
             {
-              title: <span className="">Understanding Mathematics</span>,
+              title: (
+                <span className="">{getCourseData?.data?.course_title}</span>
+              ),
             },
           ]}
         />
         <div className="w-[581px] flex items-center gap-5">
           <div className="w-[186px] h-[140px] rounded-[10px] overflow-hidden">
             <img
-              src={course.image}
+              src={getCourseData?.data?.course_image}
               onLoadStart={() => {
                 setIsLoadingImage(true);
               }}
@@ -81,7 +103,7 @@ const CourseDetails = () => {
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-[24px] leading-[32px] text-neutral-900 font-bold">
-                  {course.title}
+                  {getCourseData?.data?.course_title}
                 </h2>
 
                 <button className="flex items-center justify-center">
@@ -90,7 +112,10 @@ const CourseDetails = () => {
               </div>
               <p className="text-sm text-neutral-600 font-medium">
                 {activeType !== "normal" ? "Mapped • " : ""}
-                {course.createdAt}
+                {format(
+                  parseISO(getCourseData?.data?.createdAt),
+                  "dd MMM, yyyy • hh:mma"
+                )}
               </p>
               {activeType !== "normal" ? (
                 <div className="flex flex-col gap-2 mt-2">
@@ -114,19 +139,19 @@ const CourseDetails = () => {
                     Institution
                   </p>
                   <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                    {course.institution}
+                    {getCourseData?.data?.institution}
                   </p>
                 </div>
                 <div>
                   <p className="font-bold text-sm text-neutral-900">State</p>
                   <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                    {course.state}
+                    {getCourseData?.data?.state}
                   </p>
                 </div>
                 <div>
                   <p className="font-bold text-sm text-neutral-900">Grade</p>
                   <p className="text-neutral-600 text-[12px] leading-[18px] font-medium">
-                    {course.grade}
+                    {getCourseData?.data?.grade}
                   </p>
                 </div>
               </div>
