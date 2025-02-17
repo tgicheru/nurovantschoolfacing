@@ -17,11 +17,16 @@ import RecapContent from "./components/RecapContent";
 import DiscussContent from "./components/DiscussContent";
 import { useSearchParams } from "react-router-dom";
 
-
-import {  Modal, Upload, Checkbox, ConfigProvider } from "antd"
-import { DownloadOutlined, UploadOutlined, CloseOutlined } from "@ant-design/icons"
-import type { UploadProps } from "antd"
+import { Modal, Upload, Checkbox, ConfigProvider } from "antd";
+import {
+  DownloadOutlined,
+  UploadOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
+import type { UploadProps } from "antd";
 import router from "../../../../router";
+import { useGetLectureById } from "../../../../hooks/lecture/lecture";
+import { parseISO, format } from "date-fns";
 
 export const LabelComponent = ({
   isActive,
@@ -66,6 +71,15 @@ export const LabelComponent = ({
 const LectureDetail = () => {
   const navigate = useNavigate();
   const [param, setParam] = useSearchParams();
+  const id = param.get("id");
+
+  const {
+    data: lectureData,
+    isLoading,
+    isError,
+    error,
+  } = useGetLectureById({ id });
+  console.log(lectureData);
 
   const lecture = {
     title: "Algebra",
@@ -180,11 +194,11 @@ const LectureDetail = () => {
   );
 
   const handleTab = (tab: string) => {
-    setParam({ tab });
+    setParam({ tab, id: id as string });
     setActiveTab(tab);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const uploadProps: UploadProps = {
     name: "file",
@@ -192,68 +206,68 @@ const LectureDetail = () => {
     action: "/api/upload", // Replace with your upload endpoint
     accept: ".svg,.png,.jpg,.gif",
     showUploadList: false,
-  }
+  };
 
   const handleContinue = async () => {
-    setIsModalOpen(false) // Close the modal
-    router.call("/courses/lecture/curriculumAlignment") // Navigate to the specified route
- // Navigate to the specified route
-  }
+    setIsModalOpen(false); // Close the modal
+    router.call("/courses/lecture/curriculumAlignment"); // Navigate to the specified route
+    // Navigate to the specified route
+  };
 
   return (
-    
-    <div className="w-full flex flex-col gap-9 flex justify-end">
-    
-    <div className="ml-auto flex gap-3 mt-16">
-      <Button
-        icon={<DownloadOutlined />}
-        className="flex items-center border-[#4318FF] text-[#4318FF] hover:!text-[#4318FF] hover:!border-[#4318FF]"
-      >
-        Export to LMS
-      </Button>
+    <div className="w-full flex flex-col gap-9 justify-end">
+      <div className="ml-auto flex gap-3 mt-16">
+        <Button
+          icon={<DownloadOutlined />}
+          className="flex items-center border-[#4318FF] text-[#4318FF] hover:!text-[#4318FF] hover:!border-[#4318FF]"
+        >
+          Export to LMS
+        </Button>
 
-      <Button
-        type="primary"
-        className="flex items-center bg-[#4318FF] hover:!bg-[#4318FF]/90"
-        icon={<UploadOutlined />}
-        onClick={() => setIsModalOpen(true)}
-      >
-        Import Pacing Guide
-      </Button>
+        <Button
+          type="primary"
+          className="flex items-center bg-[#4318FF] hover:!bg-[#4318FF]/90"
+          icon={<UploadOutlined />}
+          onClick={() => setIsModalOpen(true)}
+        >
+          Import Pacing Guide
+        </Button>
 
-      
-      <Modal
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-        width={472}
-        closeIcon={<CloseOutlined className="text-gray-500" />}
-        title={<h2 className="text-xl font-medium">Import Pacing Guide</h2>}
-        className="rounded-2xl"
-      >
-        <div className="py-4">
-          <Upload.Dragger {...uploadProps} className="bg-gray-50 px-6 py-12">
-            <p className="text-gray-600">Click to upload or drag and drop</p>
-            <p className="text-gray-400 text-sm">SVG, PNG, JPG or GIF (max. 800×400px)</p>
-          </Upload.Dragger>
+        <Modal
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+          width={472}
+          closeIcon={<CloseOutlined className="text-gray-500" />}
+          title={<h2 className="text-xl font-medium">Import Pacing Guide</h2>}
+          className="rounded-2xl"
+        >
+          <div className="py-4">
+            <Upload.Dragger {...uploadProps} className="bg-gray-50 px-6 py-12">
+              <p className="text-gray-600">Click to upload or drag and drop</p>
+              <p className="text-gray-400 text-sm">
+                SVG, PNG, JPG or GIF (max. 800×400px)
+              </p>
+            </Upload.Dragger>
 
-          <div className="mt-6">
-            <Checkbox className="text-gray-600">Integrate to google calendar</Checkbox>
+            <div className="mt-6">
+              <Checkbox className="text-gray-600">
+                Integrate to google calendar
+              </Checkbox>
+            </div>
+
+            <Button
+              type="primary"
+              className="w-full mt-6 h-12 bg-[#4318FF] hover:!bg-[#4318FF]/90 text-base"
+              onClick={handleContinue}
+            >
+              Continue
+            </Button>
           </div>
-
-          <Button
-            type="primary"
-            className="w-full mt-6 h-12 bg-[#4318FF] hover:!bg-[#4318FF]/90 text-base"
-            onClick={handleContinue}
-          >
-            Continue
-          </Button>
-        </div>
-      </Modal>
+        </Modal>
       </div>
-  
 
-       <Breadcrumb
+      <Breadcrumb
         items={[
           {
             title: (
@@ -264,13 +278,16 @@ const LectureDetail = () => {
           },
           {
             title: (
-              <a href="/courses/details" className="hover:bg-none">
+              <a
+                href={`/courses/details?id=${lectureData?.course}`}
+                className="hover:bg-none"
+              >
                 Lectures
               </a>
             ),
           },
           {
-            title: <span className="">Algebra 101</span>,
+            title: <span className="">{lectureData?.title}</span>,
           },
         ]}
       />
@@ -280,7 +297,7 @@ const LectureDetail = () => {
           <BorderHOC rounded="rounded-[10px]">
             <div className="h-[50px] w-[50px] flex-shrink-0 bg-[#FEEDD6] rounded-[10px] flex items-center justify-center">
               <h5 className="text-[20px] leading-[30px] font-bold text-black">
-                {lecture.title.charAt(0)}
+                {lectureData?.title.charAt(0)}
               </h5>
             </div>
           </BorderHOC>
@@ -289,10 +306,14 @@ const LectureDetail = () => {
         <div className="flex items-center justify-between w-[255px]">
           <div className="flex flex-col">
             <h2 className="text-sm text-neutral-900 font-bold">
-              {lecture.title}
+              {lectureData?.title}
             </h2>
             <p className="text-[12px] leading-[18px] text-neutral-600">
-              {lecture.createdAt}
+              {lectureData?.createdAt &&
+                format(
+                  parseISO(lectureData?.createdAt),
+                  "dd MMM, yyyy • hh:mma"
+                )}
             </p>
           </div>
 

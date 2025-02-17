@@ -732,6 +732,10 @@ progress effectively`
             // disabled={!upldFile?.file}
 
             loading={createCourseLoad}
+            disabled={
+              !(selectedJurisdictionDetail?.length > 0 && standardSet?.data) ||
+              createCourseLoad
+            }
             onClick={() => {
               handleStep2();
             }}

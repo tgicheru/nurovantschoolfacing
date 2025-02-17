@@ -45,11 +45,35 @@ const CourseDetails = () => {
   };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isGridView, setIsGridView] = useState(true);
-  const [lectures, setLectures] = useState<any[]>([]);
+  const [lectures, setLectures] = useState<any[]>(
+    getCourseData?.data?.lectures
+  );
 
   const [isOpen, setIsOpen] = useState(true);
   const onClose = () => {
     setIsOpen(false);
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 15;
+
+  const paginatedLectures = lectures?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const totalPages = Math.ceil(lectures?.length / pageSize);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
   };
 
   if (getCourseLoad) {
@@ -165,7 +189,7 @@ const CourseDetails = () => {
               <div className="w-full flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <h1 className="text-neutral-900 text-[24px] leading-[32px] font-bold">
-                    {lectures.length}
+                    {lectures?.length}
                   </h1>
                   <p className="text-sm font-semibold text-neutral-600">
                     Lecture(s)
@@ -187,7 +211,7 @@ const CourseDetails = () => {
                   <div className="flex items-center gap-[5px] h-full">
                     <div
                       className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
-                        lectures.length && isGridView && "bg-[#E7E7E7]"
+                        lectures?.length && isGridView && "bg-[#E7E7E7]"
                       }`}
                       onClick={() => {
                         setIsGridView(true);
@@ -197,7 +221,7 @@ const CourseDetails = () => {
                     </div>
                     <div
                       className={`w-[40px] flex items-center justify-center h-full rounded-[1000px] cursor-pointer ${
-                        lectures.length &&
+                        lectures?.length &&
                         isGridView === false &&
                         "bg-[#E7E7E7]"
                       }`}
@@ -225,16 +249,16 @@ const CourseDetails = () => {
               <BorderHOC className="mt-[10px]" />
             </div>
 
-            {lectures.length ? (
+            {paginatedLectures.length ? (
               <div className="w-full flex flex-col">
                 {isGridView ? (
                   <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {lectures.map((lecture, idx) => (
+                    {paginatedLectures.map((lecture, idx) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
                         onClick={() => {
-                          navigate("/courses/lecture");
+                          navigate(`/courses/lecture?id=${lecture._id}`);
                         }}
                       >
                         <BorderHOC className="" rounded="rounded-[10px]">
@@ -295,12 +319,12 @@ const CourseDetails = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col w-full gap-3 p-4">
-                    {lectures.map((lecture, idx) => (
+                    {paginatedLectures.map((lecture, idx) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
                         onClick={() => {
-                          navigate("/courses/lecture");
+                          navigate(`/courses/lecture?id=${lecture._id}`);
                         }}
                       >
                         <BorderHOC className="w-full" rounded="rounded-[10px]">
@@ -405,9 +429,11 @@ const CourseDetails = () => {
                 )}
                 <BorderHOC className="mt-[10px]" />
                 <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
-                  <p className="text-sm text-neutral-900">Page 1 of 10</p>
+                  <p className="text-sm text-neutral-900">
+                    Page {currentPage} of {totalPages}
+                  </p>
                   <div className="flex items-center gap-4">
-                    <button className="">
+                    <button className="" onClick={() => handlePreviousPage()}>
                       <BorderHOC className="w-full" rounded="rounded-[1000px]">
                         <div className="py-[10px] w-[106px] flex items-center justify-center">
                           <span className="text-[#344054] text-sm">
@@ -417,7 +443,7 @@ const CourseDetails = () => {
                       </BorderHOC>
                     </button>
 
-                    <button className="">
+                    <button className="" onClick={() => handleNextPage()}>
                       <BorderHOC className="w-full" rounded="rounded-[1000px]">
                         <div className="py-[10px] w-[80px] flex items-center justify-center">
                           <span className="text-[#344054] text-sm">Next</span>
