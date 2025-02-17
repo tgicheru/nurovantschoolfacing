@@ -30,6 +30,27 @@ export function useGetLectures(params?: any) {
   );
 }
 
+export function useGetLectureById(params?: any) {
+  const url = `/teacher_api/lecture`;
+  // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:single_lecture"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 export function usePostLecture(successAction?: any) {
   const url = "/api_backend/lectures/create_teacher_lecture";
   const axios = useContext(AxiosContext);
