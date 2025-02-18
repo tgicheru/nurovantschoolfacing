@@ -30,7 +30,8 @@ export function useGetAllFlashcards(params?: any) {
 }
 
 export function useGetFlashcard(id: string) {
-  const url = "/api_backend/flashcards/";
+  // const url = "/api_backend/flashcards/";
+  const url = `/teacher_api/flashcard?flash_card_id=`;
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_flashcard"],
@@ -49,8 +50,9 @@ export function useGetFlashcard(id: string) {
   );
 }
 
-export function usePostFlashcards(successAction?: any) {
-  const url = "/api_backend/flashcards/create";
+export function usePostFlashcards(successAction?: any, id?: string) {
+  // const url = "/api_backend/flashcards/create";
+  const url = `/teacher_api/flashcard/create?lecture_id=${id}`;
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -60,7 +62,7 @@ export function usePostFlashcards(successAction?: any) {
         successAction?.(response);
         notification.success({
           message: "Success!",
-          description: response?.message || "action successful.",
+          description: response?.message || "Flashcard created successfully.",
         });
       },
       onError: (error: any) =>

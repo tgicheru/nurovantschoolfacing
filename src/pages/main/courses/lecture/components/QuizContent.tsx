@@ -9,6 +9,8 @@ import EmptyState from "../../../../../assets/EmptyState.svg";
 import { RiFileCopy2Line } from "react-icons/ri";
 import { BsQrCodeScan } from "react-icons/bs";
 import { useSearchParams } from "react-router-dom";
+import { usePostQuiz } from "../../../../../hooks/quiz/quiz";
+import { format, parseISO } from "date-fns";
 
 export const TruncatedText = ({
   text,
@@ -31,11 +33,21 @@ const QuizContent = ({
   data,
 }: {
   isGridView: boolean;
-  data: any[];
+  data: any;
 }) => {
   const navigate = useNavigate();
-  const url = `https://app.nurovant.com/page/quiz/?id=673b06f088793a2c42ede9ec`;
+  const [params, setParams] = useSearchParams();
+  const lecture_id = params.get("id");
+  const url = `https://app.nurovant.com/page/quiz/?id=${data?.quiz?._id}`;
   const { pathname } = useLocation();
+  const dataArray = [data?.quiz];
+
+  const { mutate: postQuizAction, isLoading: postQuizLoad } = usePostQuiz(
+    (res: any) => {
+      message.success("Quiz created successfully");
+      navigate(`/courses/lecture/quiz?id=${res?.data?._id}`);
+    }
+  );
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -43,16 +55,16 @@ const QuizContent = ({
   };
   return (
     <div>
-      {data.length ? (
+      {dataArray?.length ? (
         <div className="w-full flex flex-col">
           {isGridView ? (
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.map((lecture: any, idx) => (
+              {dataArray?.map((quiz: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate(`${pathname}/quiz`);
+                    navigate(`${pathname}/quiz?id=${quiz._id}`);
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -75,10 +87,15 @@ const QuizContent = ({
                       <div className="w-full flex items-center justify-between">
                         <div className="flex flex-col">
                           <h2 className="text-sm text-neutral-900 font-bold">
-                            {"Algebra 101 Quiz"}
+                            {data?.title} Quiz
                           </h2>
                           <p className="text-[12px] leading-[18px] text-neutral-600">
-                            {lecture.createdAt}
+                            {quiz?.createdAt &&
+                              quiz?.createdAt &&
+                              format(
+                                parseISO(quiz?.createdAt),
+                                "dd MMM, yyyy • hh:mma"
+                              )}
                           </p>
                         </div>
                         <BsQrCodeScan />
@@ -90,12 +107,12 @@ const QuizContent = ({
             </div>
           ) : (
             <div className="flex flex-col w-full gap-3 p-4">
-              {data.map((lecture: any, idx) => (
+              {dataArray?.map((quiz: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/quiz");
+                    navigate(`${pathname}/quiz?id=${quiz._id}`);
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">
@@ -113,10 +130,15 @@ const QuizContent = ({
                         <div className="flex items-center flex-1 gap-[50px]">
                           <div className="flex flex-col gap-[5px]">
                             <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                              {"Algebra 101 Quiz"}
+                              {data?.title} Quiz
                             </h2>
                             <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                              {lecture.createdAt}
+                              {quiz?.createdAt &&
+                                quiz?.createdAt &&
+                                format(
+                                  parseISO(quiz?.createdAt),
+                                  "dd MMM, yyyy • hh:mma"
+                                )}
                             </p>
                           </div>
                           <div className="flex flex-col gap-[5px]">
@@ -197,10 +219,13 @@ const QuizContent = ({
             </div>
 
             <Button
-              onClick={() => {}}
+              onClick={() => {
+                postQuizAction({ lecture_id, duration: "30" });
+              }}
               className="bg-primary !rounded-[1000px]"
               type="primary"
               size="large"
+              loading={postQuizLoad}
               icon={<WiStars className="text-[34px]" />}
             >
               Generate quiz

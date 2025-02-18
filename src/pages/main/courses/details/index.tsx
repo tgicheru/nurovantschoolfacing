@@ -249,7 +249,7 @@ const CourseDetails = () => {
               <BorderHOC className="mt-[10px]" />
             </div>
 
-            {paginatedLectures.length ? (
+            {paginatedLectures?.length ? (
               <div className="w-full flex flex-col">
                 {isGridView ? (
                   <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
