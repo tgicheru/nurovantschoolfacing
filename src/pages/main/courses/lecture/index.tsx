@@ -81,11 +81,6 @@ const LectureDetail = () => {
   } = useGetLectureById({ id });
   console.log(lectureData);
 
-  const lecture = {
-    title: "Algebra",
-    createdAt: "Created 11 Nov, 2024 • 12:09PM",
-  };
-
   const [isGridView, setIsGridView] = React.useState(true);
   const [data, setData] = React.useState([
     {
@@ -120,7 +115,7 @@ const LectureDetail = () => {
       {
         key: "quiz",
         // column: quizColumns,
-        data: data,
+        data: lectureData?.quiz,
         label: (isActive: boolean) => (
           <LabelComponent
             isActive={isActive}
@@ -130,15 +125,15 @@ const LectureDetail = () => {
                 className={`${isActive ? "text-primary" : "text-neutral-400"}`}
               />
             }
-            length={data?.length}
+            length={lectureData?.quiz !== null ? 1 : 0}
           />
         ),
-        content: <QuizContent data={data} isGridView={isGridView} />,
+        content: <QuizContent data={lectureData} isGridView={isGridView} />,
       },
       {
         key: "flash-cards",
         // column: flashcardColumns,
-        data: data,
+        data: lectureData?.flash_card,
         label: (isActive: boolean) => (
           <LabelComponent
             isActive={isActive}
@@ -148,10 +143,12 @@ const LectureDetail = () => {
                 className={`${isActive ? "text-primary" : "text-neutral-400"}`}
               />
             }
-            length={data?.length}
+            length={lectureData?.flash_card !== null ? 1 : 0}
           />
         ),
-        content: <FlashCardsContent data={data} isGridView={isGridView} />,
+        content: (
+          <FlashCardsContent data={lectureData} isGridView={isGridView} />
+        ),
       },
       {
         key: "recaps",
@@ -190,7 +187,7 @@ const LectureDetail = () => {
         content: <DiscussContent data={data} />,
       },
     ],
-    [data, isGridView]
+    [data, isGridView, lectureData]
   );
 
   const handleTab = (tab: string) => {

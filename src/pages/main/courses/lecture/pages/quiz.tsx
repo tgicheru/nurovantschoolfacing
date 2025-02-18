@@ -7,18 +7,32 @@ import { useSearchParams } from "react-router-dom";
 import QuizQuestions from "../components/Quiz/QuizQuestions";
 import Participants from "../components/Quiz/Participants";
 import DiscussContent from "../components/DiscussContent";
+import { useGetQuiz } from "../../../../../hooks/quiz/quiz";
+import { useGetLectureById } from "../../../../../hooks/lecture/lecture";
 
 const QuizPage = () => {
   const [param, setParam] = useSearchParams();
+  const id = param.get("id");
 
   const [activeTab, setActiveTab] = React.useState(
     param.get("tab") || "quiz-question"
   );
 
+  const { data: quizData, isLoading: quizLoading } = useGetQuiz({
+    quiz_id: id,
+  });
+
+  const { data: lectureData } = useGetLectureById({
+    id: quizData?.data?.lecture,
+  });
+
+  console.log("quizData", quizData);
+  console.log("lectureData", lectureData);
+
   const data: any[] = ["Well"];
 
   const handleTab = (tab: string) => {
-    setParam({ tab });
+    setParam({ id: id as string, tab });
     setActiveTab(tab);
   };
 
@@ -27,15 +41,15 @@ const QuizPage = () => {
       {
         key: "quiz-question",
         // column: lectureColumns,
-        data: [],
+        data: quizData?.data?.quiz_topics,
         label: (isActive: boolean) => (
           <LabelComponent
             isActive={isActive}
             label="Quiz Questions"
-            length={data?.length}
+            length={quizData?.data?.mcq?.length}
           />
         ),
-        content: <QuizQuestions />,
+        content: <QuizQuestions data={quizData?.data} />,
       },
       {
         key: "participants",
@@ -64,7 +78,7 @@ const QuizPage = () => {
         content: <DiscussContent data={data} />,
       },
     ],
-    []
+    [quizData]
   );
 
   return (
@@ -95,7 +109,7 @@ const QuizPage = () => {
       />
       <div className="w-full flex items-center justify-between pt-[25px] py-[35px]">
         <h2 className="text-[24px] leading-[32px] font-bold text-neutral-900">
-          Algebra 101 Quiz
+          {lectureData?.title} Quiz
         </h2>
         <Button
           onClick={() => {}}

@@ -29,12 +29,13 @@ export function useGetAllQuiz(params?: any) {
   );
 }
 
-export function useGetQuiz(id: string) {
-  const url = "/api_backend/quiz/";
+export function useGetQuiz(params?: any) {
+  // const url = "/api_backend/quiz/";
+  const url = `/teacher_api/quiz`;
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:single_quiz"],
-    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
       onError: (error: any) =>
         notification.error({
@@ -70,7 +71,8 @@ export function useGetQuizParticipants(id: string) {
 }
 
 export function usePostQuiz(successAction?: any) {
-  const url = "/api_backend/quiz/create";
+  // const url = "/api_backend/quiz/create";
+  const url = "/teacher_api/quiz/create_quiz";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -80,7 +82,7 @@ export function usePostQuiz(successAction?: any) {
         successAction?.(response);
         notification.success({
           message: "Success!",
-          description: response?.message || "action successful.",
+          description: response?.message || "Quiz created successfully.",
         });
       },
       onError: (error: any) =>

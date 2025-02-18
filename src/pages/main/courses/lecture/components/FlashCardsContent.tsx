@@ -13,17 +13,28 @@ import { useNavigate } from "react-router";
 import EmptyState from "../../../../../assets/EmptyState.svg";
 import { TruncatedText } from "./QuizContent";
 import { RiFileCopy2Line } from "react-icons/ri";
+import { useSearchParams } from "react-router-dom";
+import { usePostFlashcards } from "../../../../../hooks/flashcards/flashcards";
+import { format, parseISO } from "date-fns";
 
 const FlashCardsContent = ({
   isGridView,
   data,
 }: {
   isGridView: boolean;
-  data: any[];
+  data: any;
 }) => {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const lecture_id = params.get("id");
+  const url = `https://app.nurovant.com/page/flashcard/?id=${data?.flashcard?._id}`;
 
-  const url = `https://app.nurovant.com/page/quiz/?id=673b06f088793a2c42ede9ec`;
+  const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
+    usePostFlashcards((res: any) => {
+      navigate(`/courses/lecture/flashcard?id=${res?.data?._id}`);
+    }, lecture_id as string);
+
+  const dataArray = [data.flash_card];
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -31,16 +42,16 @@ const FlashCardsContent = ({
   };
   return (
     <div>
-      {data.length ? (
+      {data?.length ? (
         <div className="w-full flex flex-col">
           {isGridView ? (
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.map((lecture: any, idx) => (
+              {dataArray?.map((flashcard: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/flashcard");
+                    navigate(`/courses/lecture/flashcard?id=${flashcard?._id}`);
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -63,10 +74,15 @@ const FlashCardsContent = ({
                       <div className="w-full flex items-center justify-between">
                         <div className="flex flex-col">
                           <h2 className="text-sm text-neutral-900 font-bold">
-                            {"Algebra 101 Flash Cards"}
+                            {data?.title} Flash Cards
                           </h2>
                           <p className="text-[12px] leading-[18px] text-neutral-600">
-                            {lecture.createdAt}
+                            {flashcard?.createdAt &&
+                              flashcard?.createdAt &&
+                              format(
+                                parseISO(flashcard?.createdAt),
+                                "dd MMM, yyyy • hh:mma"
+                              )}
                           </p>
                         </div>
                         <BsQrCodeScan />
@@ -78,12 +94,12 @@ const FlashCardsContent = ({
             </div>
           ) : (
             <div className="flex flex-col w-full gap-3 p-4">
-              {data.map((lecture: any, idx) => (
+              {dataArray?.map((flashcard: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/flashcard");
+                    navigate(`/courses/lecture/flashcard?id=${flashcard?._id}`);
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">
@@ -104,7 +120,7 @@ const FlashCardsContent = ({
                               {"Algebra 101 Flash Cards"}
                             </h2>
                             <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                              {lecture.createdAt}
+                              {flashcard?.createdAt}
                             </p>
                           </div>
                           <div className="flex flex-col gap-[5px]">
@@ -206,10 +222,13 @@ const FlashCardsContent = ({
             </div>
 
             <Button
-              onClick={() => {}}
+              onClick={() => {
+                postFlashcardAction({});
+              }}
               className="bg-primary !rounded-[1000px]"
               type="primary"
               size="large"
+              loading={postFlashcardLoad}
               icon={<WiStars className="text-[34px]" />}
             >
               Generate Flash Cards

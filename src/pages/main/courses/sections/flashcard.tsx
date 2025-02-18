@@ -15,6 +15,67 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { isEqual } from "../../../../context/utils";
 import { useRecoilValue } from "recoil";
 import authAtom from "../../../../atoms/auth/auth.atom";
+import { motion } from "framer-motion";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+
+function FlipCard({
+  front,
+  back,
+  isFlipped,
+  onClick,
+}: {
+  front: string;
+  back: string;
+  isFlipped: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      className={`w-full md:w-[400px] h-[450px] md:h-[500px] flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10`}
+      style={{ perspective: "1000px" }}
+      onClick={onClick}
+    >
+      <motion.div
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{
+          duration: 0.6,
+          type: "spring",
+          stiffness: 500,
+          damping: 30,
+        }}
+        style={{ transformStyle: "preserve-3d" }}
+        className="relative h-full w-full"
+      >
+        {/* Front of card */}
+        <motion.div
+          className={
+            "absolute h-full w-full backface-hidden flex flex-col items-center justify-center gap-4 p-8 text-center"
+          }
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          <h2 className="text-3xl font-semibold">{front}</h2>
+          <p className="text-sm text-gray-400">Tap to view meaning</p>
+        </motion.div>
+
+        {/* Back of card */}
+        <motion.div
+          className={
+            "absolute h-full w-full backface-hidden flex flex-col items-center justify-center gap-4 p-8 text-center"
+          }
+          style={{
+            backfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+          }}
+        >
+          <h2 className="text-3xl font-semibold">{back}</h2>
+          <p className="text-sm text-gray-400">Tap to view word</p>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
 
 const FlashcardSection = () => {
   const navigate = useNavigate();
@@ -28,14 +89,23 @@ const FlashcardSection = () => {
 
   const { data: getFlashcardData, isLoading: getFlashcardLoad } =
     useGetFlashcard(id!);
-  console.log(getFlashcardData?.data?.flashCards);
 
   const handleSubmit = () => {};
 
   const CurrentFlashcard: any = useMemo(
-    () => getFlashcardData?.data?.flashCards?.[activeQuest],
-    [activeQuest, getFlashcardData?.data?.flashCards]
+    () => getFlashcardData?.data?.flash_cards?.[activeQuest],
+    [activeQuest, getFlashcardData?.data?.flash_cards]
   );
+
+  const handlePrevious = () => {
+    setActiveQuest(activeQuest - 1);
+    setShowMeaning(false);
+  };
+
+  const handleNext = () => {
+    setActiveQuest(activeQuest + 1);
+    setShowMeaning(false);
+  };
 
   return (
     <Spin spinning={getFlashcardLoad}>
@@ -43,7 +113,7 @@ const FlashcardSection = () => {
         <div className="w-full flex items-center px-5 md:px-10 gap-5">
           <MdCancel className="cursor-pointer text-3xl" onClick={goBack} />
           <div className="w-full pb-1 flex flex-nowrap items-center gap-3 overflow-x-auto">
-            {getFlashcardData?.data?.flashCards?.map((d: any, idx: number) => (
+            {getFlashcardData?.data?.flash_cards?.map((d: any, idx: number) => (
               <Button
                 type="primary"
                 onClick={() => setActiveQuest(idx)}
@@ -53,20 +123,27 @@ const FlashcardSection = () => {
               />
             ))}
           </div>
+          <span className="text-sm text-gray-500 whitespace-nowrap">
+            {activeQuest + 1} of {getFlashcardData?.data?.flash_cards?.length}
+          </span>
         </div>
 
         <div className="w-full flex flex-col justify-center items-center gap-10">
-          <div
-            className={`${
-              showMeaning
-                ? "w-full md:w-[400px] h-[450px] md:h-[500px]"
-                : "w-full md:w-[400px] h-[450px] md:h-[500px]"
-            } flex items-center justify-center gap-5 mx-auto border border-[#f7f6f8] rounded-lg shadow-xl px-5 py-10`}
-          >
-            <div className="flex items-center justify-center gap-2 flex-col w-full">
-              {/* <span className="px-4 py-2 border border-[#F2F2FA] rounded-3xl">
-                {activeQuest + 1}/{getFlashcardData?.data?.flashCards?.length}
-              </span> */}
+          <div className="relative w-full">
+            <Button
+              icon={<LeftOutlined />}
+              style={{
+                position: "absolute",
+                left: "16px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 10,
+              }}
+              onClick={handlePrevious}
+              disabled={activeQuest === 0}
+            />
+            {/* <div className="flex items-center justify-center gap-2 flex-col w-full">
+              
               <p className="text-dark text-[24px] md:text-[28px] leading-[40px] text-center w-full font-bold">
                 {showMeaning
                   ? CurrentFlashcard?.meaning
@@ -80,7 +157,7 @@ const FlashcardSection = () => {
               >
                 Tap to view {showMeaning ? "word" : "meaning"}
               </span>
-            </div>
+            </div> */}
             {/* {CurrentQuest?.answered ? ( */}
             {/* <div className="space-y-3">
                 <p>Correct Answer: {CurrentQuest?.answer}</p>
@@ -103,6 +180,28 @@ const FlashcardSection = () => {
                   ))}
                 </Space>
               </Radio.Group> */}
+            <FlipCard
+              front={CurrentFlashcard?.word}
+              back={CurrentFlashcard?.meaning}
+              isFlipped={showMeaning}
+              onClick={() => setShowMeaning(!showMeaning)}
+            />
+
+            <Button
+              icon={<RightOutlined />}
+              style={{
+                position: "absolute",
+                right: "16px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 10,
+              }}
+              onClick={handleNext}
+              disabled={
+                activeQuest + 1 ===
+                getFlashcardData?.data?.flash_cards?.length - 1
+              }
+            />
           </div>
           <Popconfirm
             okButtonProps={{ type: "primary", className: "bg-primary" }}
@@ -121,7 +220,7 @@ const FlashcardSection = () => {
           </Popconfirm>
         </div>
 
-        <div className="w-full">
+        {/* <div className="w-full">
           <Divider />
           <div className="flex gap-10 justify-center items-center">
             <Button
@@ -139,7 +238,7 @@ const FlashcardSection = () => {
               className="border-primary text-primary rounded-xl"
               disabled={isEqual(
                 activeQuest + 1,
-                getFlashcardData?.data?.flashCards?.length
+                getFlashcardData?.data?.flash_cards?.length
               )}
               onClick={() => {
                 setActiveQuest(activeQuest + 1);
@@ -150,7 +249,7 @@ const FlashcardSection = () => {
               Next
             </Button>
           </div>
-        </div>
+        </div> */}
       </div>
     </Spin>
   );
