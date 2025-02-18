@@ -116,6 +116,7 @@ const FlashcardSection = () => {
             {getFlashcardData?.data?.flash_cards?.map((d: any, idx: number) => (
               <Button
                 type="primary"
+                key={idx}
                 onClick={() => setActiveQuest(idx)}
                 className={`!w-[150px] !h-[13px] ${
                   isEqual(idx, activeQuest) ? "bg-primary" : "bg-fint"
