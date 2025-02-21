@@ -97,7 +97,7 @@ const LectureDetail = () => {
       {
         key: "lesson-plan",
         // column: lectureColumns,
-        data: [],
+        data: lectureData?.lesson_plan,
         label: (isActive: boolean) => (
           <LabelComponent
             isActive={isActive}
@@ -107,10 +107,12 @@ const LectureDetail = () => {
                 className={`${isActive ? "text-primary" : "text-neutral-400"}`}
               />
             }
-            length={data?.length}
+            length={lectureData?.lesson_plan !== null ? 1 : 0}
           />
         ),
-        content: <LessonPlanContent data={data} isGridView={isGridView} />,
+        content: (
+          <LessonPlanContent data={lectureData} isGridView={isGridView} />
+        ),
       },
       {
         key: "quiz",

@@ -106,3 +106,25 @@ export function useDeleteLecture(successAction?: any, errorAction?: any) {
     }
   );
 }
+
+export function useGetLessonPlan(params?: any) {
+  const url = `/teacher_api/lesson_plan/generate`;
+  // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:lesson_plan"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+      enabled: false,
+    }
+  );
+}
