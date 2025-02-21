@@ -24,17 +24,18 @@ const FlashCardsContent = ({
   isGridView: boolean;
   data: any;
 }) => {
+  console.log("FlashCardsContent", data);
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const lecture_id = params.get("id");
-  const url = `https://app.nurovant.com/page/flashcard/?id=${data?.flashcard?._id}`;
+  const url = `https://app.nurovant.com/page/flashcard/?id=${data?.flash_card?._id}`;
 
   const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
     usePostFlashcards((res: any) => {
       navigate(`/courses/lecture/flashcard?id=${res?.data?._id}`);
     }, lecture_id as string);
 
-  const dataArray = [data.flash_card];
+  const dataArray = [data?.flash_card];
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -42,7 +43,7 @@ const FlashCardsContent = ({
   };
   return (
     <div>
-      {data?.length ? (
+      {dataArray?.length ? (
         <div className="w-full flex flex-col">
           {isGridView ? (
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

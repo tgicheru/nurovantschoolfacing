@@ -3,19 +3,20 @@ import { useState, useMemo } from "react";
 import { BorderHOC } from "../../../../../components";
 import { useSearchParams } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
-import { Button, Dropdown, type MenuProps } from "antd"
-import { DownOutlined } from "@ant-design/icons"
-import { Link } from "react-router-dom"
-
+import { Button, Dropdown, type MenuProps } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import EmptyState from "../../../../../assets/EmptyState.svg";
 
 //for rubric
-import { Collapse, Radio, Space } from "antd"
-import { CaretRightOutlined } from "@ant-design/icons"
-import type { RadioChangeEvent } from "antd"
-import styled from "styled-components"
+import { Collapse, Radio, Space } from "antd";
+import { CaretRightOutlined } from "@ant-design/icons";
+import type { RadioChangeEvent } from "antd";
+import styled from "styled-components";
+import { WiStars } from "react-icons/wi";
+import { useGetLessonPlan } from "../../../../../hooks/lecture/lecture";
 
-
-const { Panel } = Collapse
+const { Panel } = Collapse;
 
 // Styled Components
 const StyledRadioGroup = styled(Radio.Group)`
@@ -24,25 +25,25 @@ const StyledRadioGroup = styled(Radio.Group)`
   }
 
   .ant-radio {
-    border-color: #E5E7EB;
+    border-color: #e5e7eb;
   }
 
   .ant-radio-inner {
     width: 24px;
     height: 24px;
-    border-color: #E5E7EB;
+    border-color: #e5e7eb;
   }
 
   .ant-radio-inner::after {
     width: 8px;
     height: 8px;
-    background-color: #4F46E5;
+    background-color: #4f46e5;
   }
 
   .ant-radio-wrapper-checked .ant-radio-inner {
-    border-color: #4F46E5;
+    border-color: #4f46e5;
   }
-`
+`;
 
 const StyledCollapse = styled(Collapse)`
   .ant-collapse-header {
@@ -52,20 +53,21 @@ const StyledCollapse = styled(Collapse)`
   .ant-collapse-content-box {
     padding: 0 16px 16px !important;
   }
-`
+`;
 
 interface CriteriaItem {
-  key: string
-  name: string
-  description: string
-  details: string[]
+  key: string;
+  name: string;
+  description: string;
+  details: string[];
 }
 
 const criteria: CriteriaItem[] = [
   {
     key: "participation",
     name: "Participation",
-    description: "Consistently demonstrates deep understanding of Ohm's Law through active problem-solving and data...",
+    description:
+      "Consistently demonstrates deep understanding of Ohm's Law through active problem-solving and data...",
     details: [
       "Consistently demonstrates deep understanding of Ohm's Law through active problem-solving and data",
       "Actively participates in circuit building exercises, making precise measurements",
@@ -76,7 +78,8 @@ const criteria: CriteriaItem[] = [
   {
     key: "understanding",
     name: "Understanding",
-    description: "Demonstrates comprehensive understanding of magnetic field behavior and electromagnetic induction...",
+    description:
+      "Demonstrates comprehensive understanding of magnetic field behavior and electromagnetic induction...",
     details: [
       "Comprehends core electromagnetic principles",
       "Applies theoretical knowledge to practical scenarios",
@@ -111,7 +114,8 @@ const criteria: CriteriaItem[] = [
   {
     key: "problem-solving",
     name: "Problem-Solving and Analytical Thinking",
-    description: "Demonstrates advanced problem-solving skills in complex electromagnetic scenarios...",
+    description:
+      "Demonstrates advanced problem-solving skills in complex electromagnetic scenarios...",
     details: [
       "Applies analytical thinking to complex problems",
       "Develops creative solutions",
@@ -119,23 +123,15 @@ const criteria: CriteriaItem[] = [
       "Evaluates and validates results effectively",
     ],
   },
-]
+];
 
-
-  const handlePointsChange = (key: string) => (e: RadioChangeEvent) => {
-    console.log(`${key} points changed to: ${e.target.value}`)
-  }
-
-
+const handlePointsChange = (key: string) => (e: RadioChangeEvent) => {
+  console.log(`${key} points changed to: ${e.target.value}`);
+};
 
 //rubric
 
-
-
 const { Title, Text } = Typography;
-
-
-
 
 const items: MenuProps["items"] = [
   {
@@ -150,7 +146,7 @@ const items: MenuProps["items"] = [
     key: "3",
     label: "Blended Learning",
   },
-]
+];
 
 const columns = [
   {
@@ -163,7 +159,7 @@ const columns = [
     title: "Activity",
     dataIndex: "activity",
     key: "activity",
-    render: (text: string, record: { link: string ; prefix?:string}) => (
+    render: (text: string, record: { link: string; prefix?: string }) => (
       <span>
         {record.prefix && `${record.prefix}: `}
         {record.link ? (
@@ -176,7 +172,7 @@ const columns = [
       </span>
     ),
   },
-]
+];
 
 const data = [
   {
@@ -214,7 +210,7 @@ const data = [
     prefix: "Closure",
     link: "#",
   },
-]
+];
 
 // Sample data for each tab content
 const lessonObjectives = [
@@ -248,7 +244,7 @@ const LessonPlanContent = ({
   data,
 }: {
   isGridView: boolean;
-  data: any[];
+  data: any;
 }) => {
   const [param, setParam] = useSearchParams();
   const [activeTab, setActiveTab] = useState(
@@ -258,6 +254,16 @@ const LessonPlanContent = ({
     setParam({ subTab: tab });
     setActiveTab(tab);
   };
+
+  const {
+    data: lessonPlanData,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useGetLessonPlan({
+    course_id: data?.course as string,
+    lecture_id: data?._id as string,
+  });
 
   const tabs = useMemo(
     () => [
@@ -310,53 +316,55 @@ const LessonPlanContent = ({
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header Card */}
-      <Card className="mb-4" style={{ backgroundColor: "#E1E7FF" }}>
-        <div className="flex items-center justify-between flex-1 gap-4">
-          <div className="flex items-center flex-1 justify-between">
-            <div className="flex flex-col gap-[5px]">
-              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                {"Created"}
-              </h2>
-              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                11 Nov. 2024 · 12:09PM
-              </p>
-            </div>
-            <div className="flex flex-col gap-[5px]">
-              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                {"Subject"}
-              </h2>
-              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                Physics
-              </p>
-            </div>
-            <div className="flex flex-col gap-[5px]">
-              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                Grade Level
-              </h2>
-              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                Grade 8
-              </p>
-            </div>
+      {data?.lesson_plan && (
+        <Card className="mb-4" style={{ backgroundColor: "#E1E7FF" }}>
+          <div className="flex items-center justify-between flex-1 gap-4">
+            <div className="flex items-center flex-1 justify-between">
+              <div className="flex flex-col gap-[5px]">
+                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                  {"Created"}
+                </h2>
+                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                  11 Nov. 2024 · 12:09PM
+                </p>
+              </div>
+              <div className="flex flex-col gap-[5px]">
+                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                  {"Subject"}
+                </h2>
+                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                  Physics
+                </p>
+              </div>
+              <div className="flex flex-col gap-[5px]">
+                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                  Grade Level
+                </h2>
+                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                  Grade 8
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-[5px]">
-              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                Unit Name
-              </h2>
-              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                Electricity and Magnetism
-              </p>
-            </div>
-            <div className="flex flex-col gap-[5px]">
-              <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
-                Lesson Duration
-              </h2>
-              <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                45 Mins
-              </p>
+              <div className="flex flex-col gap-[5px]">
+                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                  Unit Name
+                </h2>
+                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                  Electricity and Magnetism
+                </p>
+              </div>
+              <div className="flex flex-col gap-[5px]">
+                <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
+                  Lesson Duration
+                </h2>
+                <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
+                  45 Mins
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      )}
 
       {/* Main Content */}
       {/* <div className="flex gap-4">
@@ -400,50 +408,78 @@ const LessonPlanContent = ({
         />
       </div> */}
 
-      <div className="w-full flex flex-col lg:flex-row gap-5">
-        <div className="w-full lg:w-[294px]">
-          <BorderHOC className="" rounded="rounded-[10px]">
-            <div className="w-full  p-4">
-              <Title level={4}>Lesson Objectives</Title>
-              <ul className="list-disc pl-6 space-y-2">
-                {tabs.map((tab) => (
-                  <li
-                    key={tab.key}
-                    className={`cursor-pointer text-sm ${
-                      activeTab === tab.key
-                        ? "text-primary"
-                        : "text-neutral-900"
-                    }`}
-                    onClick={() => handleTab(tab.key)}
-                  >
-                    {tab.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </BorderHOC>
-          <Link
-      to="/courses/lecture/analyze"
-      className="inline-block px-4 py-2 text-lg font-medium text-blue-600 border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-4"
-    >
-      Analyze Lesson Plan
-    </Link>
-    <button
-      className="p-3 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-7"
-      aria-label="Open chat"
-    >
-      <BsChatDots className="w-6 h-6" />
-    </button>
-        </div>
+      {data?.lesson_plan && (
+        <div className="w-full flex flex-col lg:flex-row gap-5">
+          <div className="w-full lg:w-[294px]">
+            <BorderHOC className="" rounded="rounded-[10px]">
+              <div className="w-full  p-4">
+                <Title level={4}>Lesson Objectives</Title>
+                <ul className="list-disc pl-6 space-y-2">
+                  {tabs.map((tab) => (
+                    <li
+                      key={tab.key}
+                      className={`cursor-pointer text-sm ${
+                        activeTab === tab.key
+                          ? "text-primary"
+                          : "text-neutral-900"
+                      }`}
+                      onClick={() => handleTab(tab.key)}
+                    >
+                      {tab.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </BorderHOC>
+            <Link
+              to="/courses/lecture/analyze"
+              className="inline-block px-4 py-2 text-lg font-medium text-blue-600 border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-4"
+            >
+              Analyze Lesson Plan
+            </Link>
+            <button
+              className="p-3 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-7"
+              aria-label="Open chat"
+            >
+              <BsChatDots className="w-6 h-6" />
+            </button>
+          </div>
 
-        <div className="w-full h-full">
-          <BorderHOC className="" rounded="rounded-[10px]">
-            <div className="w-full p-4">
-              {tabs.find((tab) => tab.key === activeTab)?.children}
-            </div>
-          </BorderHOC>
+          <div className="w-full h-full">
+            <BorderHOC className="" rounded="rounded-[10px]">
+              <div className="w-full p-4">
+                {tabs.find((tab) => tab.key === activeTab)?.children}
+              </div>
+            </BorderHOC>
+          </div>
         </div>
-      </div>
+      )}
+
+      {!data?.lesson_plan && (
+        <div className="w-full flex items-center justify-center py-[72px]">
+          <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+            <div className="flex flex-col items-center justify-center">
+              <img src={EmptyState} alt="empty courses" />
+              <span className="text-base font-bold text-neutral-900 text-center">
+                You do not have any lesson plan created yet
+              </span>
+            </div>
+
+            <Button
+              onClick={() => {
+                refetch();
+              }}
+              className="bg-primary !rounded-[1000px]"
+              type="primary"
+              size="large"
+              loading={isLoading || isRefetching}
+              icon={<WiStars className="text-[34px]" />}
+            >
+              Generate Lesson Plan
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -538,18 +574,28 @@ function RubricContent() {
         <div className="grid grid-cols-[200px_auto_1fr] items-start gap-8 pb-2 border-b border-gray-200">
           <Text className="text-sm font-medium text-gray-500">Criteria</Text>
           <Text className="text-sm font-medium text-gray-500">Points</Text>
-          <Text className="text-sm font-medium text-gray-500">Student Responses May Include</Text>
+          <Text className="text-sm font-medium text-gray-500">
+            Student Responses May Include
+          </Text>
         </div>
         {/* Table Body */}
         {criteria.map((item) => (
-          <div key={item.key} className="border-b border-gray-100 pb-2 last:border-b-0">
+          <div
+            key={item.key}
+            className="border-b border-gray-100 pb-2 last:border-b-0"
+          >
             <div className="grid grid-cols-[200px_auto_1fr] items-start gap-8">
               <Text className="text-sm text-gray-900 pt-2">{item.name}</Text>
-              <StyledRadioGroup onChange={handlePointsChange(item.key)} className="flex items-center gap-1 pt-1.5">
+              <StyledRadioGroup
+                onChange={handlePointsChange(item.key)}
+                className="flex items-center gap-1 pt-1.5"
+              >
                 <Space>
                   {[1, 2, 3, 4, 5].map((point) => (
                     <Radio key={point} value={point}>
-                      <span className="flex items-center justify-center w-6 h-6 text-sm">{point}</span>
+                      <span className="flex items-center justify-center w-6 h-6 text-sm">
+                        {point}
+                      </span>
                     </Radio>
                   ))}
                 </Space>
@@ -557,10 +603,20 @@ function RubricContent() {
               <StyledCollapse
                 ghost
                 expandIcon={({ isActive }) => (
-                  <CaretRightOutlined rotate={isActive ? 90 : 0} className="text-gray-400" />
+                  <CaretRightOutlined
+                    rotate={isActive ? 90 : 0}
+                    className="text-gray-400"
+                  />
                 )}
               >
-                <Panel header={<Text className="text-sm text-gray-600">{item.description}</Text>} key="1">
+                <Panel
+                  header={
+                    <Text className="text-sm text-gray-600">
+                      {item.description}
+                    </Text>
+                  }
+                  key="1"
+                >
                   <ul className="list-disc pl-5 space-y-2">
                     {item.details.map((detail, index) => (
                       <li key={index} className="text-sm text-gray-600">
@@ -591,7 +647,12 @@ function ActivitiesContent() {
           Continuous Feedback loop
         </Button>
       </div>
-      <Table columns={columns} dataSource={data} pagination={false} className="bg-gray-50 rounded-lg" />
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={false}
+        className="bg-gray-50 rounded-lg"
+      />
     </div>
   );
 }
