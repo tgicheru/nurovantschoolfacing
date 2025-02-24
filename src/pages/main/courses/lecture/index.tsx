@@ -76,6 +76,7 @@ const LectureDetail = () => {
   const {
     data: lectureData,
     isLoading,
+    refetch,
     isError,
     error,
   } = useGetLectureById({ id });
@@ -111,7 +112,11 @@ const LectureDetail = () => {
           />
         ),
         content: (
-          <LessonPlanContent data={lectureData} isGridView={isGridView} />
+          <LessonPlanContent
+            data={lectureData}
+            isGridView={isGridView}
+            lectureRefetch={refetch}
+          />
         ),
       },
       {
