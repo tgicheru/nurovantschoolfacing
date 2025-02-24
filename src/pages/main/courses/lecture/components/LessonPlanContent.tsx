@@ -1,5 +1,5 @@
 import { Card, Tabs, Typography, Descriptions, Table } from "antd";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BorderHOC } from "../../../../../components";
 import { useSearchParams } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
@@ -15,6 +15,7 @@ import type { RadioChangeEvent } from "antd";
 import styled from "styled-components";
 import { WiStars } from "react-icons/wi";
 import { useGetLessonPlan } from "../../../../../hooks/lecture/lecture";
+import { format, parseISO } from "date-fns";
 
 const { Panel } = Collapse;
 
@@ -150,9 +151,9 @@ const items: MenuProps["items"] = [
 
 const columns = [
   {
-    title: "Time",
-    dataIndex: "time",
-    key: "time",
+    title: "Duration(mins)",
+    dataIndex: "duration",
+    key: "duration",
     width: "150px",
   },
   {
@@ -213,45 +214,22 @@ const data = [
 ];
 
 // Sample data for each tab content
-const lessonObjectives = [
-  "Identify the properties of electric charges and their interactions.",
-  "Explain the concept of magnetic fields and their effects on moving charges.",
-  "Assemble a basic circuit to demonstrate the flow of electricity.",
-  "Predict the direction of a compass needle when placed near a magnet",
-];
-
-const materialsNeeded = [
-  "Batteries",
-  "Wires",
-  "LED bulbs",
-  "Magnets",
-  "Compass",
-  "Circuit boards",
-];
-
-const homework = {
-  assignment: "Complete worksheet on electric circuits",
-  dueDate: "Next class",
-  requirements: [
-    "Draw circuit diagrams",
-    "Calculate current in series circuits",
-    "Explain magnetic field effects",
-  ],
-};
 
 const LessonPlanContent = ({
   isGridView,
   data,
+  lectureRefetch,
 }: {
   isGridView: boolean;
   data: any;
+  lectureRefetch: any;
 }) => {
   const [param, setParam] = useSearchParams();
   const [activeTab, setActiveTab] = useState(
     param.get("subTab") || "lesson-objectives"
   );
   const handleTab = (tab: string) => {
-    setParam({ subTab: tab });
+    setParam({ id: data?._id as string, subTab: tab });
     setActiveTab(tab);
   };
 
@@ -260,10 +238,13 @@ const LessonPlanContent = ({
     isLoading,
     isRefetching,
     refetch,
+    isSuccess,
   } = useGetLessonPlan({
     course_id: data?.course as string,
     lecture_id: data?._id as string,
   });
+
+  console.log("lessonPlanData", lessonPlanData);
 
   const tabs = useMemo(
     () => [
@@ -272,51 +253,94 @@ const LessonPlanContent = ({
         // column: lectureColumns,
         data: [],
         label: "Lesson Objectives",
-        children: <LessonObjectivesContent />,
+        children: (
+          <LessonObjectivesContent
+            data={
+              lessonPlanData?.data?.objectives || data?.lesson_plan?.objectives
+            }
+          />
+        ),
       },
       {
         key: "materials-needed",
         // column: quizColumns,
         data: data,
         label: "Materials Needed",
-        children: <MaterialsContent />,
+        children: (
+          <MaterialsContent
+            data={
+              lessonPlanData?.data?.materials_needed ||
+              data?.lesson_plan?.materials_needed
+            }
+          />
+        ),
       },
       {
         key: "homework",
         // column: flashcardColumns,
         data: data,
         label: "Homework",
-        children: <HomeworkContent />,
+        children: (
+          <HomeworkContent
+            data={lessonPlanData?.data?.homework || data?.lesson_plan?.homework}
+          />
+        ),
       },
       {
         key: "teachers-note",
         // column: recapColumns,
         data: data,
         label: "Teachers Note",
-        children: <TeachersNoteContent />,
+        children: (
+          <TeachersNoteContent
+            data={
+              lessonPlanData?.data?.teachers_note ||
+              data?.lesson_plan?.teachers_note
+            }
+          />
+        ),
       },
       {
         key: "rubic",
         // column: discussColumns,
         data: data,
         label: "Rubric and Scoring Guide",
-        children: <RubricContent />,
+        children: (
+          <RubricContent
+            data={
+              lessonPlanData?.data?.rubic_scoring_guide ||
+              data?.lesson_plan?.rubic_scoring_guide
+            }
+          />
+        ),
       },
       {
         key: "activities",
         // column: discussColumns,
         data: data,
         label: "Activities",
-        children: <ActivitiesContent />,
+        children: (
+          <ActivitiesContent
+            data={
+              lessonPlanData?.data?.activities || data?.lesson_plan?.activities
+            }
+          />
+        ),
       },
     ],
-    [data, isGridView]
+    [data, lessonPlanData?.data]
   );
+
+  useEffect(() => {
+    if (isSuccess) {
+      lectureRefetch();
+    }
+  }, [isSuccess, lectureRefetch]);
 
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header Card */}
-      {data?.lesson_plan && (
+      {(lessonPlanData?.data || data?.lesson_plan) && (
         <Card className="mb-4" style={{ backgroundColor: "#E1E7FF" }}>
           <div className="flex items-center justify-between flex-1 gap-4">
             <div className="flex items-center flex-1 justify-between">
@@ -325,10 +349,15 @@ const LessonPlanContent = ({
                   {"Created"}
                 </h2>
                 <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                  11 Nov. 2024 · 12:09PM
+                  {data?.lesson_plan?.createdAt &&
+                    data?.lesson_plan?.createdAt &&
+                    format(
+                      parseISO(data?.lesson_plan?.createdAt),
+                      "dd MMM, yyyy • hh:mma"
+                    )}
                 </p>
               </div>
-              <div className="flex flex-col gap-[5px]">
+              {/* <div className="flex flex-col gap-[5px]">
                 <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
                   {"Subject"}
                 </h2>
@@ -343,14 +372,14 @@ const LessonPlanContent = ({
                 <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
                   Grade 8
                 </p>
-              </div>
+              </div> */}
 
               <div className="flex flex-col gap-[5px]">
                 <h2 className="text-sm text-neutral-900 font-bold whitespace-nowrap">
                   Unit Name
                 </h2>
                 <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                  Electricity and Magnetism
+                  {data?.unit}
                 </p>
               </div>
               <div className="flex flex-col gap-[5px]">
@@ -358,7 +387,7 @@ const LessonPlanContent = ({
                   Lesson Duration
                 </h2>
                 <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                  45 Mins
+                  {data?.lesson_plan?.duration} Mins
                 </p>
               </div>
             </div>
@@ -484,14 +513,14 @@ const LessonPlanContent = ({
   );
 };
 
-function LessonObjectivesContent() {
+function LessonObjectivesContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <Title level={5} className="!text-primary mb-4">
         By the end of this lesson, students will be able to
       </Title>
       <ul className="list-disc pl-6 space-y-2">
-        {lessonObjectives.map((objective, index) => (
+        {data?.map((objective, index) => (
           <li key={index}>{objective}</li>
         ))}
       </ul>
@@ -499,10 +528,10 @@ function LessonObjectivesContent() {
   );
 }
 
-function MaterialsContent() {
+function MaterialsContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
-      <Title level={5} className="!text-primary">
+      {/* <Title level={5} className="!text-primary">
         For the Teacher
       </Title>
       <ul className="list-disc pl-6 space-y-2">
@@ -512,18 +541,12 @@ function MaterialsContent() {
         ].map((material, index) => (
           <li key={index}>{material}</li>
         ))}
-      </ul>
+      </ul> */}
       <Title level={5} className="mt-4 !text-primary">
         For Student Activities
       </Title>
       <ul className="list-disc pl-6 space-y-2">
-        {[
-          "Magnets (one per group).",
-          "Wires (5 pieces per group)",
-          "Batteries (AA size, one per group)",
-          "Lightbulbs (small, one per group).",
-          "Compasses (one per group)",
-        ].map((material, index) => (
+        {data?.map((material, index) => (
           <li key={index}>{material}</li>
         ))}
       </ul>
@@ -531,18 +554,14 @@ function MaterialsContent() {
   );
 }
 
-function HomeworkContent() {
+function HomeworkContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <Title level={5} className="mt-4">
         Complete the Electricity and Magnetism Worksheet:
       </Title>
       <ul className="list-disc pl-6 space-y-2">
-        {[
-          "Define electric charges and their interactions",
-          "Draw and label a simple circuit.",
-          "Describe how a compass reacts to a nearby magnet",
-        ].map((req, index) => (
+        {data?.map((req, index) => (
           <li key={index}>{req}</li>
         ))}
       </ul>
@@ -550,15 +569,11 @@ function HomeworkContent() {
   );
 }
 
-function TeachersNoteContent() {
+function TeachersNoteContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <ul className="list-disc pl-6 space-y-2">
-        {[
-          "Check all demo materials before class.",
-          "Offer hints to students struggling with circuit-building.",
-          "Collect homework to review next lesson.",
-        ].map((req, index) => (
+        {data?.map((req, index) => (
           <li key={index}>{req}</li>
         ))}
       </ul>
@@ -566,7 +581,7 @@ function TeachersNoteContent() {
   );
 }
 
-function RubricContent() {
+function RubricContent({ data }: { data: any }) {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="space-y-4">
@@ -634,19 +649,9 @@ function RubricContent() {
   );
 }
 
-function ActivitiesContent() {
+function ActivitiesContent({ data }: { data: any }) {
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <Dropdown menu={{ items }} trigger={["click"]}>
-          <Button className="text-gray-600">
-            Project-Based Learning <DownOutlined />
-          </Button>
-        </Dropdown>
-        <Button type="primary" className="bg-blue-500">
-          Continuous Feedback loop
-        </Button>
-      </div>
       <Table
         columns={columns}
         dataSource={data}
