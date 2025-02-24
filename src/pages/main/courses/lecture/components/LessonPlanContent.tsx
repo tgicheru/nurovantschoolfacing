@@ -175,6 +175,30 @@ const columns = [
   },
 ];
 
+const rubicColumns = [
+  {
+    title: "Criteria",
+    dataIndex: "title",
+    key: "title",
+  },
+  {
+    title: "Activity",
+    dataIndex: "activity",
+    key: "activity",
+    render: (text: string, record: { link: string; prefix?: string }) => (
+      <span>
+        {record.prefix && `${record.prefix}: `}
+        {record.link ? (
+          <a href={record.link} className="text-blue-500 hover:text-blue-600">
+            {text}
+          </a>
+        ) : (
+          text
+        )}
+      </span>
+    ),
+  },
+];
 const data = [
   {
     key: "1",
@@ -594,57 +618,87 @@ function RubricContent({ data }: { data: any }) {
           </Text>
         </div>
         {/* Table Body */}
-        {criteria.map((item) => (
-          <div
-            key={item.key}
-            className="border-b border-gray-100 pb-2 last:border-b-0"
-          >
-            <div className="grid grid-cols-[200px_auto_1fr] items-start gap-8">
-              <Text className="text-sm text-gray-900 pt-2">{item.name}</Text>
-              <StyledRadioGroup
-                onChange={handlePointsChange(item.key)}
-                className="flex items-center gap-1 pt-1.5"
-              >
-                <Space>
-                  {[1, 2, 3, 4, 5].map((point) => (
-                    <Radio key={point} value={point}>
-                      <span className="flex items-center justify-center w-6 h-6 text-sm">
-                        {point}
-                      </span>
-                    </Radio>
-                  ))}
-                </Space>
-              </StyledRadioGroup>
-              <StyledCollapse
-                ghost
-                expandIcon={({ isActive }) => (
-                  <CaretRightOutlined
-                    rotate={isActive ? 90 : 0}
-                    className="text-gray-400"
-                  />
-                )}
-              >
-                <Panel
-                  header={
-                    <Text className="text-sm text-gray-600">
-                      {item.description}
-                    </Text>
-                  }
-                  key="1"
+        {data?.criteria.map(
+          (item: {
+            title: string;
+            _id: string;
+            criteria_grade_breakdown: {
+              _id: string;
+              excellent: string;
+              good: string;
+              needs_improvement: string;
+            };
+          }) => (
+            <div
+              key={item._id}
+              className="border-b border-gray-100 pb-2 last:border-b-0"
+            >
+              <div className="grid grid-cols-[200px_auto_1fr] items-start gap-8">
+                <Text className="text-sm text-gray-900 pt-2">{item.title}</Text>
+                <StyledRadioGroup
+                  onChange={handlePointsChange(item._id)}
+                  className="flex items-center gap-1 pt-1.5"
                 >
-                  <ul className="list-disc pl-5 space-y-2">
-                    {item.details.map((detail, index) => (
-                      <li key={index} className="text-sm text-gray-600">
-                        {detail}
-                      </li>
+                  <Space>
+                    {[1, 2, 3, 4, 5].map((point) => (
+                      <Radio key={point} value={point}>
+                        <span className="flex items-center justify-center w-6 h-6 text-sm">
+                          {point}
+                        </span>
+                      </Radio>
                     ))}
-                  </ul>
-                </Panel>
-              </StyledCollapse>
+                  </Space>
+                </StyledRadioGroup>
+                <StyledCollapse
+                  ghost
+                  expandIcon={({ isActive }) => (
+                    <CaretRightOutlined
+                      rotate={isActive ? 90 : 0}
+                      className="text-gray-400"
+                    />
+                  )}
+                >
+                  <Panel
+                    header={
+                      <Text className="text-sm text-gray-600">
+                        {"Criteria Grade Breakdown"}
+                      </Text>
+                    }
+                    key="1"
+                  >
+                    <ul className="list-disc pl-5 space-y-2">
+                      {Object.keys(item.criteria_grade_breakdown)?.map(
+                        (detail, index) => (
+                          <li
+                            key={index}
+                            className={`text-sm text-gray-600 ${
+                              detail === "_id" && "hidden"
+                            }`}
+                          >
+                            {detail}:{" "}
+                            {
+                              item.criteria_grade_breakdown[
+                                detail as keyof typeof item.criteria_grade_breakdown
+                              ]
+                            }
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </Panel>
+                </StyledCollapse>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
+
+      {/* <Table
+        columns={rubicColumns}
+        dataSource={data?.criteria}
+        pagination={false}
+        className="bg-gray-50 rounded-lg"
+      /> */}
     </div>
   );
 }
