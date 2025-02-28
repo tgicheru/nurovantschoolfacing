@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 
 const MiniRecaps = ({ data }: any) => {
   const navigate = useNavigate();
+  console.log({ miniRecaps: data });
   return (
     <>
       {data?.map((recaps: any, index: number) => (

@@ -25,7 +25,7 @@ const RecapLecturePage = () => {
     recap_id: id as string,
   });
 
-  console.log(recapData);
+  console.log({ recapData });
 
   const data: any[] = [];
 
@@ -87,7 +87,10 @@ const RecapLecturePage = () => {
           },
           {
             title: (
-              <a href="/courses/lecture?tab=recaps" className="hover:bg-none">
+              <a
+                href={`/courses/lecture?id=${recapData?.data?.lecture?._id}&tab=recaps`}
+                className="hover:bg-none"
+              >
                 Recap
               </a>
             ),
