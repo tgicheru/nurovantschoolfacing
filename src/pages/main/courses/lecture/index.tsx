@@ -170,10 +170,10 @@ const LectureDetail = () => {
                 className={`${isActive ? "text-primary" : "text-neutral-400"}`}
               />
             }
-            length={data?.length}
+            length={lectureData?.recap !== null ? 1 : 0}
           />
         ),
-        content: <RecapContent data={data} isGridView={isGridView} />,
+        content: <RecapContent data={lectureData} isGridView={isGridView} />,
       },
       {
         key: "analysis",

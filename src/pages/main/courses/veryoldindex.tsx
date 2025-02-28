@@ -952,7 +952,7 @@ function Home() {
   const { mutate: postFlashcardAction, isLoading: postFlashcardLoad } =
     usePostFlashcards(flashCardSuccessAction);
 
-  const { mutate: postRecapAction, isLoading: postRecapLoad } =
+  const { refetch: postRecapAction, isLoading: postRecapLoad } =
     usePostRecaps(recapSuccessAction);
 
   const { mutate: postDiscussAction, isLoading: postDiscussLoad } =

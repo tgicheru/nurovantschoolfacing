@@ -13,17 +13,31 @@ import { useNavigate } from "react-router";
 import EmptyState from "../../../../../assets/EmptyState.svg";
 import { TruncatedText } from "./QuizContent";
 import { RiFileCopy2Line } from "react-icons/ri";
+import { format, parseISO } from "date-fns";
+import { usePostRecaps } from "../../../../../hooks/recap/recap";
+import { useSearchParams } from "react-router-dom";
 
 const RecapContent = ({
   isGridView,
   data,
 }: {
   isGridView: boolean;
-  data: any[];
+  data: any;
 }) => {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const lecture_id = params.get("id");
 
-  const url = `https://app.nurovant.com/page/quiz/?id=673b06f088793a2c42ede9ec`;
+  const url = `https://app.nurovant.com/page/flashcard/?id=${data?.recap?._id}`;
+
+  const { refetch: postRecapAction, isRefetching: postRecapLoad } =
+    usePostRecaps((res: any) => {
+      message.success("Quiz created successfully");
+      navigate(`/courses/lecture/recap?id=${res?.data?._id}`);
+    }, lecture_id as string);
+
+  const dataArray = data?.recap ? [data?.recap] : [];
+  console.log("dataArray", dataArray);
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -31,11 +45,11 @@ const RecapContent = ({
   };
   return (
     <div>
-      {data.length ? (
+      {dataArray.length ? (
         <div className="w-full flex flex-col">
           {isGridView ? (
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {data.map((lecture: any, idx) => (
+              {dataArray.map((recap: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
@@ -66,7 +80,12 @@ const RecapContent = ({
                             {"Algebra 101 Recap"}
                           </h2>
                           <p className="text-[12px] leading-[18px] text-neutral-600">
-                            {lecture.createdAt}
+                            {recap?.createdAt &&
+                              recap?.createdAt &&
+                              format(
+                                parseISO(recap?.createdAt),
+                                "dd MMM, yyyy • hh:mma"
+                              )}
                           </p>
                         </div>
                         <BsQrCodeScan />
@@ -78,7 +97,7 @@ const RecapContent = ({
             </div>
           ) : (
             <div className="flex flex-col w-full gap-3 p-4">
-              {data.map((lecture: any, idx) => (
+              {dataArray.map((recap: any, idx) => (
                 <div
                   className="w-full cursor-pointer"
                   key={idx}
@@ -104,7 +123,12 @@ const RecapContent = ({
                               {"Algebra 101 Recap"}
                             </h2>
                             <p className="text-[12px] leading-[18px] text-neutral-600 whitespace-nowrap">
-                              {lecture.createdAt}
+                              {recap?.createdAt &&
+                                recap?.createdAt &&
+                                format(
+                                  parseISO(recap?.createdAt),
+                                  "dd MMM, yyyy • hh:mma"
+                                )}
                             </p>
                           </div>
                           <div className="flex flex-col gap-[5px]">
@@ -206,9 +230,12 @@ const RecapContent = ({
             </div>
 
             <Button
-              onClick={() => {}}
+              onClick={() => {
+                postRecapAction({});
+              }}
               className="bg-primary !rounded-[1000px]"
               type="primary"
+              loading={postRecapLoad}
               size="large"
               icon={<WiStars className="text-[30px]" />}
             >

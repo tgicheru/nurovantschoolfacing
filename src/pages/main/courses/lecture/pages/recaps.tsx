@@ -9,6 +9,7 @@ import Transcription from "../components/Recap/Transcription";
 
 const RecapLecturePage = () => {
   const [param, setParam] = useSearchParams();
+  const id = param.get("id");
 
   const [activeTab, setActiveTab] = React.useState(
     param.get("tab") || "mini-recaps"
@@ -17,7 +18,7 @@ const RecapLecturePage = () => {
   const data: any[] = [];
 
   const handleTab = (tab: string) => {
-    setParam({ tab });
+    setParam({ id: id as string, tab });
     setActiveTab(tab);
   };
 

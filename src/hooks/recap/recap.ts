@@ -29,20 +29,15 @@ export function useGetRecap(id: string) {
   );
 }
 
-export function usePostRecaps(successAction?: any) {
-  const url = "/api_backend/recaps/create";
+export function usePostRecaps(successAction?: any, lecture_id?: string) {
+  // const url = "/api_backend/recaps/create";
+  const url = `/teacher_api/recaps/generate?lecture_id=${lecture_id}`;
   const axios = useContext(AxiosContext);
-  return useMutation(
-    async (payload: any) =>
-      postRequest(axios as unknown as AxiosInstance, url, payload),
+
+  return useQuery(
+    ["create:single_recap"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
     {
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -52,6 +47,14 @@ export function usePostRecaps(successAction?: any) {
                 ?.join(", ")
             : "something went wrong please check internet connection.",
         }),
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      enabled: false,
     }
   );
 }
