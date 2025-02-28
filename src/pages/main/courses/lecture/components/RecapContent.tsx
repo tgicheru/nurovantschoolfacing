@@ -37,7 +37,6 @@ const RecapContent = ({
     }, lecture_id as string);
 
   const dataArray = data?.recap ? [data?.recap] : [];
-  console.log("dataArray", dataArray);
 
   const handleCopy = () => {
     message.success("Copied to clipboard");
@@ -54,7 +53,7 @@ const RecapContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/recap");
+                    navigate(`/courses/lecture/recap?id=${recap?._id}`);
                   }}
                 >
                   <BorderHOC className="" rounded="rounded-[10px]">
@@ -102,7 +101,7 @@ const RecapContent = ({
                   className="w-full cursor-pointer"
                   key={idx}
                   onClick={() => {
-                    navigate("/courses/lecture/recap");
+                    navigate(`/courses/lecture/recap?id=${recap?._id}`);
                   }}
                 >
                   <BorderHOC className="w-full" rounded="rounded-[10px]">
