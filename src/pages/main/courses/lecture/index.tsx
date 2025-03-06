@@ -16,6 +16,7 @@ import FlashCardsContent from "./components/FlashCardsContent";
 import RecapContent from "./components/RecapContent";
 import DiscussContent from "./components/DiscussContent";
 import { useSearchParams } from "react-router-dom";
+import { CiViewList } from "react-icons/ci";
 
 import { Modal, Upload, Checkbox, ConfigProvider } from "antd";
 import {
@@ -27,6 +28,7 @@ import type { UploadProps } from "antd";
 import router from "../../../../router";
 import { useGetLectureById } from "../../../../hooks/lecture/lecture";
 import { parseISO, format } from "date-fns";
+import CreativeAssessmentContent from "./components/CreativeAssessmentContent";
 
 export const LabelComponent = ({
   isActive,
@@ -192,6 +194,30 @@ const LectureDetail = () => {
           />
         ),
         content: <DiscussContent data={data} />,
+      },
+      {
+        key: "creative-assessment",
+        // column: discussColumns,
+        data: data,
+        label: (isActive: boolean) => (
+          <LabelComponent
+            isActive={isActive}
+            label="Creative Assessment"
+            icon={
+              <CiViewList
+                className={`${isActive ? "text-primary" : "text-neutral-400"}`}
+              />
+            }
+            length={lectureData?.creative_assessment !== null ? 1 : 0}
+          />
+        ),
+        content: (
+          <CreativeAssessmentContent
+            data={lectureData}
+            isGridView={isGridView}
+            lectureRefetch={refetch}
+          />
+        ),
       },
     ],
     [data, isGridView, lectureData]
