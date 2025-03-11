@@ -151,3 +151,34 @@ export function useGetCreativeAssessment(params?: any) {
     }
   );
 }
+
+export function useGeneratePacingGuide(params?: any, successAction?: any) {
+  console.log("params", params);
+  const url = `/teacher_api/curriculum_alignment/generate`;
+  // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["generate:pacing_guide"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description:
+            response?.message || "Pacing Guide generated successfully.",
+        });
+      },
+      enabled: false,
+    }
+  );
+}

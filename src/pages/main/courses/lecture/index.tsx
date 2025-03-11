@@ -26,9 +26,13 @@ import {
 } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import router from "../../../../router";
-import { useGetLectureById } from "../../../../hooks/lecture/lecture";
+import {
+  useGeneratePacingGuide,
+  useGetLectureById,
+} from "../../../../hooks/lecture/lecture";
 import { parseISO, format } from "date-fns";
 import CreativeAssessmentContent from "./components/CreativeAssessmentContent";
+import { Icon } from "@iconify/react";
 
 export const LabelComponent = ({
   isActive,
@@ -93,6 +97,24 @@ const LectureDetail = () => {
   ]);
   const [activeTab, setActiveTab] = React.useState(
     param.get("tab") || "lesson-plan"
+  );
+
+  const {
+    data: pacingGuideData,
+    isLoading: isPacingGuideLoading,
+    isRefetching: isPacingGuideRefetching,
+    refetch: pacingGuideRefetch,
+    isSuccess: isPacingGuideSuccess,
+  } = useGeneratePacingGuide(
+    {
+      lecture_id: id as string,
+    },
+    (res: any) => {
+      console.log("res", res);
+      if (res?.data?.success) {
+        navigate("/courses/lecture/curriculum-alignment");
+      }
+    }
   );
 
   const tabs = React.useMemo(
@@ -248,17 +270,21 @@ const LectureDetail = () => {
     <div className="w-full flex flex-col gap-9 justify-end">
       <div className="ml-auto flex gap-3 mt-16">
         <Button
-          icon={<DownloadOutlined />}
-          className="flex items-center border-[#4318FF] text-[#4318FF] hover:!text-[#4318FF] hover:!border-[#4318FF]"
+          icon={<Icon icon={"solar:export-outline"} fontSize={16} />}
+          className="flex items-center border-primary text-primary hover:!text-primary hover:!border-primary h-[40px] rounded-[1000px]"
         >
           Export to LMS
         </Button>
 
         <Button
           type="primary"
-          className="flex items-center bg-[#4318FF] hover:!bg-[#4318FF]/90"
-          icon={<UploadOutlined />}
-          onClick={() => setIsModalOpen(true)}
+          className="flex items-center bg-primary hover:!bg-primary/90 h-[40px] rounded-[1000px]"
+          icon={<Icon icon={"solar:export-outline"} fontSize={16} />}
+          onClick={() => {
+            // setIsModalOpen(true);
+            pacingGuideRefetch();
+          }}
+          loading={isPacingGuideLoading || isPacingGuideRefetching}
         >
           Import Pacing Guide
         </Button>

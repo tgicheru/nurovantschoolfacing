@@ -26,7 +26,6 @@ const CourseImport = lazy(() => import("../pages/main/courses/import"));
 const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
 const GamingPage = lazy(() => import("../pages/main/courses/gaming"));
 
-
 const FlashCardPage = lazy(
   () => import("../pages/main/courses/lecture/pages/flashcards")
 );
@@ -84,7 +83,7 @@ export const routes = [
     label: "gaming",
     component: <GamingPage />,
   },
-   {
+  {
     path: "/courses/lecture/analyze",
     label: "analyze",
     component: <AnalyzeLesson />,
@@ -110,7 +109,7 @@ export const routes = [
     component: <GroupActivity />,
   },
   {
-    path: "/courses/lecture/curriculumAlignment",
+    path: "/courses/lecture/curriculum-alignment",
     label: "Curriculum Alignment",
     component: <CurriculumAlignment />,
   },
