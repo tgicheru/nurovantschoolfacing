@@ -17,6 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import { LiaShareAltSolid } from "react-icons/lia";
 import ShareCourseButton from "../../../components/course/ShareCourseButton";
 import MappedCourseTable from "./components/mappedTable";
+import FeedbackDrawer from "../../../components/course/FeedbackDrawer";
 
 const Home = () => {
   const width = window.innerWidth;
@@ -41,6 +42,7 @@ const Home = () => {
   } = useGetCourses({ limit, page });
 
   const onOpen = () => setIsOpen(true);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const [isGridView, setIsGridView] = useState(true);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -61,7 +63,7 @@ const Home = () => {
 
               // loading={createCourseLoad}
               onClick={() => {
-                // navigate("/courses?type=mapped");
+                setIsFeedbackOpen(true);
               }}
               className="bg-[#E1E7FF] hover:!bg-[#E1E7FF] !w-[154px] !h-[40px] flex items-center justify-center gap-2"
               type="primary"
@@ -371,6 +373,11 @@ const Home = () => {
           isOpen={isOpen}
           onClose={onClose}
           refetch={getCoursesFetch}
+        />
+
+        <FeedbackDrawer
+          isOpen={isFeedbackOpen}
+          onClose={() => setIsFeedbackOpen(false)}
         />
       </div>
     </Spin>
