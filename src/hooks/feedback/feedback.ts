@@ -9,11 +9,11 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-export function useGetCourseF(params?: any) {
-  const url = "/api_backend/flashcards/";
+export function useGetAllFeedback(params?: any) {
+  const url = "/teacher_api/course-feedback/all-feedbacks";
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:all_flashcards"],
+    ["get:all_feedback"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
       onError: (error: any) =>
@@ -50,9 +50,30 @@ export function useGetCourseFeedback(id: string) {
   );
 }
 
-export function usePostFlashcards(successAction?: any, id?: string) {
+export function useGetLectureFeedback(id: string) {
+  // const url = "/api_backend/flashcards/";
+  const url = `/teacher_api/course-feedback/lecture/${id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:lecture_feedback"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+export function useCreateFeedback(successAction?: any) {
   // const url = "/api_backend/flashcards/create";
-  const url = `/teacher_api/flashcard/create?lecture_id=${id}`;
+  const url = `/teacher_api/course-feedback/create`;
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -62,7 +83,7 @@ export function usePostFlashcards(successAction?: any, id?: string) {
         successAction?.(response);
         notification.success({
           message: "Success!",
-          description: response?.message || "Flashcard created successfully.",
+          description: response?.message || "Feedback added successfully.",
         });
       },
       onError: (error: any) =>

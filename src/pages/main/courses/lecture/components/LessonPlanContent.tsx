@@ -1,7 +1,7 @@
 import { Card, Tabs, Typography, Descriptions, Table } from "antd";
 import { useState, useMemo, useEffect } from "react";
 import { BorderHOC } from "../../../../../components";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
 import { Button, Dropdown, type MenuProps } from "antd";
 import { DownOutlined } from "@ant-design/icons";
@@ -255,7 +255,11 @@ const LessonPlanContent = ({
     params.get("subTab") || "lesson-objectives"
   );
   const handleTab = (tab: string) => {
-    setParams({ tab: mainTab as string, id: id as string, subTab: tab });
+    setParams({
+      tab: (mainTab as string) || "lesson-plan",
+      id: id as string,
+      subTab: tab,
+    });
     setActiveTab(tab);
   };
 
@@ -270,7 +274,7 @@ const LessonPlanContent = ({
     lecture_id: id as string,
   });
 
-  console.log("lessonPlanData", lessonPlanData);
+  console.log("lessonPlanData", data);
 
   const tabs = useMemo(
     () => [
@@ -350,6 +354,7 @@ const LessonPlanContent = ({
             data={
               lessonPlanData?.data?.activities || data?.lesson_plan?.activities
             }
+            allData={data}
           />
         ),
       },
@@ -705,9 +710,28 @@ function RubricContent({ data }: { data: any }) {
   );
 }
 
-function ActivitiesContent({ data }: { data: any }) {
+function ActivitiesContent({ data, allData }: { data: any; allData: any }) {
+  const navigation = useNavigate();
   return (
     <div className="p-4 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <Dropdown menu={{ items }} trigger={["click"]}>
+          <Button className="text-gray-600">
+            Project-Based Learning <DownOutlined />
+          </Button>
+        </Dropdown>
+        <Button
+          type="primary"
+          className="bg-blue-500"
+          onClick={() => {
+            navigation(
+              `/courses/lecture/feedback?course=${allData?.course}&lecture=${allData?._id}`
+            );
+          }}
+        >
+          Continuous Feedback loop
+        </Button>
+      </div>
       <Table
         columns={columns}
         dataSource={data}

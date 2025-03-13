@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, Modal, Spin } from "antd";
 import DefaultBanner from "../../../../assets/default_banner.png";
 import EmptyState from "../../../../assets/EmptyState.svg";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BorderHOC } from "../../../../components";
 import { RiSearch2Line } from "react-icons/ri";
 import { useNavigate } from "react-router";
@@ -45,11 +45,12 @@ const CourseDetails = () => {
   };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isGridView, setIsGridView] = useState(true);
-  const [lectures, setLectures] = useState<any[]>(
-    getCourseData?.data?.lectures
+  const lectures = useMemo(
+    () => getCourseData?.data?.lectures || [],
+    [getCourseData]
   );
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);
   };
@@ -253,7 +254,7 @@ const CourseDetails = () => {
               <div className="w-full flex flex-col">
                 {isGridView ? (
                   <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {paginatedLectures.map((lecture, idx) => (
+                    {paginatedLectures.map((lecture: any, idx: number) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
@@ -319,7 +320,7 @@ const CourseDetails = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col w-full gap-3 p-4">
-                    {paginatedLectures.map((lecture, idx) => (
+                    {paginatedLectures?.map((lecture: any, idx: number) => (
                       <div
                         className="w-full cursor-pointer"
                         key={idx}
@@ -503,13 +504,13 @@ const CourseDetails = () => {
               <div
                 className="px-5 py-[19px] gap-[9px] cursor-pointer"
                 onClick={() => {
-                  setLectures((prev) => [
-                    ...prev,
-                    {
-                      title: "Algebra",
-                      createdAt: "Created 11 Nov, 2024 • 12:09PM",
-                    },
-                  ]);
+                  // setLectures((prev) => [
+                  //   ...prev,
+                  //   {
+                  //     title: "Algebra",
+                  //     createdAt: "Created 11 Nov, 2024 • 12:09PM",
+                  //   },
+                  // ]);
                   onClose();
                 }}
               >
