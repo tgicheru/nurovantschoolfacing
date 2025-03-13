@@ -26,7 +26,6 @@ const CourseImport = lazy(() => import("../pages/main/courses/import"));
 const QuizPage = lazy(() => import("../pages/main/courses/lecture/pages/quiz"));
 const GamingPage = lazy(() => import("../pages/main/courses/gaming"));
 
-
 const FlashCardPage = lazy(
   () => import("../pages/main/courses/lecture/pages/flashcards")
 );
@@ -42,6 +41,10 @@ const AnalyzeLesson = lazy(
 );
 const ContinuousFeedback = lazy(
   () => import("../pages/main/courses/lecture/pages/continuousFeedback")
+);
+
+const Feedback = lazy(
+  () => import("../pages/main/courses/lecture/pages/feedback")
 );
 const LmsPage = lazy(
   () => import("../pages/main/courses/lecture/pages/lmsIntegration")
@@ -84,7 +87,7 @@ export const routes = [
     label: "gaming",
     component: <GamingPage />,
   },
-   {
+  {
     path: "/courses/lecture/analyze",
     label: "analyze",
     component: <AnalyzeLesson />,
@@ -93,6 +96,11 @@ export const routes = [
     path: "/courses/lecture/continuousFeedback",
     label: "Continuous Feedback",
     component: <ContinuousFeedback />,
+  },
+  {
+    path: "/courses/lecture/feedback",
+    label: "Feedback",
+    component: <Feedback />,
   },
   {
     path: "/courses/lecture/lmsIntegration",
@@ -110,7 +118,7 @@ export const routes = [
     component: <GroupActivity />,
   },
   {
-    path: "/courses/lecture/curriculumAlignment",
+    path: "/courses/lecture/curriculum-alignment",
     label: "Curriculum Alignment",
     component: <CurriculumAlignment />,
   },

@@ -3,19 +3,24 @@ import ChunkBox from "./ChunkBox";
 import { BorderHOC } from "../../../../../../components";
 import { useNavigate } from "react-router";
 
-const MiniRecaps = () => {
+const MiniRecaps = ({ data }: any) => {
   const navigate = useNavigate();
+  console.log({ miniRecaps: data });
   return (
-    <div className="w-full flex flex-col gap-3">
-      <ChunkBox
-        header="The lecture focuses on the design and features of a travel-booking app, with comparisons made to Airbnb."
-        text="PLEASE DOWNLOAD THE AIRBNB APP FOR MORE REFERENCE:1. Homepage & Category Feeds:a. Implement a clean, scrollable feed for listings categorized by type (e. g. Featured, hotels, cars, cruise …). Each listing should display essential information like the title, rating, price, and a thumbnail image. ConsiderAirbnb's minimalist approach."
-        action={() => {
-          navigate("/courses/lecture/recap/details");
-        }}
-      />
-      <BorderHOC />
-    </div>
+    <>
+      {data?.map((recaps: any, index: number) => (
+        <div className="w-full flex flex-col gap-3" key={index}>
+          <ChunkBox
+            header={recaps?.title}
+            text={recaps?.body}
+            action={() => {
+              navigate("/courses/lecture/recap/details");
+            }}
+          />
+          {data.length - 1 !== index && <BorderHOC />}
+        </div>
+      ))}
+    </>
   );
 };
 

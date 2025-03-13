@@ -9,13 +9,12 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 
-export function useGetRecap(param?: any) {
-  // const url = "/api_backend/recaps/";
-  const url = "/teacher_api/recaps/get-recap";
+export function useGetAllFeedback(params?: any) {
+  const url = "/teacher_api/course-feedback/all-feedbacks";
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:single_recap"],
-    () => getRequest(axios as unknown as AxiosInstance, url, param),
+    ["get:all_feedback"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
       onError: (error: any) =>
         notification.error({
@@ -30,13 +29,12 @@ export function useGetRecap(param?: any) {
   );
 }
 
-export function usePostRecaps(successAction?: any, lecture_id?: string) {
-  // const url = "/api_backend/recaps/create";
-  const url = `/teacher_api/recaps/generate?lecture_id=${lecture_id}`;
+export function useGetCourseFeedback(id: string) {
+  // const url = "/api_backend/flashcards/";
+  const url = `/teacher_api/course-feedback/course/${id}/lectures`;
   const axios = useContext(AxiosContext);
-
   return useQuery(
-    ["create:single_recap"],
+    ["get:course_feedback"],
     () => getRequest(axios as unknown as AxiosInstance, url),
     {
       onError: (error: any) =>
@@ -48,26 +46,18 @@ export function usePostRecaps(successAction?: any, lecture_id?: string) {
                 ?.join(", ")
             : "something went wrong please check internet connection.",
         }),
-      onSuccess: (response: any) => {
-        successAction?.(response);
-        notification.success({
-          message: "Success!",
-          description: response?.message || "action successful.",
-        });
-      },
-      enabled: false,
     }
   );
 }
 
-export function useGetAllRecaps(params?: any) {
-  const url = "/api_backend/recaps/";
+export function useGetLectureFeedback(id: string) {
+  // const url = "/api_backend/flashcards/";
+  const url = `/teacher_api/course-feedback/lecture/${id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:all_recaps"],
-    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    ["get:lecture_feedback"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
     {
-      // refetchInterval: 60000,
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -81,8 +71,36 @@ export function useGetAllRecaps(params?: any) {
   );
 }
 
-export function useDeleteRecap(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/recaps/";
+export function useCreateFeedback(successAction?: any) {
+  // const url = "/api_backend/flashcards/create";
+  const url = `/teacher_api/course-feedback/create`;
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "Feedback added successfully.",
+        });
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+export function useDeleteFlashcard(successAction?: any, errorAction?: any) {
+  const url = "/api_backend/flashcards/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (id: any) =>

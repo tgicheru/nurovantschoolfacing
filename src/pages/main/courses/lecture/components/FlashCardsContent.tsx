@@ -35,7 +35,7 @@ const FlashCardsContent = ({
       navigate(`/courses/lecture/flashcard?id=${res?.data?._id}`);
     }, lecture_id as string);
 
-  const dataArray = [data?.flash_card];
+  const dataArray = data?.flash_card ? [data?.flash_card] : [];
 
   const handleCopy = () => {
     message.success("Copied to clipboard");

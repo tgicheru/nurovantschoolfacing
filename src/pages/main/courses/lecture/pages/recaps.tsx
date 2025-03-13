@@ -6,18 +6,31 @@ import { LabelComponent } from "..";
 import MiniRecaps from "../components/Recap/MiniRecaps";
 import OverallRecaps from "../components/Recap/OverallRecaps";
 import Transcription from "../components/Recap/Transcription";
+import { useGetRecap } from "../../../../../hooks/recap/recap";
 
 const RecapLecturePage = () => {
   const [param, setParam] = useSearchParams();
+  const id = param.get("id");
 
   const [activeTab, setActiveTab] = React.useState(
     param.get("tab") || "mini-recaps"
   );
 
+  const {
+    data: recapData,
+    isLoading,
+    error,
+    isError,
+  } = useGetRecap({
+    recap_id: id as string,
+  });
+
+  console.log({ recapData });
+
   const data: any[] = [];
 
   const handleTab = (tab: string) => {
-    setParam({ tab });
+    setParam({ id: id as string, tab });
     setActiveTab(tab);
   };
 
@@ -30,7 +43,7 @@ const RecapLecturePage = () => {
         label: (isActive: boolean) => (
           <LabelComponent isActive={isActive} label="Mini Recaps" />
         ),
-        content: <MiniRecaps />,
+        content: <MiniRecaps data={recapData?.data?.recaps?.mini_recaps} />,
       },
       {
         key: "overall-recaps",
@@ -39,7 +52,9 @@ const RecapLecturePage = () => {
         label: (isActive: boolean) => (
           <LabelComponent isActive={isActive} label="Overall Recaps" />
         ),
-        content: <OverallRecaps />,
+        content: (
+          <OverallRecaps data={recapData?.data?.recaps?.overall_recaps} />
+        ),
       },
       {
         key: "transcription",
@@ -48,7 +63,9 @@ const RecapLecturePage = () => {
         label: (isActive: boolean) => (
           <LabelComponent isActive={isActive} label="Transcription" />
         ),
-        content: <Transcription />,
+        content: (
+          <Transcription data={recapData?.data?.recaps?.transcriptions} />
+        ),
       },
     ],
     []
@@ -70,21 +87,24 @@ const RecapLecturePage = () => {
           },
           {
             title: (
-              <a href="/courses/lecture?tab=recaps" className="hover:bg-none">
+              <a
+                href={`/courses/lecture?id=${recapData?.data?.lecture?._id}&tab=recaps`}
+                className="hover:bg-none"
+              >
                 Recap
               </a>
             ),
           },
           {
-            title: <span className="">Algebra 101</span>,
+            title: <span className="">{recapData?.data?.lecture?.title}</span>,
           },
         ]}
       />
       <h2 className="text-[24px] leading-[32px] font-bold text-neutral-900 pt-[25px] pb-[43px]">
-        Algebra 101 Recap
+        {recapData?.data?.lecture?.title} Recap
       </h2>
       <BorderHOC className="" rounded="rounded-[10px]">
-        <div className="w-full px-[15px] pt-[15px] min-h-[660px]">
+        <div className="w-full px-[15px] pt-[15px] min-h-[360px]">
           <div className="w-full pb-[10px]">
             <div className="w-full flex items-center justify-between">
               <div className="flex items-center gap-5">

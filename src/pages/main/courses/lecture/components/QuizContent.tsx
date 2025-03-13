@@ -40,7 +40,7 @@ const QuizContent = ({
   const lecture_id = params.get("id");
   const url = `https://app.nurovant.com/page/quiz/?id=${data?.quiz?._id}`;
   const { pathname } = useLocation();
-  const dataArray = [data?.quiz];
+  const dataArray = data?.quiz ? [data?.quiz] : [];
 
   const { mutate: postQuizAction, isLoading: postQuizLoad } = usePostQuiz(
     (res: any) => {

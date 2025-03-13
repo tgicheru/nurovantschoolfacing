@@ -13,11 +13,11 @@ const ChunkBox = ({ header, text, action }: ChunkBoxType) => {
         {header}
       </h3>
       <p className="text-sm font-semibold text-neutral-700">{text}</p>
-      <div className="flex items-center justify-center w-full py-[10px]">
+      {/* <div className="flex items-center justify-center w-full py-[10px]">
         <button onClick={action} className="text-sm">
           View full chunk
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

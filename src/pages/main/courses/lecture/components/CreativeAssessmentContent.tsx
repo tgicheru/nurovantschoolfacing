@@ -1,7 +1,7 @@
 import { Card, Tabs, Typography, Descriptions, Table } from "antd";
 import { useState, useMemo, useEffect } from "react";
 import { BorderHOC } from "../../../../../components";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { BsChatDots } from "react-icons/bs";
 import { Button, Dropdown, type MenuProps } from "antd";
 import { DownOutlined } from "@ant-design/icons";
@@ -14,7 +14,10 @@ import { CaretRightOutlined } from "@ant-design/icons";
 import type { RadioChangeEvent } from "antd";
 import styled from "styled-components";
 import { WiStars } from "react-icons/wi";
-import { useGetLessonPlan } from "../../../../../hooks/lecture/lecture";
+import {
+  useGetCreativeAssessment,
+  useGetLessonPlan,
+} from "../../../../../hooks/lecture/lecture";
 import { format, parseISO } from "date-fns";
 
 const { Panel } = Collapse;
@@ -239,7 +242,7 @@ const data = [
 
 // Sample data for each tab content
 
-const LessonPlanContent = ({
+const CreativeAssessmentContent = ({
   isGridView,
   data,
   lectureRefetch,
@@ -254,27 +257,21 @@ const LessonPlanContent = ({
   const [activeTab, setActiveTab] = useState(
     params.get("subTab") || "lesson-objectives"
   );
+  console.log("dataC", data);
   const handleTab = (tab: string) => {
-    setParams({
-      tab: (mainTab as string) || "lesson-plan",
-      id: id as string,
-      subTab: tab,
-    });
+    setParams({ tab: mainTab as string, id: id as string, subTab: tab });
     setActiveTab(tab);
   };
 
   const {
-    data: lessonPlanData,
+    data: creativeAssessmentData,
     isLoading,
     isRefetching,
     refetch,
     isSuccess,
-  } = useGetLessonPlan({
-    course_id: data?.course as string,
+  } = useGetCreativeAssessment({
     lecture_id: id as string,
   });
-
-  console.log("lessonPlanData", data);
 
   const tabs = useMemo(
     () => [
@@ -286,7 +283,8 @@ const LessonPlanContent = ({
         children: (
           <LessonObjectivesContent
             data={
-              lessonPlanData?.data?.objectives || data?.lesson_plan?.objectives
+              creativeAssessmentData?.data?.objectives ||
+              data?.lesson_plan?.objectives
             }
           />
         ),
@@ -299,7 +297,7 @@ const LessonPlanContent = ({
         children: (
           <MaterialsContent
             data={
-              lessonPlanData?.data?.materials_needed ||
+              creativeAssessmentData?.data?.materials_needed ||
               data?.lesson_plan?.materials_needed
             }
           />
@@ -312,7 +310,10 @@ const LessonPlanContent = ({
         label: "Homework",
         children: (
           <HomeworkContent
-            data={lessonPlanData?.data?.homework || data?.lesson_plan?.homework}
+            data={
+              creativeAssessmentData?.data?.homework ||
+              data?.lesson_plan?.homework
+            }
           />
         ),
       },
@@ -324,7 +325,7 @@ const LessonPlanContent = ({
         children: (
           <TeachersNoteContent
             data={
-              lessonPlanData?.data?.teachers_note ||
+              creativeAssessmentData?.data?.teachers_note ||
               data?.lesson_plan?.teachers_note
             }
           />
@@ -338,7 +339,7 @@ const LessonPlanContent = ({
         children: (
           <RubricContent
             data={
-              lessonPlanData?.data?.rubic_scoring_guide ||
+              creativeAssessmentData?.data?.rubic_scoring_guide ||
               data?.lesson_plan?.rubic_scoring_guide
             }
           />
@@ -352,14 +353,14 @@ const LessonPlanContent = ({
         children: (
           <ActivitiesContent
             data={
-              lessonPlanData?.data?.activities || data?.lesson_plan?.activities
+              creativeAssessmentData?.data?.activities ||
+              data?.lesson_plan?.activities
             }
-            allData={data}
           />
         ),
       },
     ],
-    [data, lessonPlanData?.data]
+    [data, creativeAssessmentData?.data]
   );
 
   useEffect(() => {
@@ -371,7 +372,7 @@ const LessonPlanContent = ({
   return (
     <div className="max-w-7xl mx-auto p-4">
       {/* Header Card */}
-      {(lessonPlanData?.data || data?.lesson_plan) && (
+      {(creativeAssessmentData?.data || data?.lesson_plan) && (
         <Card className="mb-4" style={{ backgroundColor: "#E1E7FF" }}>
           <div className="flex items-center justify-between flex-1 gap-4">
             <div className="flex items-center flex-1 justify-between">
@@ -468,60 +469,63 @@ const LessonPlanContent = ({
         />
       </div> */}
 
-      {data?.lesson_plan && (
+      {data?.creative_assessment && (
         <div className="w-full flex flex-col lg:flex-row gap-5">
-          <div className="w-full lg:w-[294px]">
+          <div className="w-full lg:w-[294px] flex-shrink-0">
             <BorderHOC className="" rounded="rounded-[10px]">
               <div className="w-full  p-4">
-                <Title level={4}>Lesson Objectives</Title>
+                <Title level={4}>Key Topics</Title>
                 <ul className="list-disc pl-6 space-y-2">
-                  {tabs.map((tab) => (
-                    <li
-                      key={tab.key}
-                      className={`cursor-pointer text-sm ${
-                        activeTab === tab.key
-                          ? "text-primary"
-                          : "text-neutral-900"
-                      }`}
-                      onClick={() => handleTab(tab.key)}
-                    >
-                      {tab.label}
+                  {data?.creative_assessment?.topics?.map((topic: any) => (
+                    <li key={topic?._id} className={`cursor-pointer text-sm`}>
+                      {topic?.topic}
                     </li>
                   ))}
                 </ul>
               </div>
             </BorderHOC>
-            <Link
-              to="/courses/lecture/analyze"
-              className="inline-block px-4 py-2 text-lg font-medium text-blue-600 border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-4"
+            <Button
+              onClick={() => {
+                // refetch();
+              }}
+              className="bg-primary !rounded-[1000px] mt-4 px-4"
+              type="primary"
+              size="large"
+              loading={false}
             >
-              Analyze Lesson Plan
-            </Link>
-            <button
-              className="p-3 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 mt-7"
-              aria-label="Open chat"
-            >
-              <BsChatDots className="w-6 h-6" />
-            </button>
+              Edit
+            </Button>
           </div>
 
           <div className="w-full h-full">
             <BorderHOC className="" rounded="rounded-[10px]">
-              <div className="w-full p-4">
-                {tabs.find((tab) => tab.key === activeTab)?.children}
+              <div className="w-full p-4 flex flex-col gap-3">
+                <h3 className="text-[20px] leading-[20px] font-semibold">
+                  Questions
+                </h3>
+                {data?.creative_assessment?.topics?.map(
+                  (topic: any, index: number) => (
+                    <BorderHOC className="" rounded="rounded-[10px]">
+                      <div className="w-full p-4 flex gap-2 text-sm">
+                        <span>{index + 1}.</span>
+                        <p>{topic?.question}</p>
+                      </div>
+                    </BorderHOC>
+                  )
+                )}
               </div>
             </BorderHOC>
           </div>
         </div>
       )}
 
-      {!data?.lesson_plan && (
+      {!data?.creative_assessment && (
         <div className="w-full flex items-center justify-center py-[72px]">
           <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
             <div className="flex flex-col items-center justify-center">
               <img src={EmptyState} alt="empty courses" />
               <span className="text-base font-bold text-neutral-900 text-center">
-                You do not have any lesson plan created yet
+                You do not have any Creative Assessment yet
               </span>
             </div>
 
@@ -535,7 +539,7 @@ const LessonPlanContent = ({
               loading={isLoading || isRefetching}
               icon={<WiStars className="text-[34px]" />}
             >
-              Generate Lesson Plan
+              Generate Assessment
             </Button>
           </div>
         </div>
@@ -710,28 +714,9 @@ function RubricContent({ data }: { data: any }) {
   );
 }
 
-function ActivitiesContent({ data, allData }: { data: any; allData: any }) {
-  const navigation = useNavigate();
+function ActivitiesContent({ data }: { data: any }) {
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <Dropdown menu={{ items }} trigger={["click"]}>
-          <Button className="text-gray-600">
-            Project-Based Learning <DownOutlined />
-          </Button>
-        </Dropdown>
-        <Button
-          type="primary"
-          className="bg-blue-500"
-          onClick={() => {
-            navigation(
-              `/courses/lecture/feedback?course=${allData?.course}&lecture=${allData?._id}`
-            );
-          }}
-        >
-          Continuous Feedback loop
-        </Button>
-      </div>
       <Table
         columns={columns}
         dataSource={data}
@@ -742,4 +727,4 @@ function ActivitiesContent({ data, allData }: { data: any; allData: any }) {
   );
 }
 
-export default LessonPlanContent;
+export default CreativeAssessmentContent;
