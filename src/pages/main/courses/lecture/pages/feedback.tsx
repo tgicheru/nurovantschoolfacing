@@ -8,18 +8,21 @@ import {
   Tag,
   ConfigProvider,
   Empty,
+  Button,
 } from "antd";
 import { Icon } from "@iconify/react";
 import type { ColumnsType } from "antd/es/table";
 import { useGetLessonPlan } from "../../../../../hooks/lecture/lecture";
 import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useCreateFeedback,
   useGetLectureFeedback,
 } from "../../../../../hooks/feedback/feedback";
 import authAtom from "../../../../../atoms/auth/auth.atom";
 import { useRecoilValue } from "recoil";
+import { extractAvatar } from "../../../../../constants";
+import { format, parseISO } from "date-fns";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -70,30 +73,48 @@ export default function FeedBackPage() {
   //     refetch();
   //   }, [lessonPlanData]);
 
-  //   console.log(lessonPlanData);
+  console.log("lessonPlanData", lessonPlanData);
 
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [inputValue, setInputValue] = useState("");
 
+  const feedbackContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to the latest message when feedbackItems changes
+  useEffect(() => {
+    if (feedbackContainerRef.current && feedbackItems.length > 0) {
+      feedbackContainerRef.current.scrollTop =
+        feedbackContainerRef.current.scrollHeight;
+    }
+  }, [feedbackItems]);
+
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
-    const newFeedback: FeedbackItem = {
-      id: Date.now().toString(),
-      sender: "Nurovant Ai",
-      avatar: "B",
-      timestamp: new Date().toLocaleString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }),
-      content: inputValue,
-    };
+    // const newFeedback: FeedbackItem = {
+    //   id: Date.now().toString(),
+    //   sender: "Nurovant Ai",
+    //   avatar: "B",
+    //   timestamp: new Date().toLocaleString("en-US", {
+    //     day: "numeric",
+    //     month: "short",
+    //     year: "numeric",
+    //     hour: "numeric",
+    //     minute: "2-digit",
+    //     hour12: true,
+    //   }),
+    //   content: inputValue,
+    // };
 
-    setFeedbackItems([...feedbackItems, newFeedback]);
+    mutate({
+      course_id: course as string,
+      lecture_id: lecture as string,
+      user_email: user?.email,
+      user_full_name: `${user?.first_name} ${user?.last_name}`,
+      message: inputValue,
+    });
+
+    // setFeedbackItems([...feedbackItems, newFeedback]);
     setInputValue("");
   };
 
@@ -280,168 +301,134 @@ export default function FeedBackPage() {
           </Card>
 
           {/* Right side - Feedback Panel */}
+          {/* Right side - Feedback Panel */}
           <Card
-            style={{
-              flex: "1 1 500px",
-              borderRadius: "8px",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            className="flex-1 basis-[500px] rounded-lg shadow-sm flex flex-col h-[calc(100vh-48px)] max-h-[800px]"
+            bodyStyle={{
+              padding: 0,
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              overflow: "hidden",
             }}
             title={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Title level={4} style={{ margin: 0 }}>
+              <div className="flex justify-between items-center">
+                <Title level={4} className="m-0">
                   Feedback Panel
                 </Title>
-                <div
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    border: "1px solid #e8e8e8",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Icon
-                    icon="mdi:close"
-                    width="20"
-                    height="20"
-                    style={{ color: "#4285F4" }}
-                  />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center border border-gray-200 cursor-pointer">
+                  <Icon icon="mdi:close" className="w-5 h-5 text-blue-500" />
                 </div>
               </div>
             }
             headStyle={{ borderBottom: "1px solid #f0f0f0" }}
           >
-            {feedbackItems.length === 0 ? (
-              <Empty
-                description="No feedback yet"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ margin: "40px 0" }}
-              />
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  marginBottom: "16px",
-                }}
-              >
-                {feedbackItems.map((item) => (
-                  <div
-                    key={item.id}
-                    style={{ display: "flex", alignItems: "flex-start" }}
-                  >
-                    <Avatar
-                      size={48}
-                      style={{
-                        backgroundColor: "#F87171",
-                        marginRight: "16px",
-                        fontSize: "20px",
-                      }}
+            <div
+              ref={feedbackContainerRef}
+              className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+            >
+              {feedBackData?.data?.length === 0 ? (
+                <Empty
+                  description="No feedback yet"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  className="m-auto"
+                />
+              ) : (
+                feedBackData?.data?.map((item: any) => {
+                  console.log("item", item);
+                  return (
+                    <div
+                      key={item._id}
+                      className="flex items-start flex-col flex-1"
                     >
-                      {item.avatar}
-                    </Avatar>
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        <Tag
-                          color="white"
-                          style={{
-                            marginRight: "8px",
-                            border: "1px solid #e8e8e8",
-                          }}
+                      <div className="flex items-center w-full mb-4">
+                        <Avatar
+                          alt="user"
+                          size={48}
+                          src={user?.info?.profile_img}
+                          className="bg-red-400 mr-4 text-xl flex-shrink-0"
                         >
-                          {item.sender}
-                        </Tag>
-                        <Text type="secondary" style={{ fontSize: "14px" }}>
-                          {item.timestamp}
-                        </Text>
-                      </div>
+                          {extractAvatar(
+                            `${item?.user_full_name}` || item?.user_email
+                          )}
+                        </Avatar>
 
-                      <Card
-                        style={{
-                          marginBottom: "8px",
-                          backgroundColor: "#EEF2FF",
-                          border: "none",
-                          borderRadius: "8px",
-                        }}
-                        bodyStyle={{ padding: "16px" }}
-                      >
-                        <Paragraph style={{ margin: 0 }}>
-                          {item.content}
-                        </Paragraph>
-
-                        {item.bulletPoints && (
-                          <List
-                            style={{ marginTop: "8px" }}
-                            itemLayout="horizontal"
-                            dataSource={item.bulletPoints}
-                            renderItem={(point) => (
-                              <List.Item
-                                style={{ padding: "4px 0", border: "none" }}
-                              >
-                                <div style={{ display: "flex" }}>
-                                  <div style={{ marginRight: "8px" }}>•</div>
-                                  <div>{point}</div>
-                                </div>
-                              </List.Item>
+                        <div className="flex items-center justify-between w-full">
+                          <div className="border border-[#DCDBEF] h-[36px] w-fit rounded-[50px] p-[10px] flex items-center justify-center">
+                            <span className="text-sm text-neutral-600 font-semibold">
+                              {item?.user_full_name}
+                            </span>
+                          </div>
+                          <Text
+                            type="secondary"
+                            className="text-sm text-neutral-600 font-semibold"
+                          >
+                            {format(
+                              parseISO(item?.createdAt),
+                              "dd MMM, yyyy • hh:mma"
                             )}
-                          />
-                        )}
-                      </Card>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                          </Text>
+                        </div>
+                      </div>
+                      <div className="flex-1 max-w-[80%] w-full ml-auto">
+                        <div className="mb-2 bg-indigo-50 border-none rounded-lg px-[20px] py-[14px]">
+                          <span className="text-[14px] leading-[22px] text-black font-medium">
+                            {item.message}
+                          </span>
 
-            <div style={{ display: "flex", marginTop: "24px" }}>
+                          {/* {item.bulletPoints && (
+                            <List
+                              className="mt-2"
+                              itemLayout="horizontal"
+                              dataSource={item.bulletPoints}
+                              renderItem={(point) => (
+                                <List.Item className="py-1 px-0 border-none">
+                                  <div className="flex">
+                                    <div className="mr-2">•</div>
+                                    <div>{point}</div>
+                                  </div>
+                                </List.Item>
+                              )}
+                            />
+                          )} */}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="p-4 border-t border-gray bg-white flex">
               <Input
                 placeholder="Type a reply"
-                style={{
-                  borderRadius: "8px",
-                  padding: "12px 16px",
-                  flex: 1,
-                  marginRight: "8px",
-                }}
+                className="rounded-lg py-3 px-4 flex-1 mr-2"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
               />
-              <div
+              <Button
                 style={{
                   width: "48px",
                   height: "48px",
-                  backgroundColor: "#4F46E5",
                   borderRadius: "8px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
                 }}
+                className="!bg-primary"
                 onClick={handleSendMessage}
-              >
-                <Icon
-                  icon="mdi:send"
-                  width="24"
-                  height="24"
-                  style={{ color: "white" }}
-                />
-              </div>
+                icon={
+                  <Icon
+                    icon="mdi:send"
+                    width="24"
+                    height="24"
+                    style={{ color: "white" }}
+                  />
+                }
+                loading={createFeedbackLoading}
+              />
             </div>
           </Card>
         </div>
