@@ -12,7 +12,10 @@ import {
 } from "antd";
 import { Icon } from "@iconify/react";
 import type { ColumnsType } from "antd/es/table";
-import { useGetLessonPlan } from "../../../../../hooks/lecture/lecture";
+import {
+  useGetLessonPlan,
+  useGetSingleLessonPlan,
+} from "../../../../../hooks/lecture/lecture";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -23,10 +26,17 @@ import authAtom from "../../../../../atoms/auth/auth.atom";
 import { useRecoilValue } from "recoil";
 import { extractAvatar } from "../../../../../constants";
 import { format, parseISO } from "date-fns";
+import {
+  HomeworkContent,
+  LessonObjectivesContent,
+  MaterialsContent,
+  RubricContent,
+  TeachersNoteContent,
+} from "../components/LessonPlanContent";
 
 const { Title, Text, Paragraph } = Typography;
 
-interface FeedbackItem {
+export interface FeedbackItem {
   id: string;
   sender: string;
   avatar: string;
@@ -56,24 +66,16 @@ export default function FeedBackPage() {
     isRefetching,
     refetch,
     isSuccess,
-  } = useGetLessonPlan({
-    course_id: course as string,
+  } = useGetSingleLessonPlan({
     lecture_id: lecture as string,
   });
 
   const { data: feedBackData, refetch: getLectureFeedbackRefetch } =
     useGetLectureFeedback(lecture as string);
-  console.log("feedBackData", feedBackData);
 
   const { mutate, isLoading: createFeedbackLoading } = useCreateFeedback(() => {
     getLectureFeedbackRefetch();
   });
-
-  //   useEffect(() => {
-  //     refetch();
-  //   }, [lessonPlanData]);
-
-  console.log("lessonPlanData", lessonPlanData);
 
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -90,21 +92,6 @@ export default function FeedBackPage() {
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
-
-    // const newFeedback: FeedbackItem = {
-    //   id: Date.now().toString(),
-    //   sender: "Nurovant Ai",
-    //   avatar: "B",
-    //   timestamp: new Date().toLocaleString("en-US", {
-    //     day: "numeric",
-    //     month: "short",
-    //     year: "numeric",
-    //     hour: "numeric",
-    //     minute: "2-digit",
-    //     hour12: true,
-    //   }),
-    //   content: inputValue,
-    // };
 
     mutate({
       course_id: course as string,
@@ -217,30 +204,11 @@ export default function FeedBackPage() {
             }}
           >
             <div style={{ padding: "16px" }}>
-              <Text
-                style={{
-                  color: "#4285F4",
-                  fontSize: "16px",
-                  fontWeight: "normal",
-                }}
-              >
-                By the end of this lesson, students will be able to
-              </Text>
-
-              <List
-                itemLayout="horizontal"
-                dataSource={learningObjectives}
-                renderItem={(item) => (
-                  <List.Item style={{ padding: "4px 0" }}>
-                    <div style={{ display: "flex" }}>
-                      <div style={{ marginRight: "8px" }}>•</div>
-                      <div>{item}</div>
-                    </div>
-                  </List.Item>
-                )}
+              <LessonObjectivesContent
+                data={lessonPlanData?.data?.objectives}
               />
 
-              <Text
+              {/* <Text
                 strong
                 style={{
                   display: "block",
@@ -286,9 +254,17 @@ export default function FeedBackPage() {
                     </div>
                   </List.Item>
                 )}
-              />
+              /> */}
 
-              <div style={{ marginTop: "24px" }}>
+              <MaterialsContent data={lessonPlanData?.data?.materials_needed} />
+
+              <HomeworkContent data={lessonPlanData?.data?.homework} />
+
+              <TeachersNoteContent data={lessonPlanData?.data?.teachers_note} />
+
+              {/* <RubricContent data={lessonPlanData?.data?.rubic_scoring_guide} /> */}
+
+              {/* <div style={{ marginTop: "24px" }}>
                 <Table
                   columns={columns}
                   dataSource={data}
@@ -296,7 +272,7 @@ export default function FeedBackPage() {
                   bordered
                   size="middle"
                 />
-              </div>
+              </div> */}
             </div>
           </Card>
 
@@ -335,7 +311,6 @@ export default function FeedBackPage() {
                 />
               ) : (
                 feedBackData?.data?.map((item: any) => {
-                  console.log("item", item);
                   return (
                     <div
                       key={item._id}
