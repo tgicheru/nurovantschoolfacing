@@ -9,6 +9,7 @@ import { Icon } from "@iconify/react";
 import { useGetAllFeedback } from "../../hooks/feedback/feedback";
 import { useSearchParams } from "react-router-dom";
 import FeedbackDetailView from "./FeedbackDetailView";
+import { format, parseISO } from "date-fns";
 
 type CreateCourseDrawerProps = {
   isOpen: boolean;
@@ -38,8 +39,11 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
   const { students, totalCount } = studentData;
   const displayedStudents = students.slice(0, 3);
   const [selectedFeedback, setSelectedFeedback] = useState<any>(null);
-  const { data: allFeedback, isLoading: allFeedbackLoading } =
-    useGetAllFeedback();
+  const {
+    data: allFeedback,
+    isLoading: allFeedbackLoading,
+    refetch,
+  } = useGetAllFeedback();
 
   const handleFeedbackClick = (feedback: any) => {
     setSelectedFeedback(feedback);
@@ -78,6 +82,7 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
             feedback={selectedFeedback}
             onClose={onClose}
             onBack={handleBack}
+            refetch={refetch}
           />
         ) : (
           <>
@@ -88,7 +93,7 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
                     <h3 className="text-[24px] leading-[32px] font-bold text-neutral-900">
                       Feedback Panel
                     </h3>
-                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full flex-shrink-0 text-sm">
                       {allFeedback?.data?.length || 0}
                     </span>
                   </div>
@@ -112,17 +117,15 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
                           <h5 className="text-[24px] leading-[20px] font-bold text-neutral-900">
                             {item?.lecture?.title}
                           </h5>
-                          <p className="text-sm font-semibold text-neutral-600">
+                          {/* <p className="text-sm font-semibold text-neutral-600">
                             Created:{" "}
-                            {new Date(item.createdAt).toLocaleString("en-US", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                              hour: "numeric",
-                              minute: "2-digit",
-                              hour12: true,
-                            })}
-                          </p>
+                            {item?.lecture?.createdAt &&
+                              item?.lecture?.createdAt &&
+                              format(
+                                parseISO(item?.lecture?.createdAt),
+                                "dd MMM, yyyy • hh:mma"
+                              )}
+                          </p> */}
                         </div>
 
                         <div className="relative flex items-center">

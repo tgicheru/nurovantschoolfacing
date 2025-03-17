@@ -7,6 +7,8 @@ import { extractAvatar } from "../../constants";
 import { parseISO, format } from "date-fns";
 import { useCreateFeedback } from "../../hooks/feedback/feedback";
 import { FeedbackItem } from "../../pages/main/courses/lecture/pages/feedback";
+import { useRecoilValue } from "recoil";
+import authAtom from "../../atoms/auth/auth.atom";
 
 interface FeedbackMessage {
   id: string;
@@ -21,6 +23,7 @@ interface FeedbackDetailViewProps {
   feedback: any;
   onClose: () => void;
   onBack: () => void;
+  refetch: any;
 }
 
 const { Text } = Typography;
@@ -29,9 +32,16 @@ const FeedbackDetailView: React.FC<FeedbackDetailViewProps> = ({
   feedback,
   onClose,
   onBack,
+  refetch,
 }) => {
-  console.log(feedback);
-  const { mutate, isLoading: createFeedbackLoading } = useCreateFeedback(() => {
+  console.log("feedback", feedback);
+  const { user } = useRecoilValue(authAtom);
+  const {
+    mutate,
+    isLoading: createFeedbackLoading,
+    isSuccess,
+    data,
+  } = useCreateFeedback(() => {
     //   getLectureFeedbackRefetch();
   });
 
@@ -48,14 +58,27 @@ const FeedbackDetailView: React.FC<FeedbackDetailViewProps> = ({
     }
   }, [feedbackItems]);
 
+  useEffect(() => {
+    console.log("isSuccess", isSuccess);
+    console.log("data", data);
+    if (isSuccess) {
+      refetch();
+    }
+  }, [isSuccess, refetch]);
+
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
 
+    console.log(feedback?.feedbacks?.course?._id);
+    console.log(feedback?.feedbacks?.lecture?._id);
+    console.log(feedback?.feedbacks?.user_email);
+    console.log(feedback?.feedbacks?.user_full_name);
+
     mutate({
-      course_id: feedback?.feedbacks?.course?._id as string,
-      lecture_id: feedback?.feedbacks?.lecture?._id as string,
-      user_email: feedback?.feedbacks?.user_email,
-      user_full_name: feedback?.feedbacks?.user_full_name,
+      course_id: feedback?.feedbacks[0]?.course?._id as string,
+      lecture_id: feedback?.lecture?._id as string,
+      user_email: user?.email,
+      user_full_name: `${user?.first_name} ${user?.last_name}`,
       message: inputValue,
     });
 
@@ -90,29 +113,6 @@ const FeedbackDetailView: React.FC<FeedbackDetailViewProps> = ({
   ]);
   const [replyText, setReplyText] = useState("");
 
-  const handleSendReply = () => {
-    if (!replyText.trim()) return;
-
-    const newMessage: FeedbackMessage = {
-      id: Date.now().toString(),
-      sender: "Nurovant Ai",
-      avatar: "T",
-      role: "Educator",
-      timestamp: new Date().toLocaleString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }),
-      content: replyText,
-    };
-
-    setMessages([...messages, newMessage]);
-    setReplyText("");
-  };
-
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -129,7 +129,7 @@ const FeedbackDetailView: React.FC<FeedbackDetailViewProps> = ({
               <h3 className="text-[24px] leading-[32px] font-bold text-neutral-900">
                 Feedback Panel
               </h3>
-              <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+              <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full flex-shrink-0 text-sm">
                 {messages.length}
               </span>
             </div>
