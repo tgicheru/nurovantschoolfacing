@@ -544,7 +544,7 @@ const LessonPlanContent = ({
   );
 };
 
-function LessonObjectivesContent({ data }: { data: string[] }) {
+export function LessonObjectivesContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <Title level={5} className="!text-primary mb-4">
@@ -559,7 +559,7 @@ function LessonObjectivesContent({ data }: { data: string[] }) {
   );
 }
 
-function MaterialsContent({ data }: { data: string[] }) {
+export function MaterialsContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       {/* <Title level={5} className="!text-primary">
@@ -585,7 +585,7 @@ function MaterialsContent({ data }: { data: string[] }) {
   );
 }
 
-function HomeworkContent({ data }: { data: string[] }) {
+export function HomeworkContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <Title level={5} className="mt-4">
@@ -600,7 +600,7 @@ function HomeworkContent({ data }: { data: string[] }) {
   );
 }
 
-function TeachersNoteContent({ data }: { data: string[] }) {
+export function TeachersNoteContent({ data }: { data: string[] }) {
   return (
     <div className="p-4">
       <ul className="list-disc pl-6 space-y-2">
@@ -612,7 +612,7 @@ function TeachersNoteContent({ data }: { data: string[] }) {
   );
 }
 
-function RubricContent({ data }: { data: any }) {
+export function RubricContent({ data }: { data: any }) {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="space-y-4">
@@ -710,7 +710,13 @@ function RubricContent({ data }: { data: any }) {
   );
 }
 
-function ActivitiesContent({ data, allData }: { data: any; allData: any }) {
+export function ActivitiesContent({
+  data,
+  allData,
+}: {
+  data: any;
+  allData: any;
+}) {
   const navigation = useNavigate();
   return (
     <div className="p-4 max-w-4xl mx-auto">

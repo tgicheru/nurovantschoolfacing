@@ -129,6 +129,27 @@ export function useGetLessonPlan(params?: any) {
   );
 }
 
+export function useGetSingleLessonPlan(params?: any) {
+  const url = `/teacher_api/lesson_plan/get-lesson-plan`;
+  // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:lesson_plan"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 export function useGetCreativeAssessment(params?: any) {
   console.log("params", params);
   const url = `/teacher_api/creative_assessment/generate`;
