@@ -203,3 +203,31 @@ export function useGeneratePacingGuide(params?: any, successAction?: any) {
     }
   );
 }
+
+export function usePostPacingGuide(successAction?: any) {
+  const url = "/teacher_api/curriculum-alignment/improve";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description:
+            response?.message || "Pacing guide created successfully.",
+        });
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}

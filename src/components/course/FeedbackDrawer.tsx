@@ -45,6 +45,8 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
     refetch,
   } = useGetAllFeedback();
 
+  console.log("allFeedback", allFeedback);
+
   const handleFeedbackClick = (feedback: any) => {
     setSelectedFeedback(feedback);
   };
@@ -93,7 +95,7 @@ const FeedbackDrawer = ({ isOpen, onClose }: CreateCourseDrawerProps) => {
                     <h3 className="text-[24px] leading-[32px] font-bold text-neutral-900">
                       Feedback Panel
                     </h3>
-                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full flex-shrink-0 text-sm">
+                    <span className="bg-blue-100 text-blue-600 h-[32px] w-[32px] flex items-center justify-center rounded-full flex-shrink-0 text-sm">
                       {allFeedback?.data?.length || 0}
                     </span>
                   </div>

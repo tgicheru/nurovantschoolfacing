@@ -31,7 +31,7 @@ export function useGetAllFeedback(params?: any) {
 
 export function useGetCourseFeedback(id: string) {
   // const url = "/api_backend/flashcards/";
-  const url = `/teacher_api/course-feedback/course/${id}/lectures`;
+  const url = `/teacher_api/course-feedback/${id}/lectures`;
   const axios = useContext(AxiosContext);
   return useQuery(
     ["get:course_feedback"],
