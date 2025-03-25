@@ -97,7 +97,7 @@ const CreateCourseDrawer = ({
       accessKeyId: process.env["REACT_APP_AWS_ACCESS_KEY_ID"],
       secretAccessKey: process.env["REACT_APP_AWS_SECRET_ACCESS_KEY"],
       // region: process.env["REACT_APP_AWS_REGION"],
-      region: "us-east-2",
+      region: "us-east-1",
     });
 
     // Specify the bucket and key (object key) for the upload
