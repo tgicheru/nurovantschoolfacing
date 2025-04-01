@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import {
   getRequest,
   otherRequest,
+  patchRequest,
   postRequest,
   putRequest,
 } from "../../context/requestTypes";
@@ -14,7 +15,7 @@ import authAtom from "../../atoms/auth/auth.atom";
 import { AxiosInstance } from "axios";
 
 export function useGetProfile() {
-  const url = "/api_backend/user/";
+  const url = "/teacher_api/auth/profile";
   const navigate = useNavigate();
   const location = useLocation();
   const [auth, setAuth] = useRecoilState(authAtom);
@@ -28,11 +29,7 @@ export function useGetProfile() {
           ...auth,
           user: {
             ...auth?.user,
-            info: {
-              ...auth?.user?.info,
-              ...response?.data?.info,
-              ...response?.data,
-            },
+            ...response?.data,
           },
         }),
       onError: (error: any) => {
@@ -122,12 +119,12 @@ export function useGetSubs() {
 }
 
 export function useSetProfile(successAction?: any, errorAction?: any) {
-  const url = "/api_backend/teachers/update_profile/";
+  const url = "/teacher_api/auth/update-profile";
   const axios = useContext(AxiosContext);
   const queryClient = useQueryClient();
   return useMutation(
     (payload: any) =>
-      putRequest(axios as unknown as AxiosInstance, url, payload),
+      patchRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response) => {
         successAction?.();
@@ -155,11 +152,11 @@ export function useSetProfile(successAction?: any, errorAction?: any) {
 }
 
 export function useChangePassword() {
-  const url = "/api_backend/auth/reset_password";
+  const url = "/teacher_api/auth/reset_password_in_app";
   const navigate = useNavigate();
   const axios = useContext(AxiosContext);
   return useMutation(
-    (payload) => postRequest(axios as unknown as AxiosInstance, url, payload),
+    (payload) => patchRequest(axios as unknown as AxiosInstance, url, payload),
     {
       onSuccess: (response) => {
         notification.success({

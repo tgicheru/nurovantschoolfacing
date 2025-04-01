@@ -8,6 +8,7 @@ import {
   Input,
   Modal,
   Radio,
+  Select,
   Spin,
   Upload,
   UploadProps,
@@ -32,8 +33,9 @@ import {
 import { MdEdit } from "react-icons/md";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { FiSave } from "react-icons/fi";
-import { useAWSUpload, useStripePay } from "../../../hooks/otherhooks";
+import { useAWSUpload, useGetUSStates, useStripePay } from "../../../hooks/otherhooks";
 import SubscribeContent from "./contents/subscribe";
+import { genders, grades, subjects } from "../../../constants";
 
 function SettingsPage() {
   const { user } = useRecoilValue(authAtom);
@@ -62,9 +64,10 @@ function SettingsPage() {
   const onOpen = () => setIsOpen(true);
   const [form] = Form.useForm();
 
-  const isNoEditMail = ["google", "apple"]?.includes(user?.info?.sign_up_type);
+  const isNoEditMail = ["google", "apple"]?.includes(user?.sign_up_type);
 
-  const { data: getSubsData, isLoading: getSubsLoad } = useGetSubs();
+  // const { data: getSubsData, isLoading: getSubsLoad } = useGetSubs();
+  const { isLoading: getStatesLoad, data: getStatesData } = useGetUSStates();
 
   const { isLoading: postSubLoad, mutateAsync: postSubAction } = usePostSub();
 
@@ -84,7 +87,7 @@ function SettingsPage() {
   } = useStripePay(onPayOpen);
 
   const { mutate: uploadFileAction } = useAWSUpload(
-    (res: any) => setProfileAction({ profile_img: res?.Location }),
+    (res: any) => setProfileAction({ profile_image: res?.Location }),
     () => {},
     "profile"
   );
@@ -115,13 +118,23 @@ function SettingsPage() {
     () =>
       [
         {
-          key: <p className="text-base font-medium text-[#646462]">Name</p>,
+          key: <p className="text-base font-medium text-[#646462]">First Name</p>,
           data: isEdit ? (
-            <Form.Item name="name" className="!m-0 !p-0">
-              <Input placeholder="Enter your full name" size="large" />
+            <Form.Item name="first_name" className="!m-0 !p-0">
+              <Input placeholder="Enter your first name" size="large" />
             </Form.Item>
           ) : (
-            user?.info?.name || "NIL"
+            user?.first_name || "NIL"
+          ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">Last Name</p>,
+          data: isEdit ? (
+            <Form.Item name="last_name" className="!m-0 !p-0">
+              <Input placeholder="Enter your last name" size="large" />
+            </Form.Item>
+          ) : (
+            user?.last_name || "NIL"
           ),
         },
         {
@@ -136,54 +149,61 @@ function SettingsPage() {
                 />
               </Form.Item>
             ) : (
-              user?.info?.email || "NIL"
+              user?.email || "NIL"
             ),
         },
         {
-          key: <p className="text-base font-medium text-[#646462]">Phone</p>,
+          key: <p className="text-base font-medium text-[#646462]">Gender</p>,
+          data:
+            isEdit ? (
+              <Form.Item name="sex" className="!m-0 !p-0">
+                <Select placeholder="Select gender" size="large" options={genders} />
+              </Form.Item>
+            ) : (
+              user?.sex || "NIL"
+            ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">State</p>,
           data: isEdit ? (
-            <Form.Item name="mobile_number" className="!m-0 !p-0">
-              <Input placeholder="Enter your mobile number" size="large" />
+            <Form.Item name="state" className="!m-0 !p-0">
+              <Select placeholder="Select state" size="large" options={getStatesData?.data?.map((d: any) => ({label: d, value: d}))} loading={getStatesLoad} />
             </Form.Item>
           ) : (
-            user?.info?.mobile_number || "NIL"
+            user?.state || "NIL"
           ),
         },
         {
-          key: <p className="text-base font-medium text-[#646462]">Country</p>,
-          data: isEdit ? (
-            <Form.Item name="country" className="!m-0 !p-0">
-              <Input placeholder="Enter your country" size="large" />
-            </Form.Item>
-          ) : (
-            user?.info?.country || "NIL"
-          ),
-        },
-        {
-          key: (
-            <p className="text-base font-medium text-[#646462]">Institution</p>
-          ),
+          key: <p className="text-base font-medium text-[#646462]">Institution</p>,
           data: isEdit ? (
             <Form.Item name="institution" className="!m-0 !p-0">
               <Input placeholder="Enter your institution" size="large" />
             </Form.Item>
           ) : (
-            user?.info?.institution || "NIL"
+            user?.institution || "NIL"
           ),
         },
         {
-          key: (
-            <p className="text-base font-medium text-[#646462]">
-              Course Taught
-            </p>
-          ),
-          data: isEdit ? (
-            <Form.Item name="course_taught" className="!m-0 !p-0">
-              <Input placeholder="Enter your course taught" size="large" />
-            </Form.Item>
-          ) : (
-            user?.info?.course_taught || "NIL"
-          ),
+          key: <p className="text-base font-medium text-[#646462]">Grade Level</p>,
+          data:
+            isEdit ? (
+              <Form.Item name="grade_level" className="!m-0 !p-0">
+                <Select placeholder="Select grade level" size="large" options={grades} />
+              </Form.Item>
+            ) : (
+              user?.grade_level || "NIL"
+            ),
+        },
+        {
+          key: <p className="text-base font-medium text-[#646462]">Subject</p>,
+          data:
+            isEdit ? (
+              <Form.Item name="course_taught" className="!m-0 !p-0">
+                <Select placeholder="Select course taught" size="large" options={subjects} />
+              </Form.Item>
+            ) : (
+              user?.course_taught || "NIL"
+            ),
         },
         {
           notActive: isNoEditMail,
@@ -198,24 +218,24 @@ function SettingsPage() {
             </Button>
           ),
         },
-        {
-          key: (
-            <p className="text-base font-medium text-[#646462]">Subscription</p>
-          ),
-          data: (
-            <div className="flex items-center">
-              <p className="capitalize">{user?.info?.current_tier}</p>
-              <Button
-                loading={getSubsLoad}
-                onClick={onSubOpen}
-                className="text-primary text-sm font-medium !bg-transparent"
-                type="text"
-              >
-                View Plans
-              </Button>
-            </div>
-          ),
-        },
+        // {
+        //   key: (
+        //     <p className="text-base font-medium text-[#646462]">Subscription</p>
+        //   ),
+        //   data: (
+        //     <div className="flex items-center">
+        //       <p className="capitalize">{user?.info?.current_tier}</p>
+        //       <Button
+        //         // loading={getSubsLoad}
+        //         onClick={onSubOpen}
+        //         className="text-primary text-sm font-medium !bg-transparent"
+        //         type="text"
+        //       >
+        //         View Plans
+        //       </Button>
+        //     </div>
+        //   ),
+        // },
         {
           data: isEdit ? (
             <div className="flex items-center gap-5">
@@ -249,7 +269,7 @@ function SettingsPage() {
           ),
         },
       ].filter((d) => !d?.notActive),
-    [user, isEdit, getSubsLoad, setProfileLoad, isNoEditMail]
+    [user, isEdit, setProfileLoad, isNoEditMail, getStatesData, getStatesLoad]
   );
 
   const subscriptions = useMemo(
@@ -257,30 +277,29 @@ function SettingsPage() {
       {
         key: "premium",
         title: "Premium",
-        yearly: getSubsData?.data?.premium_year?.price,
-        monthly: getSubsData?.data?.premium_month?.price,
-        features: [
-          "Get access to all features",
-          `${
-            getSubsData?.data?.[`premium_${actSubLowRep}`]?.credits
-          } credits per ${actSubLowRep}`,
-        ],
+        // yearly: getSubsData?.data?.premium_year?.price,
+        // monthly: getSubsData?.data?.premium_month?.price,
+        // features: [
+        //   "Get access to all features",
+        //   `${
+        //     getSubsData?.data?.[`premium_${actSubLowRep}`]?.credits
+        //   } credits per ${actSubLowRep}`,
+        // ],
       },
       {
         key: "pro",
         title: "Pro",
-        yearly: getSubsData?.data?.pro_year?.price,
-        monthly: getSubsData?.data?.pro_month?.price,
+        // yearly: getSubsData?.data?.pro_year?.price,
+        // monthly: getSubsData?.data?.pro_month?.price,
         features: ["Unlimited transcription time", "Unlimited credit"],
       },
     ],
-    [actSubLowRep, getSubsData]
+    [actSubLowRep]
   );
 
   const handlePasswSubmit = (d: any) => {
-    const payload = {
-      user: user?.info?._id,
-      ...d,
+    const payload = { ...d,
+      email: user?.email,
     };
     putPasswordAction(payload);
   };
@@ -332,15 +351,15 @@ function SettingsPage() {
 
       <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <Avatar size={70} src={user?.info?.profile_img}>
-            {extractAvatar(user?.info?.name || user?.info?.email || "USER")}
+          <Avatar size={70} src={user?.profile_image}>
+            {extractAvatar(user?.first_name || user?.email || "USER")}
           </Avatar>
           <Upload {...uploadProps}>
             <Button loading={setProfileLoad}>Change photo</Button>
           </Upload>
         </div>
         <p className="text-2xl font-bold text-secondary">
-          {user?.info?.name || "User"}
+          {user?.first_name ? `${user?.first_name} ${user?.last_name}` : "User"}
         </p>
         <div className="flex items-center gap-3 !hidden">
           <p className="text-sm font-medium text-[#A2A2A1]">Nurovant Code:</p>
@@ -354,7 +373,7 @@ function SettingsPage() {
             />
           </div>
         </div>
-        <div>
+        <div hidden>
           <p className="text-base font-medium flex items-center gap-2 text-[#646462]">
             <PiCoins />
             <span>{user?.current_credit}</span>
@@ -363,7 +382,7 @@ function SettingsPage() {
         </div>
         <Form
           onFinish={setProfileAction}
-          initialValues={user?.info}
+          initialValues={user}
           layout="vertical"
           form={form}
         >
@@ -397,7 +416,7 @@ function SettingsPage() {
           <Form onFinish={handlePasswSubmit} className="w-full space-y-10">
             <div className="relative">
               <label
-                htmlFor="password"
+                htmlFor="old_password"
                 className="absolute z-10 -top-5 left-3 bg-[#E0E0E0] !text-xs font-semibold text-dark px-2 py-1 border-2 border-[#E0E0E0] rounded-3xl"
               >
                 Old Password
@@ -406,9 +425,10 @@ function SettingsPage() {
                 <Input
                   className="px-5 py-3 rounded-xl"
                   placeholder="Password"
+                  id="old_password"
                   type="password"
-                  id="password"
                   size="large"
+                  required
                 />
               </Form.Item>
             </div>
@@ -480,7 +500,7 @@ function SettingsPage() {
         closeIcon={false}
         onCancel={onSubClose}
       >
-        <Spin spinning={getSubsLoad}>
+        <Spin spinning={false}>
           {isPayOpen && postPayData ? (
             <SubscribeContent
               clientSecret={postPayData?.client_secret!}
