@@ -91,7 +91,7 @@ const LectureDetail = () => {
     isError,
     error,
   } = useGetLectureById({ id });
-  console.log(lectureData);
+  // console.log(lectureData);
 
   const [isGridView, setIsGridView] = React.useState(true);
   const [data, setData] = React.useState([
