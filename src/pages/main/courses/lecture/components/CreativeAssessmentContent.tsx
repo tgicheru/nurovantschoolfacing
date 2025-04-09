@@ -19,6 +19,7 @@ import {
   useGetLessonPlan,
 } from "../../../../../hooks/lecture/lecture";
 import { format, parseISO } from "date-fns";
+import EditQuizModal from "./ContinuousAssessment/EditQuizModal";
 
 const { Panel } = Collapse;
 
@@ -257,11 +258,12 @@ const CreativeAssessmentContent = ({
   const [activeTab, setActiveTab] = useState(
     params.get("subTab") || "lesson-objectives"
   );
-  console.log("dataC", data);
+  // console.log("dataC", data);
   const handleTab = (tab: string) => {
     setParams({ tab: mainTab as string, id: id as string, subTab: tab });
     setActiveTab(tab);
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     data: creativeAssessmentData,
@@ -487,13 +489,14 @@ const CreativeAssessmentContent = ({
             <Button
               onClick={() => {
                 // refetch();
+                setIsModalOpen(true);
               }}
               className="bg-primary !rounded-[1000px] mt-4 px-4"
               type="primary"
               size="large"
               loading={false}
             >
-              Edit
+              Edit Quiz
             </Button>
           </div>
 
@@ -544,6 +547,14 @@ const CreativeAssessmentContent = ({
           </div>
         </div>
       )}
+
+      <EditQuizModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        duration={data?.creative_assessment?.duration}
+        id={data?.creative_assessment?._id}
+        number_of_questions={data?.creative_assessment?.number_of_questions}
+      />
     </div>
   );
 };

@@ -68,7 +68,7 @@ const RecapLecturePage = () => {
         ),
       },
     ],
-    []
+    [recapData, data]
   );
 
   return (

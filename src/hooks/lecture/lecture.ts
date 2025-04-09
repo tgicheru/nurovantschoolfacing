@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "react-query";
 import {
   deleteRequest,
   getRequest,
+  patchRequest,
   postRequest,
 } from "../../context/requestTypes";
 import { useContext } from "react";
@@ -169,6 +170,30 @@ export function useGetCreativeAssessment(params?: any) {
             : "something went wrong please check internet connection.",
         }),
       enabled: false,
+    }
+  );
+}
+
+export function useEditCreativeAssessmentQuiz(id: string, successAction?: any) {
+  const url = `/teacher_api/creative_assessment/settings?assessment_id=${id}`;
+  const axios = useContext(AxiosContext);
+
+  return useMutation(
+    (payload: any) =>
+      patchRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+        successAction?.(response);
+      },
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message,
+        }),
     }
   );
 }
