@@ -93,7 +93,8 @@ export function useAWSUpload(
 ) {
   // Upload bucket type object
   const buckets = {
-    content: process.env["REACT_APP_S3_BUCKET"]!,
+    // content: process.env["REACT_APP_S3_BUCKET"]!,
+    content: process.env["REACT_APP_S3_BUCKET_ALS"]!,
     profile: process.env["REACT_APP_S3_BUCKET_PROFILE"]!,
   };
 
@@ -307,7 +308,7 @@ export function useGetSingleJurisdiction(id: string) {
   const url = `/teacher_api/commonstandards/get_jurisdictions_detail?id=${id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get-single-jurisdiction"],
+    ["get-single-jurisdiction", id],
     () =>
       getRequest(axios as unknown as AxiosInstance, url, {
         headers: {
@@ -335,7 +336,7 @@ export function useGetStandardSet(id: string) {
   const url = `/teacher_api/commonstandards/get_standard_set?id=${id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get-standard_set"],
+    ["get-standard_set", id],
     () =>
       getRequest(axios as unknown as AxiosInstance, url, {
         headers: {

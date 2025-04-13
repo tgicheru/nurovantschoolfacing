@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
-function FlipCard({
+export function FlipCard({
   front,
   back,
   isFlipped,

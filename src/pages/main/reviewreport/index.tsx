@@ -22,7 +22,6 @@ function ReviewReport() {
   const [actForm, setActForm] = useState("learning_objectives")
   const [isCreate, setIsCreate] = useState(false)
   const [selected, setSelected] = useState<any>()
-  const onCloseCreate = () => setIsCreate(false)
   const [payload, setPayload] = useState<any>()
   const onOpenCreate = () => setIsCreate(true)
   const [isView, setIsView] = useState(false)
@@ -32,12 +31,18 @@ function ReviewReport() {
   const onCloseOpt = () => setIsOpt(false)
   const onOpenOpt = () => setIsOpt(true)
   const targetRef = useRef()
+  const onCloseCreate = () => {
+    setIsCreate(false)
+    setPayload({})
+  }
   const onCloseView = () => {
     setIsView(false)
+    setPayload({})
   }
   const onClose = () => {
     setActForm("learning_objectives")
     setIsOpen(false)
+    setPayload({})
   }
   const onOpen = () => setIsOpen(true)
   const width = window.innerWidth
@@ -304,8 +309,8 @@ function ReviewReport() {
         <div className='w-full p-5 space-y-5 bg-white rounded-3xl'>
           <div className='w-full flex justify-between gap-5'>
             <div className=''>
-              <p className='text-xl font-bold text-[#161617]'>Generate Report</p>
-              <p className='text-sm font-medium text-[#57585A]'>Add the necessary details to generate your report.</p>
+              <p className='text-xl font-bold text-[#161617]'>{payload?.create ? "Create Custom Report" : "Generate Report"}</p>
+              <p className='text-sm font-medium text-[#57585A]'>{payload?.create ? "Create Custom Reports For Accreditation purpose" : "Add the necessary details to generate your report."}</p>
             </div>
             <Button onClick={onClose} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
           </div>
@@ -343,7 +348,7 @@ function ReviewReport() {
           <div className='w-full flex justify-between gap-5'>
             <div className=''>
               <p className='text-xl font-bold text-[#161617]'>Create Custom Report</p>
-              <p className='text-sm font-medium text-[#57585A]'> Create Custom Reports For Accreditation purpose</p>
+              <p className='text-sm font-medium text-[#57585A]'>Create Custom Reports For Accreditation purpose</p>
             </div>
             <Button onClick={onCloseCreate} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
           </div>

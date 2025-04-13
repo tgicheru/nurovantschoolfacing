@@ -37,6 +37,7 @@ export function useGetFlashcard(id: string) {
     ["get:single_flashcard"],
     () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
+      enabled: Boolean(id),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
