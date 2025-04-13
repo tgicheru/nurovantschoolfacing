@@ -14,9 +14,10 @@ export function useGetRecap(param?: any) {
   const url = "/teacher_api/recaps/get-recap";
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:single_recap"],
+    ["get:single_recap", param],
     () => getRequest(axios as unknown as AxiosInstance, url, param),
     {
+      enabled: Boolean(param?.recap_id),
       onError: (error: any) =>
         notification.error({
           message: "Error!",

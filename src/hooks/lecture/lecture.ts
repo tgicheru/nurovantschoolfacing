@@ -107,14 +107,15 @@ export function useDeleteLecture(successAction?: any, errorAction?: any) {
   );
 }
 
-export function useGetLessonPlan(params?: any) {
+export function useGetLessonPlan(params?: any, successAction?: any) {
   const url = `/teacher_api/lesson_plan/generate`;
   // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:lesson_plan"],
+    ["get:lesson_plan", params],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
+      onSuccess: (res: any) => successAction?.(res),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -150,7 +151,7 @@ export function useGetSingleLessonPlan(params?: any) {
   );
 }
 
-export function useGetCreativeAssessment(params?: any) {
+export function useGetCreativeAssessment(params?: any, successAction?: any) {
   console.log("params", params);
   const url = `/teacher_api/creative_assessment/generate`;
   // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
@@ -159,6 +160,7 @@ export function useGetCreativeAssessment(params?: any) {
     ["get:creative_assessment"],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
+      onSuccess: (res: any) => successAction?.(res),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -169,6 +171,49 @@ export function useGetCreativeAssessment(params?: any) {
             : "something went wrong please check internet connection.",
         }),
       enabled: false,
+    }
+  );
+}
+
+export function useGetCreativeAssessments(params?: any, successAction?: any) {
+  console.log("params", params);
+  const url = `/teacher_api/creative_assessment/generate`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:creative_assessment"],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+      enabled: false,
+    }
+  );
+}
+
+export function usePostCreativeAssessment(successAction?: any) {
+  const url = `/teacher_api/creative_assessment/generate`;
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    (params: any) => postRequest(axios as unknown as AxiosInstance, url, {}, {params}),
+    {
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
     }
   );
 }

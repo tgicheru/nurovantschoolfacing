@@ -612,7 +612,7 @@ export function TeachersNoteContent({ data }: { data: string[] }) {
   );
 }
 
-export function RubricContent({ data }: { data: any }) {
+export function RubricContent({ data }: { data: any }) {  
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="space-y-4">

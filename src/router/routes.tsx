@@ -18,6 +18,7 @@ const TermsAndCondition = lazy(
 
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Overview = lazy(() => import("../pages/main/overview"));
+const CoursePage = lazy(() => import("../pages/main/course"));
 const Courses = lazy(() => import("../pages/main/courses/index"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
 const LectureDetails = lazy(() => import("../pages/main/courses/lecture"));
@@ -79,6 +80,11 @@ export const routes = [
   },
   {
     path: "/courses",
+    label: "Courses",
+    component: <CoursePage />,
+  },
+  {
+    path: "/course",
     label: "Courses",
     component: <Courses />,
   },

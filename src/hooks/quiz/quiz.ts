@@ -34,9 +34,10 @@ export function useGetQuiz(params?: any) {
   const url = `/teacher_api/quiz`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:single_quiz"],
+    ["get:single_quiz", params],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
+      enabled: Boolean(params?.quiz_id),
       onError: (error: any) =>
         notification.error({
           message: "Error!",
@@ -54,7 +55,7 @@ export function useGetQuizParticipants(id: string) {
   const url = "/api_backend/quiz/get_all_results/";
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:quiz_participants"],
+    ["get:quiz_participants", id],
     () => getRequest(axios as unknown as AxiosInstance, url + id),
     {
       onError: (error: any) =>

@@ -4,17 +4,19 @@ import {
   deleteRequest,
   getRequest,
   postRequest,
+  putRequest,
 } from "../../context/requestTypes";
 import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
+import { handleObjToParam } from "../../context/utils";
 
-export function useGetCourses(params?: any) {
+export function useGetCourses(params?: any, keys?: any) {
   const url = `/teacher_api/courses/my_courses`;
   // const url = `/api_backend/lectures/get-user/${user?.info?.id || user?.info?._id}`;
   const axios = useContext(AxiosContext);
   return useQuery(
-    ["get:all_courses"],
+    ["get:all_courses", ...(keys || []).map((d: any) => params?.[d])],
     () => getRequest(axios as unknown as AxiosInstance, url, params),
     {
       onError: (error: any) =>
@@ -84,6 +86,331 @@ export function useDeleteCourse(successAction?: any, errorAction?: any) {
   return useMutation(
     async (id: any) =>
       deleteRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+
+
+// course lecture group activities API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetStudentGroups(params?: any, keys?: any) {
+  const url = `/teacher_api/student-groups`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_student_groups", ...(keys || []).map((d: any) => params?.[d])],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function useGetStudentGroup(id?: any, successAction?: any) {
+  const url = `/teacher_api/student-groups/activity`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_student_group", id],
+    () => getRequest(axios as unknown as AxiosInstance, url, {group_id: id}),
+    {
+      enabled: Boolean(id),
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function useGetGroupDetails(id?: any, keys?: any) {
+  const url = `/teacher_api/student-groups/group-by-id`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_group_details", id],
+    () => getRequest(axios as unknown as AxiosInstance, url, {group_id: id}),
+    {
+      enabled: Boolean(id),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function usePostGroupActivity(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/student-groups/activity/create";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+export function usePutStudentGroup(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/student-groups/activity/update";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      putRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+export function usePutStudentGroupSwap(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/student-groups/swap";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      putRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+export function useDeleteStudentGroup(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/student-groups/delete";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (id: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + handleObjToParam({group_id: id})),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+
+
+// course lecture pacing guide API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetAllPacingGuides(params?: any, keys?: any) {
+  const url = `/teacher_api/curriculum-alignment/get-all-alignments`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_pacing_guides", ...(keys || []).map((d: any) => params?.[d])],
+    () => getRequest(axios as unknown as AxiosInstance, url, params),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function useGetPacingGuide(id?: any, successAction?: any) {
+  const url = `/teacher_api/curriculum-alignment/get-alignment/`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:pacing_guide", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      enabled: Boolean(id),
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function usePostPacingGuide(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/curriculum-alignment/improve";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
+export function useDeletePacingGuide(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/curriculum-alignment/delete-alignment/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + payload?.id, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+export function useDeletePacingGuideLecture(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/curriculum-alignment/remove-lecture-from-alignment";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      deleteRequest(axios as unknown as AxiosInstance, url + payload?.id, payload),
     {
       onSuccess: (response: any) => {
         successAction?.(response);
