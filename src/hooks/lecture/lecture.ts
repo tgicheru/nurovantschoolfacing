@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "react-query";
 import {
   deleteRequest,
   getRequest,
+  patchRequest,
   postRequest,
 } from "../../context/requestTypes";
 import { useContext } from "react";
