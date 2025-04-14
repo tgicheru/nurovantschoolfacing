@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { useGetLectureById, usePostCreativeAssessment } from '../../../../hooks/lecture/lecture';
+import { useEditCreativeAssessmentQuiz, useGetLectureById, usePostCreativeAssessment } from '../../../../hooks/lecture/lecture';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Card, Collapse, Divider, Drawer, Form, Spin } from 'antd';
+import { Button, Card, Collapse, Divider, Drawer, Form, Input, Select, Spin } from 'antd';
 import EmptyDisplay from '../../../../components/EmptyDisplay';
 import { LuPlus } from 'react-icons/lu';
 import moment from 'moment';
@@ -22,6 +22,7 @@ function CreativeAssessmentTab() {
   const onClose = () => setIsOpen(false)
   const onOpen = () => setIsOpen(true)
   const width = window.innerWidth
+  const [form] = Form.useForm()
 
   const {
     data: getLectureData,
@@ -37,12 +38,18 @@ function CreativeAssessmentTab() {
 
   const assessmentData = (getAssessmentData?.data || getLectureData?.creative_assessment)
 
-  useEffect(() => setPayload({...payload,
-    duration: assessmentData?.duration || payload?.duration,
+  const {
+    mutate: patchAssessmentAction,
+    isLoading: patchAssessmentLoad,
+  } = useEditCreativeAssessmentQuiz(assessmentData?._id, getLectureFetch)
+
+  useEffect(() => {form.setFieldsValue(assessmentData || payload); setPayload({ ...payload,
     number_of_questions: assessmentData?.number_of_questions || payload?.number_of_questions,
-  }), [assessmentData])
+    duration: assessmentData?.duration || payload?.duration,
+  })}, [assessmentData])
 
   const handleCreateAssessment = () => postAssessmentAction({ lecture_id: lecture! })
+  const handleEditAssessment = (data: any) => patchAssessmentAction({...payload, ...data})
   return (
     <Spin spinning={getLectureLoad}>
       <div className='w-full'>
@@ -113,9 +120,9 @@ function CreativeAssessmentTab() {
               <Button onClick={onClose} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
             </div>
             <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
-            <Form layout='vertical' className='space-y-5 pb-5'>
+            <Form onFinish={handleEditAssessment} form={form} layout='vertical' className='space-y-5 pb-5'>
               <div className='w-full bg-[#E1E7FF] p-5 text-center'>
-                <Button className='text-primary !text-sm font-bold' icon={<BiStopwatch />} type='text'>Current Time Limit: 45 minutes.</Button>
+                <Button className='text-primary !text-sm font-bold' icon={<BiStopwatch />} type='text'>Current Time Limit: {assessmentData?.duration?.hours} hours, {assessmentData?.duration?.minutes} minutes.</Button>
               </div>
 
               <Form.Item label="Quick Selection Options">
@@ -132,9 +139,23 @@ function CreativeAssessmentTab() {
                   })}
                 </div>
               </Form.Item>
-              <Form>
-
-              </Form>
+              <Form.Item label="Custom Input">
+                <div className='flex items-center gap-5'>
+                  <Form.Item label="Hours">
+                    <Input value={payload?.duration?.hours} onChange={({target:{value:hours}}) => setPayload({...payload, duration: {...payload?.duration, hours}})} type='number' size='large' />
+                  </Form.Item>
+                  <p className='text-3xl font-bold text-primary'>:</p>
+                  <Form.Item label="Minutes">
+                    <Input value={payload?.duration?.minutes} onChange={({target:{value:minutes}}) => setPayload({...payload, duration: {...payload?.duration, minutes}})} type='number' size='large' />
+                  </Form.Item>
+                </div>
+              </Form.Item>
+              <Form.Item label="Numbers of Questions" name="number_of_questions">
+                <Select placeholder='Select number of questions' size='large'>
+                  {Array.from(Array(20).keys()).map(d => <Select.Option value={(d + 1)}>{(d + 1)}</Select.Option>)}
+                </Select>
+              </Form.Item>
+              <Button loading={patchAssessmentLoad} htmlType='submit' size='large' type='primary' shape='round'>Save Changes</Button>
             </Form>
           </div>
         </Drawer>
