@@ -105,9 +105,10 @@ const CurriculumMaps = () => {
                         className="w-full cursor-pointer"
                         key={idx}
                         onClick={() => {
-                          navigate(
-                            `/courses/details?id=${course?._id}&type=mapped`
-                          );
+                          // navigate(
+                          //   `/courses/details?id=${course?._id}&type=mapped`
+                          // );
+                          navigate("courses?id="+course?._id);
                         }}
                       >
                         <BorderHOC className="" rounded="rounded-[10px]">

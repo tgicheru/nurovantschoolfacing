@@ -134,6 +134,6 @@ export const deleteRequest = async (
   data?: any
 ) =>
   axios
-    ?.delete(url, data)
+    ?.delete(url, { data })
     .then(({ data }) => Promise.resolve(data))
     .catch(({ response: { data } }) => handleError(data));

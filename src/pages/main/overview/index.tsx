@@ -71,7 +71,7 @@ const OverviewPage = () => {
 
         <CurriculumMaps />
 
-        <AdaptiveLearningOverview />
+        {/* <AdaptiveLearningOverview /> */}
 
         <QuickActions />
       </div>

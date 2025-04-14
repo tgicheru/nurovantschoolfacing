@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BorderHOC } from '../../../components'
-import { Button, Divider, Drawer, Dropdown, Form, Input, Upload, Image, Select, Modal, Checkbox } from 'antd'
+import { Button, Divider, Drawer, Dropdown, Form, Input, Upload, Image, Select } from 'antd'
 import { LuDownload, LuPlus, LuSearch, LuUpload, LuUploadCloud } from 'react-icons/lu'
 import { RxDashboard } from 'react-icons/rx'
 import { GoRows } from 'react-icons/go'
@@ -15,8 +15,7 @@ import { ImSpinner } from 'react-icons/im'
 import { useSearchParams } from 'react-router-dom'
 import { TbFilterSearch } from 'react-icons/tb'
 import InviteModal from '../../../components/modals/InviteModal'
-import { LiaShareAltSolid } from 'react-icons/lia'
-import { useCreateCourse, useGetCourses, usePostPacingGuide } from '../../../hooks/courses/courses'
+import { useCreateCourse, useGetCourses } from '../../../hooks/courses/courses'
 import { FiBook, FiUploadCloud } from 'react-icons/fi'
 import { grades, states } from '../../../constants'
 import { FaChevronLeft } from 'react-icons/fa'
@@ -25,25 +24,20 @@ import ContinuousFeedbackSection from './sections/feedbacks'
 import GroupActivitiesSection from './sections/group-activities'
 import GroupAnalysisSection from './sections/group-analysis'
 import SetupGroupActivity from './sections/setup-group-activity'
-import { IoIosCloseCircleOutline } from 'react-icons/io'
 import PacingGuideSection from './sections/pacing-guide'
+import PacingGuideModal from './components/pacing-guide-modal'
 
 type IconProp = {
   className?: string
 }
 function CoursePage() {
   const [isCreate, setIsCreate] = useState(false)
-  const onOpenCreate = () => setIsCreate(true)
-  const [payload, setPayload] = useState<any>({
-    integrateWithGoogleCalendar: false
-  })
+  const [payload, setPayload] = useState<any>()
   const [params, setParams] = useSearchParams()
+  const onOpenCreate = () => setIsCreate(true)
   const [isOpen, setIsOpen] = useState(false)
   const [isScan, setIsScan] = useState(false)
-  const [isOpt, setIsOpt] = useState(false)
   const [list, setList] = useState("grid")
-  const onCloseOpt = () => setIsOpt(false)
-  const onOpenOpt = () => setIsOpt(true)
   const onClose = () => setIsOpen(false)
   const unScan = () => setIsScan(false)
   const section = params.get("section")
@@ -119,15 +113,9 @@ function CoursePage() {
     onClose()
   })
 
-  const {
-    mutate: postPaceGuideAction,
-    isLoading: postPaceGuideLoad,
-  } = usePostPacingGuide((res: any) => {setParams({section: "pacing-guide", id: res?.data?._id}); onCloseOpt()});
-
   const jurisdictions = getJuriesData?.data?.map((d: any) => ({value: d?.id, label: d?.title}))
   const jurisdiction = getJuryData?.data?.standardSets?.map((d: any) => ({value: d?.id, label: d?.title}))
 
-  const handlePacingGuide = (data: any) => postPaceGuideAction(payload)
   const handleUpload = async (file: any, key: any) => await postUplAction(file).then((res: any) => setPayload({...payload, [key]: res?.Location}))
   const handleSubmit = (data: any) => postCourseAction({...data, ...payload, start_date, end_date, learning_standards: [getStanSetData?.data], learning_standard_url: ""})
 
@@ -186,7 +174,7 @@ function CoursePage() {
             <p className='text-xs font-semibold text-[#57585A]'>-- --</p>
           </div>
           <Button onClick={() => setParams({section: "pacing-guide"})} shape='round' size='large' icon={<LuDownload />}>My Pacing Guides</Button>
-          <Button onClick={onOpenOpt} type="primary" icon={<LuUpload />} loading={postPaceGuideLoad} shape='round' size='large'>Import Pacing Guide</Button>
+          <PacingGuideModal isUpload />
         </div>
       </div>
 
@@ -200,7 +188,7 @@ function CoursePage() {
 
             <div className='h-full flex items-center gap-2'>
               <Button icon={<TbFilterSearch className='text-xl' />} type='text'>Filter</Button>
-              <Button className='bg-[#E1E7FF] text-primary' size='large' shape='round' icon={<LiaShareAltSolid className='text-xl' />} type='primary' iconPosition='end'>Share Course</Button>
+              {/* <Button className='bg-[#E1E7FF] text-primary' size='large' shape='round' icon={<LiaShareAltSolid className='text-xl' />} type='primary' iconPosition='end'>Share Course</Button> */}
               <Divider type='vertical' className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
               <Button icon={<LuSearch className='text-xl' />} type='text' />
               <Divider type='vertical' className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
@@ -420,50 +408,6 @@ function CoursePage() {
           </Form>
         </div>
       </Drawer>
-
-      {/* upload pacing guide modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
-      <Modal
-        open={isOpt}
-        footer={false}
-        closeIcon={false}
-        onCancel={onCloseOpt}
-        width={width <= 500 ? width : 500}
-        classNames={{ content: "!bg-transparent !shadow-none" }}
-      >
-        <div className='w-full p-5 space-y-5 bg-white rounded-3xl'>
-          <div className='flex justify-between'>
-            <p className='text-2xl font-bold text-[#161617]'>Import Pacing Guide</p>
-            <Button onClick={onCloseOpt} type='text' icon={<IoIosCloseCircleOutline className='text-2xl text-primary' />} />
-          </div>
-          <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
-          <Form onFinish={handlePacingGuide} layout='vertical'>
-            <Form.Item label="Upload Pacing Guide Document">
-              <Upload.Dragger {...props((file: any) => handleUpload(file, "pacing_guide_url"))} disabled={postUplLoad}>
-                <p className="ant-upload-drag-icon">
-                  {postUplLoad ? <ImSpinner className="!text-2xl mx-auto !animate-spin" /> : <LuUploadCloud className="!text-2xl mx-auto" />}
-                </p>
-                <p hidden={!payload?.pacing_guide_url} className="text-sm">Document Uploaded.</p>
-                <p hidden={payload?.pacing_guide_url} className="text-sm"><span className='text-primary'>Click to upload</span> or drag and drop</p>
-                <p hidden={payload?.pacing_guide_url} className=" text-xs">File size no more than 10MB</p>
-              </Upload.Dragger>
-            </Form.Item>
-            <div className='rounded-xl bg-[#4970FC0A] p-5 space-y-2'>
-              <p className='text-base font-semibold text-primary'>Before you upload</p>
-              <ul className='px-5 list-disc'>
-                {[
-                  "Ensure your file includes weekly breakdowns",
-                  "Check that learning objectives are clearly defined",
-                  "Verify all resources are listed",
-                ].map(d => <li>{d}</li>)}
-              </ul>
-            </div>
-            <Form.Item label="Integrate With Google Calendar">
-              <Checkbox checked={payload?.integrateWithGoogleCalendar} onChange={(e) => setPayload({...payload, integrateWithGoogleCalendar: e?.target?.checked})}>Integrate With Google Calendar</Checkbox>
-            </Form.Item>
-            <Button loading={postPaceGuideLoad} disabled={!payload?.pacing_guide_url} className="bg-[#4970FC]" block size="large" type="primary" htmlType='submit' shape="round">Continue</Button>
-          </Form>
-        </div>
-      </Modal>
 
       <InviteModal isOpen={isScan} onClose={unScan} otherValue={inviteURL.concat(payload?.id)} />
     </div>

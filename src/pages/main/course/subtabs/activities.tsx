@@ -22,7 +22,7 @@ function ActivitiesTab({ data }: { data: any }) {
   ]
   return (
     <div className='w-full space-y-5'>
-      <div className="flex justify-between items-center mb-4">
+      <div hidden className="hidden justify-between items-center">
         <Select size='large' placeholder="Project Based Learning" options={items} />
         <Button type="primary" size='large' onClick={handleFeedback}>Continuous Feedback Loop</Button>
       </div>

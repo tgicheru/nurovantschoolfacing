@@ -72,21 +72,21 @@ const MainLayout = ({ children }: Props) => {
       label: "Courses",
       icon: "",
     },
-    {
-      key: "/adaptive-learning",
-      label: "Adaptive Learning",
-      icon: "",
-    },
-    {
-      key: "/question-tracker",
-      label: "Question Tracker",
-      icon: "",
-    },
-    {
-      key: "/speech-rate",
-      label: "Speech Rate",
-      icon: "",
-    },
+    // {
+    //   key: "/adaptive-learning",
+    //   label: "Adaptive Learning",
+    //   icon: "",
+    // },
+    // {
+    //   key: "/question-tracker",
+    //   label: "Question Tracker",
+    //   icon: "",
+    // },
+    // {
+    //   key: "/speech-rate",
+    //   label: "Speech Rate",
+    //   icon: "",
+    // },
     {
       key: "/question-bank",
       label: "Question Bank",

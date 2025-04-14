@@ -6,7 +6,6 @@ import EmptyDisplay from '../../../../components/EmptyDisplay';
 import { LuPlus } from 'react-icons/lu';
 import moment from 'moment';
 import { BorderHOC } from '../../../../components';
-import { BsChatDots } from 'react-icons/bs';
 import { isEqual } from '../../../../context/utils';
 import LearningObjectiveTab from '../subtabs/learning-objective';
 import MaterialsNeededTab from '../subtabs/materials-needed';
@@ -14,6 +13,7 @@ import HomeworkTab from '../subtabs/homework';
 import TeachersNoteTab from '../subtabs/teachers-note';
 import ScoringGuideTab from '../subtabs/scoring-guide';
 import ActivitiesTab from '../subtabs/activities';
+import LessonPLanDrawer from '../components/lesson-plan-drawer';
 
 function LessonPlanTab() {
   const [param, setParam] = useSearchParams()
@@ -49,11 +49,11 @@ function LessonPlanTab() {
   return (
     <Spin spinning={getLectureLoad}>
       <div className='w-full'>
-        <EmptyDisplay hidden={getLectureData?.lesson_plan} className='w-full h-[50vh]'>
+        <EmptyDisplay hidden={lessonPlanData} className='w-full h-[50vh]'>
           <Button loading={getLessonPlanLoad} onClick={getLessonPlanFetch as any} className='!text-sm !font-bold bg-[#4970FC]' icon={<LuPlus className='text-xl' />} size='large' type='primary' shape='round'>Generate material</Button>
         </EmptyDisplay>
 
-        <div hidden={!getLectureData?.lesson_plan} className='w-full space-y-5'>
+        <div hidden={!lessonPlanData} className='w-full space-y-5'>
           <Card className="!bg-[#E1E7FF]">
             <div className="flex items-center flex-1 justify-between">
               <div className="flex flex-col gap-1">
@@ -87,10 +87,7 @@ function LessonPlanTab() {
                   </ul>
                 </div>
               </BorderHOC>
-              <div className='flex items-center gap-3'>
-                <Button type='primary' size='large' shape='round'>Analyze Lesson Plan</Button>
-                <Button size='large' shape='circle' icon={<BsChatDots />} />
-              </div>
+              <LessonPLanDrawer id={lessonPlanData?._id} />
             </div>
             
             <div className='w-full'>

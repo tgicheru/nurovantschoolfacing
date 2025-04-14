@@ -1,18 +1,23 @@
 import React from "react";
 import ExportImage from "../../assets/export.svg";
 import { BorderHOC } from "../BorderHOC";
+import { useNavigate } from "react-router";
 
 export const QuickActions = () => {
+  const navigate = useNavigate()
   const options = [
     {
+      path: "/courses",
       name: "Create a course",
       detail: `Create a new course for students at any academic level.`,
     },
     {
+      path: "/courses",
       name: "Create quizes",
       detail: `Create a new course for students at any academic level.`,
     },
     {
+      path: "/adaptive-learning",
       name: "Create Adaptive Learning System",
       detail: `Create a new course for students at any academic level.`,
     },
@@ -24,9 +29,10 @@ export const QuickActions = () => {
         {options.map((option, index) => (
           <div key={index}>
             <BorderHOC
-              className="overflow-hidden"
               padding="p-[1px]"
               rounded={"rounded-[10px]"}
+              className="overflow-hidden"
+              onClick={() => navigate(option?.path)}
             >
               <div className="border border-neutral-200 rounded-[10px] p-6">
                 <div className="flex items-center w-full justify-between">

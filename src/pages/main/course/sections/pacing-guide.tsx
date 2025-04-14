@@ -7,6 +7,7 @@ import { useDeletePacingGuide, useDeletePacingGuideLecture, useGetAllPacingGuide
 import { PiDotsThreeOutline } from 'react-icons/pi'
 import { useSearchParams } from 'react-router-dom'
 import moment from 'moment'
+import PacingGuideModal from '../components/pacing-guide-modal'
 
 function PacingGuideSection() {
   const [params, setParams] = useSearchParams()
@@ -29,7 +30,7 @@ function PacingGuideSection() {
     isLoading: getPaceLoad,
   } = useGetPacingGuide(id)
 
-  const handleFetch = () => {getAllPacesFetch(); getPaceFetch()}
+  const handleFetch = () => {getAllPacesFetch(); (id && getPaceFetch())}
 
   const {
     mutate: deletePaceAction,
@@ -50,7 +51,7 @@ function PacingGuideSection() {
     <div className='w-full space-y-5'>
       <div className='w-full flex justify-between items-center'>
         <Button onClick={goBack} className='text-primary' icon={<LuChevronLeft />} type='text'>Back</Button>
-        <p className='text-2xl font-bold text-[#161617]'>Pacing Guide {}</p>
+        <p className='text-2xl font-bold text-[#161617]'>Pacing Guide</p>
         <Button href={getPaceData?.ics_file_url} disabled={!getPaceData?.ics_file_url} type='primary' shape='round' icon={<LuUpload />}>Export</Button>
       </div>
 
@@ -63,7 +64,7 @@ function PacingGuideSection() {
                 <Dropdown menu={{ items: [
                   { key: "delete", label: "Delete", onClick: handleDelete },
                 ] }}>
-                  <Button loading={deletePaceLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                  <Button loading={deletePaceLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl text-primary' />} />
                 </Dropdown>
               </div>
               <p className='text-sm font-normal text-[#7C7C7C]'>Grade Level: {getPaceData?.grade_level}</p>
@@ -76,8 +77,9 @@ function PacingGuideSection() {
 
             <p className='text-base font-semibold text-primary'>Lectures / Lessons: </p>
 
-            <div className='grid grid-cols-3'>
+            <div className='flex justify-between items-center'>
               <Input value={search} onChange={({target:{value}}) => setSearch(value)} size='large' placeholder='Search through lessons' />
+              <PacingGuideModal isAddLecture />
             </div>
 
             <div className='w-full grid md:grid-cols-2 xl:grid-cols-4 gap-5'>
@@ -91,7 +93,7 @@ function PacingGuideSection() {
                       <Dropdown menu={{ items: [
                         { key: "delete", label: "Delete", onClick: onDelete },
                       ] }}>
-                        <Button loading={deletePaceLectureLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                        <Button loading={deletePaceLectureLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl text-primary' />} />
                       </Dropdown>
                     </div>
                     <p className='text-xs font-normal text-[#7C7C7C]'>Standard Code: {d?.standard_code}</p>
@@ -119,7 +121,7 @@ function PacingGuideSection() {
       <div className='w-full flex justify-between items-center'>
         <Button onClick={goBack} className='text-primary' icon={<LuChevronLeft />} type='text'>Back</Button>
         <p className='text-2xl font-bold text-[#161617]'>Pacing Guides</p>
-        <div />
+        <PacingGuideModal />
       </div>
 
       <BorderHOC rounded='rounded-xl'>
@@ -133,18 +135,18 @@ function PacingGuideSection() {
               const onView = () => setParams({section, id: d?._id} as any)
               return (
               <BorderHOC rounded='rounded-xl'>
-                <div className='p-5 space-y-'>
+                <div className='p-5 space-y-1'>
                   <div className='flex justify-between items-center'>
                     <p className=''>{d?.course_name}</p>
                     <Dropdown menu={{ items: [
                       { key: "view", label: "View", onClick: onView },
                       { key: "delete", label: "Delete", onClick: onDelete },
                     ] }}>
-                      <Button loading={deletePaceLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
+                      <Button loading={deletePaceLoad} type='text' icon={<PiDotsThreeOutline className='text-2xl text-primary' />} />
                     </Dropdown>
                   </div>
-                  <p className='text-sm font-normal text-[#7C7C7C]'>Grade Level: {d?.grade_level}</p>
-                  <p className='text-sm font-normal text-[#7C7C7C]'>Creation Date: {moment(d?.created_at).format("ll")}</p>
+                  <p className='text-sm font-normal text-[#7C7C7C]'>Grade Level: <b>{d?.grade_level}</b></p>
+                  <p className='text-sm font-normal text-[#7C7C7C]'>Creation Date: <b>{moment(d?.created_at).format("lll")}</b></p>
                   <div className='flex items-center gap-3'>
                     <p className='text-sm font-normal text-[#7C7C7C]'>Google Calendar Integration: </p>
                     <Tag color={d?.is_integrated_with_google_calendar ? "success" : "processing"}>{d?.is_integrated_with_google_calendar ? "Active" : "Inactive"}</Tag>
