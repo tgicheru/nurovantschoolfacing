@@ -36,8 +36,6 @@ function CourseLectureSection() {
   const [form] = Form.useForm()
   const id = param.get("id")
 
-  console.log(user)
-
   const chatBox = document.getElementById("chat-box");
   const handleChatScroll = () => setTimeout(() => chatBox?.scroll({ top: chatBox?.scrollHeight, behavior: "smooth" }), 500);
 
@@ -57,7 +55,6 @@ function CourseLectureSection() {
     isError: postFeedbackError,
     isLoading: postFeedbackLoad,
   } = usePostCourseFeedback(getAllFeedbacksFetch, getAllFeedbacksFetch)
-  
 
   const handleLectures = () => setParam({ id } as any)
   const handleTab = (tab: any) => {setTab(tab); setParam({ id, lecture, tab } as any)}

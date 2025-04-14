@@ -27,10 +27,10 @@ const OverviewPage = () => {
       name: "Students",
       value: "100",
     },
-    {
-      name: "Adaptive learning",
-      value: "12",
-    },
+    // {
+    //   name: "Adaptive learning",
+    //   value: "12",
+    // },
   ];
 
   return (
@@ -45,7 +45,7 @@ const OverviewPage = () => {
       />
 
       <div className="w-full flex flex-col gap-[15px]">
-        <div className="w-full grid grid-cols-4 gap-[14px]">
+        <div className="w-full grid grid-cols-3 gap-[14px]">
           {metricsData.map((metric, index) => (
             <div key={index}>
               <BorderHOC

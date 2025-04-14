@@ -29,7 +29,8 @@ function QuizQuestionsTab({ data }: { data: any }) {
                 children: <div className='space-y-2'>
                   <p>Options</p>
                   <ol className='px-5 list-decimal'>
-                    {d?.options?.map((o: string) => <li>{o}</li>)}
+                    {Array.isArray(d?.options) && d?.options?.map((o: string) => <li>{o}</li>)}
+                    {!Array.isArray(d?.options) && Object.entries(d?.options)?.map(([k, v]) => <li>{String(v)}</li>)}
                   </ol>
                   <p>Answer: {d?.answer}</p>
                 </div>

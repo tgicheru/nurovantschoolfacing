@@ -9,7 +9,6 @@ import QuizQuestionsTab from '../subtabs/questions';
 import QuizParticipantsTab from '../subtabs/participants';
 import { AiOutlineUserAdd } from 'react-icons/ai';
 import InviteModal from '../../../../components/modals/InviteModal';
-import QuizResultAnalysisTab from '../subtabs/analysis';
 
 function QuizTab() {
   const [param] = useSearchParams()
@@ -34,14 +33,14 @@ function QuizTab() {
   const {
     mutate: postQuizAction,
     isLoading: postQuizLoad,
-  } = usePostQuiz(() => {getLectureFetch(); getQuizFetch()})
+  } = usePostQuiz(() => {getLectureFetch(); (getLectureData?.quiz?._id && getQuizFetch())})
 
   const quizData = (getQuizData?.data || getLectureData?.quiz)
 
   const tabs = [
     { key: "questions", label: "Quiz Questions", children: <QuizQuestionsTab data={quizData} /> },
     { key: "participants", label: "Participants", children: <QuizParticipantsTab data={quizData} /> },
-    { key: "analysis", label: "Result Analysis", children: <QuizResultAnalysisTab data={quizData} /> },
+    // { key: "analysis", label: "Result Analysis", children: <QuizResultAnalysisTab data={quizData} /> },
   ]
 
   const handleCreateQuiz = () => postQuizAction({ lecture_id: lecture, duration: "30" })
