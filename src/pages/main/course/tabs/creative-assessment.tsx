@@ -62,7 +62,7 @@ function CreativeAssessmentTab() {
                   </ul>
                 </div>
               </BorderHOC>
-              <Button type='primary' shape='round'>Edit Quiz</Button>
+              <Button hidden type='primary' shape='round'>Edit Quiz</Button>
             </div>
             
             <div className='w-full'>

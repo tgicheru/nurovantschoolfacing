@@ -376,6 +376,36 @@ export function usePostPacingGuide(successAction?: any, errorAction?: any) {
 }
 
 
+export function usePostPacingGuideLesson(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/curriculum-alignment/add-lecture-to-alignment/";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url + payload?.id, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      onError: (error: any) => {
+        errorAction?.();
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        });
+      },
+    }
+  );
+}
+
+
 export function useDeletePacingGuide(successAction?: any, errorAction?: any) {
   const url = "/teacher_api/curriculum-alignment/delete-alignment/";
   const axios = useContext(AxiosContext);
@@ -405,8 +435,9 @@ export function useDeletePacingGuide(successAction?: any, errorAction?: any) {
   );
 }
 
+
 export function useDeletePacingGuideLecture(successAction?: any, errorAction?: any) {
-  const url = "/teacher_api/curriculum-alignment/remove-lecture-from-alignment";
+  const url = "/teacher_api/curriculum-alignment/remove-lecture-from-alignment/";
   const axios = useContext(AxiosContext);
   return useMutation(
     async (payload: any) =>
@@ -433,3 +464,134 @@ export function useDeletePacingGuideLecture(successAction?: any, errorAction?: a
     }
   );
 }
+
+
+
+// course lecture lesson plan API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetAllLessonPlanAnalysis(id?: string) {
+  const url = `/teacher_api/lesson_plan/get-conversation`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_lesson_plan_analysis", id],
+    () => getRequest(axios as unknown as AxiosInstance, url, {lessonPlanId: id}),
+    {
+      enabled: Boolean(id),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function usePostLessonPlanAnalyze(id?: string, successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/lesson_plan/analyze";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url + handleObjToParam({lessonPlanId: id}), payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      // onError: (error: any) => {
+      //   errorAction?.();
+      //   notification.error({
+      //     message: "Error!",
+      //     description: error?.message
+      //       ? Object.entries(error?.errors || { key: [error?.message] })
+      //           ?.map(([, value]) => (value as any)?.join(", "))
+      //           ?.join(", ")
+      //       : "something went wrong please check internet connection.",
+      //   });
+      // },
+    }
+  );
+}
+
+
+
+
+// course lecture feedback API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetAllCourseFeedbacks() {
+  const url = `/teacher_api/course-feedback/all-feedbacks`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_course_feedbacks"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function useGetAllLectureFeedbacks(id?: string) {
+  const url = `/teacher_api/course-feedback/lecture/`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_lecture_feedbacks"],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      enabled: Boolean(id),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
+export function usePostCourseFeedback(successAction?: any, errorAction?: any) {
+  const url = "/teacher_api/course-feedback/create";
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    async (payload: any) =>
+      postRequest(axios as unknown as AxiosInstance, url, payload),
+    {
+      onSuccess: (response: any) => {
+        successAction?.(response);
+        notification.success({
+          message: "Success!",
+          description: response?.message || "action successful.",
+        });
+      },
+      // onError: (error: any) => {
+      //   errorAction?.();
+      //   notification.error({
+      //     message: "Error!",
+      //     description: error?.message
+      //       ? Object.entries(error?.errors || { key: [error?.message] })
+      //           ?.map(([, value]) => (value as any)?.join(", "))
+      //           ?.join(", ")
+      //       : "something went wrong please check internet connection.",
+      //   });
+      // },
+    }
+  );
+}
+

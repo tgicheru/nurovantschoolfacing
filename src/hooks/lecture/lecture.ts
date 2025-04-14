@@ -219,6 +219,26 @@ export function usePostCreativeAssessment(successAction?: any) {
   );
 }
 
+export function useEditCreativeAssessmentQuiz(id?: string, successAction?: any) {
+  const url = `/teacher_api/creative_assessment/settings?assessment_id=`;
+  const axios = useContext(AxiosContext);
+  return useMutation(
+    (payload: any) => patchRequest(axios as unknown as AxiosInstance, url + id, payload),
+    {
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 export function useGeneratePacingGuide(params?: any, successAction?: any) {
   console.log("params", params);
   const url = `/teacher_api/curriculum_alignment/generate`;

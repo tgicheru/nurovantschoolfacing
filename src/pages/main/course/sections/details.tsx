@@ -7,7 +7,6 @@ import { PiBookOpenText, PiDotsThreeOutline } from 'react-icons/pi';
 import { BorderHOC } from '../../../../components';
 import { TbCards, TbFilterSearch, TbMessageQuestion } from 'react-icons/tb';
 import { LuBook, LuPlus, LuSearch, LuUpload } from 'react-icons/lu';
-import { LiaShareAltSolid } from 'react-icons/lia';
 import { RxDashboard } from 'react-icons/rx';
 import { GoDotFill, GoRows } from 'react-icons/go';
 import { handleObj, isEqual } from '../../../../context/utils';
@@ -34,6 +33,7 @@ function CourseDetailsSection() {
 
   const handleView = (lecture: any, tab?: any) => setParam(handleObj({ id, lecture, tab }) as any)
 
+
   const lists = [
     { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
     { key: "row", Icon: ({ className }: IconProp) => <GoRows className={className} /> },
@@ -50,6 +50,7 @@ function CourseDetailsSection() {
     pages: Math.ceil(getCourseData?.data?.lectures?.length / 9),
     lectures: [...(getCourseData?.data?.lectures || [])]?.slice(((page - 1) * 9), (page * 9)),
   }
+
 
   if (lecture) return <CourseLectureSection />
   return (
@@ -102,7 +103,7 @@ function CourseDetailsSection() {
   
               <div className='h-full flex items-center gap-2'>
                 <Button icon={<TbFilterSearch className='text-xl' />} type='text'>Filter</Button>
-                <Button className='bg-[#E1E7FF] text-primary' size='large' shape='round' icon={<LiaShareAltSolid className='text-xl' />} type='primary' iconPosition='end'>Share Course</Button>
+                {/* <Button className='bg-[#E1E7FF] text-primary' size='large' shape='round' icon={<LiaShareAltSolid className='text-xl' />} type='primary' iconPosition='end'>Share Course</Button> */}
                 <Divider type='vertical' className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
                 <Button icon={<LuSearch className='text-xl' />} type='text' />
                 <Divider type='vertical' className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
@@ -112,7 +113,7 @@ function CourseDetailsSection() {
                   return (<Button className={String(isKey && "bg-[#E7E7E7]")} onClick={handleList} icon={<Icon className='text-lg' />} type='text' shape='circle' />)
                 })}
                 <Divider type='vertical'  className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
-                <Button onClick={onOpenOpt} className='!text-sm !font-bold bg-[#4970FC]' icon={<LuPlus className='text-xl' />} size='large' type='primary' shape='round'>Create lecture</Button>
+                <Button hidden onClick={onOpenOpt} className='!text-sm !font-bold bg-[#4970FC]' icon={<LuPlus className='text-xl' />} size='large' type='primary' shape='round'>Create lecture</Button>
               </div>
             </div>
   
@@ -256,6 +257,8 @@ function CourseDetailsSection() {
             </div>
           </div>
         </Modal>
+
+        
       </div>
     </Spin>
   )
