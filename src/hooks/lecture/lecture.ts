@@ -225,7 +225,9 @@ export function useEditCreativeAssessmentQuiz(id?: string, successAction?: any) 
   return useMutation(
     (payload: any) => patchRequest(axios as unknown as AxiosInstance, url + id, payload),
     {
-      onSuccess: (res: any) => successAction?.(res),
+      onSuccess: (res: any) => { successAction?.(res)
+        notification.success({ message: "Success", description: "action successful" })
+      },
       onError: (error: any) =>
         notification.error({
           message: "Error!",

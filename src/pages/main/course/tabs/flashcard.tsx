@@ -79,7 +79,7 @@ function FlashcardTab() {
   const {
     mutate: postFlashcardAction,
     isLoading: postFlashcardLoad,
-  } = usePostFlashcards(() => {getLectureFetch(); getFlashcardFetch()}, lecture!)
+  } = usePostFlashcards(() => {getLectureFetch(); (getLectureData?.flash_card?._id && getFlashcardFetch())}, lecture!)
 
   const flashcardData = (getFlashcardData?.data || getLectureData?.flash_card)
   const CurrentFlashcard: any = (flashcardData?.flash_cards || [])?.at(activeQuest)

@@ -17,7 +17,7 @@ const OverviewPage = () => {
   const metricsData = [
     {
       name: "Lectures",
-      value: "6",
+      value: "0",
     },
     {
       name: "Questions bank",
@@ -25,7 +25,7 @@ const OverviewPage = () => {
     },
     {
       name: "Students",
-      value: "100",
+      value: "0",
     },
     // {
     //   name: "Adaptive learning",

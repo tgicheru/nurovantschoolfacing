@@ -3,11 +3,20 @@ import React from 'react'
 import { LuChevronLeft, LuUpload } from 'react-icons/lu';
 import { BorderHOC } from '../../../../components';
 import { useNavigate } from 'react-router';
+import { useGetGroupAnalysis } from '../../../../hooks/courses/courses';
+import { useSearchParams } from 'react-router-dom';
 
 function GroupAnalysisSection() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const id = params.get("id")
 
   const goBack = () => navigate(-1)
+
+  const {
+    data: getAnalysisData,
+    isLoading: getAnalysisLoad,
+  } = useGetGroupAnalysis(id)
 
   return (
     <div className='w-full space-y-5'>
@@ -20,9 +29,11 @@ function GroupAnalysisSection() {
       <Spin spinning={false}>
         <div className='w-full space-y-5'>
           <BorderHOC rounded='rounded-2xl'>
-            <div>
+            <Spin spinning={getAnalysisLoad}>
+              <div className='w-full p-5'>
 
-            </div>
+              </div>
+            </Spin>
           </BorderHOC>
         </div>
       </Spin>

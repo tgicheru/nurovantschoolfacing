@@ -29,7 +29,6 @@ function GroupActivitiesSection() {
   const id = params.get("id")
 
   const goBack = () => navigate(-1)
-  const handleAnalysis = () => setParams({id, lecture, section: "group-analysis"} as any)
 
   const props = (onChange: any) => ({
     name: "file",
@@ -96,7 +95,8 @@ function GroupActivitiesSection() {
       <div className='w-full flex justify-between items-center'>
         <Button onClick={goBack} className='text-primary' icon={<LuChevronLeft />} type='text'>Back</Button>
         <p className='text-2xl font-bold text-[#161617]'>Group Activities</p>
-        <Button onClick={handleAnalysis} type='primary' shape='round'>Grouping Analysis</Button>
+        <div />
+        {/* <Button onClick={handleAnalysis} type='primary' shape='round'>Grouping Analysis</Button> */}
       </div>
 
       <Spin spinning={getStudGroupsLoad}>
@@ -111,7 +111,7 @@ function GroupActivitiesSection() {
               {getStudGroupsData?.data?.map((d: any) => {
                 const active = Boolean(d?.activities?.length)
                 const handleEdit = () => {setPayload({...payload, ...d}); onOpen()}
-                const handleSetup = () => { if (active) return handleEdit()
+                const handleSetup = () => { if (active) return setParams({id, lecture, group: d?._id, section: "group-analysis"} as any)
                   setParams({id, lecture, group: d?._id, section: "setup-group-activity"} as any)
                 }
                 return (
@@ -121,7 +121,7 @@ function GroupActivitiesSection() {
                         <div className='flex items-center gap-3'>
                           <Avatar size="large" className='bg-[#E1E7FF]' shape='square' icon={<PiBookOpenText className='text-primary' />} />
                           <div>
-                            <Button onClick={handleSetup} className='text-base font-bold' type='text'>{d?.name}</Button>
+                            <Button title='View grouping analysis' onClick={handleSetup} className='text-base font-bold' type='text'>{d?.name}</Button>
                             <p className='text-sm font-normal text-[#7C7C7C]'>{d?.subject}</p>
                           </div>
                         </div>

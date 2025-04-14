@@ -202,6 +202,29 @@ export function useGetGroupDetails(id?: any, keys?: any) {
 }
 
 
+export function useGetGroupAnalysis(id?: any, successAction?: any) {
+  const url = `/teacher_api/student-groups/analytics`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:group_analytics", id],
+    () => getRequest(axios as unknown as AxiosInstance, url, {group_id: id}),
+    {
+      enabled: Boolean(id),
+      onSuccess: (res: any) => successAction?.(res),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
+
 export function usePostGroupActivity(successAction?: any, errorAction?: any) {
   const url = "/teacher_api/student-groups/activity/create";
   const axios = useContext(AxiosContext);
