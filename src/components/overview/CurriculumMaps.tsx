@@ -81,7 +81,8 @@ const CurriculumMaps = () => {
                 </div>
                 <BorderHOC className="h-full !w-[1px]" />
                 <Button
-                  onClick={onOpen}
+                  // onClick={onOpen}
+                  onClick={() => navigate("/courses")}
                   className="bg-primary !rounded-[1000px]"
                   type="primary"
                   size="large"
@@ -271,7 +272,8 @@ const CurriculumMaps = () => {
                 </div>
 
                 <Button
-                  onClick={onOpen}
+                  // onClick={onOpen}
+                  onClick={() => navigate("/courses")}
                   className="bg-primary !rounded-[1000px]"
                   type="primary"
                   size="large"

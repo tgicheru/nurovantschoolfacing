@@ -125,11 +125,11 @@ function PacingGuideSection() {
         <PacingGuideModal isUpload />
       </div>
 
-      <BorderHOC rounded='rounded-xl'>
-        <EmptyDisplay hidden={getAllPacesData?.length} className='w-full h-[50vh] py-10'>
-          <PacingGuideModal isUpload />
-        </EmptyDisplay>
-        <Spin spinning={getAllPacesLoad}>
+      <Spin spinning={getAllPacesLoad}>
+        <BorderHOC rounded='rounded-xl'>
+          <EmptyDisplay hidden={getAllPacesData?.length} className='w-full h-[50vh] py-10'>
+            <PacingGuideModal isUpload />
+          </EmptyDisplay>
           <div className='w-full grid md:grid-cols-2 xl:grid-cols-3 gap-5 p-5'>
             {getAllPacesData?.map((d: any) => {
               const onDelete = () => deletePaceAction({ id: d?._id,
@@ -159,8 +159,8 @@ function PacingGuideSection() {
               </BorderHOC>
             )})}
           </div>
-        </Spin>
-      </BorderHOC>
+        </BorderHOC>
+      </Spin>
     </div>
   )
 }
