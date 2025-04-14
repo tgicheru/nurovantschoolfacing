@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { message, notification } from "antd";
 import { useMutation, useQuery } from "react-query";
 import {
   deleteRequest,
@@ -10,6 +10,8 @@ import { useContext } from "react";
 import { AxiosContext } from "../../context/AxiosContext";
 import { AxiosInstance } from "axios";
 import { handleObjToParam } from "../../context/utils";
+import { useRecoilValue } from "recoil";
+import authAtom from "../../atoms/auth/auth.atom";
 
 export function useGetCourses(params?: any, keys?: any) {
   const url = `/teacher_api/courses/my_courses`;
@@ -597,13 +599,18 @@ export function usePostCourseFeedback(successAction?: any, errorAction?: any) {
 
 
 // course lecture feedback API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-export function useGetGoogleCalendarAuthURL() {
+export function usePostGoogleCalendarAuthURL(successAction?: any) {
   const url = `/teacher_api/google/auth-url`;
+  const { user } = useRecoilValue(authAtom);
   const axios = useContext(AxiosContext);
-  return useQuery(
-    ["get:google_calendar_auth_url"],
-    () => getRequest(axios as unknown as AxiosInstance, url),
+  return useMutation(
+    (d: any) => getRequest(axios as unknown as AxiosInstance, url + handleObjToParam({user_id: user?._id})),
     {
+      onSuccess: (res: any) => {
+        successAction?.(res)
+        message.success("you'll be redirected to continue authentication." )
+        setTimeout(() => { window.location.href = res?.authUrl }, 3000);
+      },
       onError: (error: any) =>
         notification.error({
           message: "Error!",

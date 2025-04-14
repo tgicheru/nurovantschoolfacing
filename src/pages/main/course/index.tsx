@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { BorderHOC } from '../../../components'
 import { Button, Divider, Drawer, Dropdown, Form, Input, Upload, Image, Select, Checkbox } from 'antd'
-import { LuDownload, LuPlus, LuSearch, LuUpload, LuUploadCloud } from 'react-icons/lu'
+import { LuPlus, LuSearch, LuUpload, LuUploadCloud } from 'react-icons/lu'
 import { RxDashboard } from 'react-icons/rx'
 import { GoRows } from 'react-icons/go'
 import EmptyDisplay from '../../../components/EmptyDisplay'
@@ -15,7 +15,7 @@ import { ImSpinner } from 'react-icons/im'
 import { useSearchParams } from 'react-router-dom'
 import { TbFilterSearch } from 'react-icons/tb'
 import InviteModal from '../../../components/modals/InviteModal'
-import { useCreateCourse, useGetCourses } from '../../../hooks/courses/courses'
+import { useCreateCourse, useGetCourses, usePostGoogleCalendarAuthURL } from '../../../hooks/courses/courses'
 import { FiBook, FiUploadCloud } from 'react-icons/fi'
 import { grades, states } from '../../../constants'
 import { FaChevronLeft } from 'react-icons/fa'
@@ -25,7 +25,9 @@ import GroupActivitiesSection from './sections/group-activities'
 import GroupAnalysisSection from './sections/group-analysis'
 import SetupGroupActivity from './sections/setup-group-activity'
 import PacingGuideSection from './sections/pacing-guide'
-import PacingGuideModal from './components/pacing-guide-modal'
+import { FcGoogle } from 'react-icons/fc'
+import { useRecoilValue } from 'recoil'
+import authAtom from '../../../atoms/auth/auth.atom'
 
 type IconProp = {
   className?: string
@@ -39,6 +41,7 @@ function CoursePage() {
   const onOpenCreate = () => setIsCreate(true)
   const [isOpen, setIsOpen] = useState(false)
   const [isScan, setIsScan] = useState(false)
+  const { user } = useRecoilValue(authAtom)
   const [list, setList] = useState("grid")
   const onClose = () => setIsOpen(false)
   const unScan = () => setIsScan(false)
@@ -115,6 +118,11 @@ function CoursePage() {
     onClose()
   })
 
+  const {
+    mutate: postGoogleAuthAction,
+    isLoading: postGoogleAuthLoad,
+  } = usePostGoogleCalendarAuthURL()
+
   const jurisdictions = getJuriesData?.data?.map((d: any) => ({value: d?.id, label: d?.title}))
   const jurisdiction = getJuryData?.data?.standardSets?.map((d: any) => ({value: d?.id, label: d?.title}))
 
@@ -175,8 +183,8 @@ function CoursePage() {
             <p className='text-sm font-bold text-[#161617]'>Students</p>
             <p className='text-xs font-semibold text-[#57585A]'>-- --</p>
           </div>
-          <Button onClick={() => setParams({section: "pacing-guide"})} shape='round' size='large' icon={<LuDownload />}>My Pacing Guides</Button>
-          <PacingGuideModal isUpload />
+          <Button onClick={postGoogleAuthAction} loading={postGoogleAuthLoad} hidden={user?.isGoogleConnected} icon={<FcGoogle />} shape='round' size='large'>Google Calendar Auth</Button>
+          <Button onClick={() => setParams({section: "pacing-guide"})} type='primary' shape='round' size='large'>Pacing Guides</Button>
         </div>
       </div>
 
@@ -218,7 +226,7 @@ function CoursePage() {
                   return (
                   <BorderHOC key={d?._id} rounded='rounded-xl' className='w-full h-full' childClass='w-full h-full p-3 space-y-3'>
                     <div className='w-full h-[100px] flex justify-center items-center'>
-                      <Image className='!w-full !rounded-xl' height={100} src={d?.course_image} alt={d?.course_title} />
+                      <Image preview={false} className='!w-full !rounded-xl' height={100} src={d?.course_image} alt={d?.course_title} />
                     </div>
                     <div className='flex justify-between items-center gap-5'>
                       <div>

@@ -56,7 +56,7 @@ function PacingGuideModal({
 
   return (
     <div>
-      <Button hidden={!isUpload} onClick={onOpen} type="primary" icon={<LuUpload />} loading={postPaceGuideLoad} shape='round' size='large'>Import Pacing Guide</Button>
+      <Button hidden={!isUpload} onClick={onOpen} type="primary" icon={<LuUpload />} loading={postPaceGuideLoad} shape='round' size='large'>Create Pacing Guide</Button>
       <Button hidden={!isAddLecture} onClick={onOpenCreate} size='large' type='primary' icon={<LuPlus />}>Add New Lecture</Button>
 
       {/* upload pacing guide modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
