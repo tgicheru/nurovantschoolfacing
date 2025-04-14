@@ -595,3 +595,24 @@ export function usePostCourseFeedback(successAction?: any, errorAction?: any) {
   );
 }
 
+
+// course lecture feedback API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+export function useGetGoogleCalendarAuthURL() {
+  const url = `/teacher_api/google/auth-url`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:google_calendar_auth_url"],
+    () => getRequest(axios as unknown as AxiosInstance, url),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}

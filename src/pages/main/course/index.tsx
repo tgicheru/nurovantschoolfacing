@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BorderHOC } from '../../../components'
-import { Button, Divider, Drawer, Dropdown, Form, Input, Upload, Image, Select } from 'antd'
+import { Button, Divider, Drawer, Dropdown, Form, Input, Upload, Image, Select, Checkbox } from 'antd'
 import { LuDownload, LuPlus, LuSearch, LuUpload, LuUploadCloud } from 'react-icons/lu'
 import { RxDashboard } from 'react-icons/rx'
 import { GoRows } from 'react-icons/go'
@@ -32,7 +32,9 @@ type IconProp = {
 }
 function CoursePage() {
   const [isCreate, setIsCreate] = useState(false)
-  const [payload, setPayload] = useState<any>()
+  const [payload, setPayload] = useState<any>({
+    integrateWithGoogleCalendar: false,
+  })
   const [params, setParams] = useSearchParams()
   const onOpenCreate = () => setIsCreate(true)
   const [isOpen, setIsOpen] = useState(false)
@@ -402,6 +404,9 @@ function CoursePage() {
               </Form.Item>
               <Form.Item label="Select your preferred jurisdiction" name="jurisdiction" rules={[{required: true}]}>
                 <Select showSearch onChange={jurisdiction => setPayload({...payload, jurisdiction})} placeholder="Select learning standard" size="large" options={jurisdiction} loading={getJuryLoad} filterOption={(d, b: any) => (b?.label || "").toLowerCase().includes(d.toLowerCase())} />
+              </Form.Item>
+              <Form.Item label="Integrate With Google Calendar">
+                <Checkbox checked={payload?.integrateWithGoogleCalendar} onChange={(e) => setPayload({...payload, integrateWithGoogleCalendar: e?.target?.checked})}>Integrate With Google Calendar</Checkbox>
               </Form.Item>
               <Button loading={postCourseLoad} className="bg-[#4970FC]" block size="large" type="primary" htmlType='submit' shape="round">Create Course</Button>
             </div>

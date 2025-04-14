@@ -121,7 +121,7 @@ function PacingGuideSection() {
       <div className='w-full flex justify-between items-center'>
         <Button onClick={goBack} className='text-primary' icon={<LuChevronLeft />} type='text'>Back</Button>
         <p className='text-2xl font-bold text-[#161617]'>Pacing Guides</p>
-        <PacingGuideModal />
+        <PacingGuideModal isUpload />
       </div>
 
       <BorderHOC rounded='rounded-xl'>
