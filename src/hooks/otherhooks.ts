@@ -93,8 +93,8 @@ export function useAWSUpload(
 ) {
   // Upload bucket type object
   const buckets = {
-    // content: process.env["REACT_APP_S3_BUCKET"]!,
-    content: process.env["REACT_APP_S3_BUCKET_ALS"]!,
+    content: process.env["REACT_APP_S3_BUCKET"]!,
+    // content: process.env["REACT_APP_S3_BUCKET_ALS"]!,
     profile: process.env["REACT_APP_S3_BUCKET_PROFILE"]!,
   };
 

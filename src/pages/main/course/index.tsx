@@ -325,12 +325,13 @@ function CoursePage() {
           </div>
           <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
           <div className='space-y-5 pb-5'>
-            {options.map(({ key, Icon, color, description, title }) => {
-              const handleAction = () => {setPayload({...payload, type: key}); onOpenCreate()}
+            {options.map(({ key, Icon, color, description, title, steps }) => {
+              const handleClick = () => {setPayload({...payload, type: key}); onOpenCreate()}
+              const handleAction = () => (steps ? handleClick() : {})
               return (<BorderHOC onClick={handleAction} key={key} rounded='rounded-xl' className='w-full h-full hover:shadow' childClass='py-3 px-3 space-y-2 cursor-pointer'>
                 <div className='flex items-center gap-3'>
                   <Button className={" ".concat(color)} type='primary' icon={<Icon />} />
-                  <p className='text-base font-bold text-[#161617]'>{title}</p>
+                  <p className='text-base font-bold text-[#161617]'>{title} {!steps && "( Coming Soon! )"}</p>
                 </div>
                 <p className='text-sm font-semibold text-[#57585A]'>{description}</p>
               </BorderHOC>

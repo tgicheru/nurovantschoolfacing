@@ -5,7 +5,7 @@ import { usePostPacingGuide, usePostPacingGuideLesson } from '../../../../hooks/
 import { useSearchParams } from 'react-router-dom';
 import { ImSpinner } from 'react-icons/im';
 import { LuPlus, LuUpload, LuUploadCloud } from 'react-icons/lu';
-import { useAWSUpload } from '../../../../hooks/otherhooks';
+import { useAWSUploadALS } from '../../../../hooks/otherhooks';
 
 function PacingGuideModal({
   successAction,
@@ -38,7 +38,7 @@ function PacingGuideModal({
   const {
     isLoading: postUplLoad,
     mutateAsync: postUplAction,
-  } = useAWSUpload()
+  } = useAWSUploadALS()
 
   const {
     mutate: postLessonAction,

@@ -80,7 +80,7 @@ function CourseDetailsSection() {
                 <p className='text-xs font-medium text-[#57585A]'>Created . {moment(getCourseData?.data?.createdAt).format("ll")} . {moment(getCourseData?.data?.createdAt).format("LT")}</p>
               </div>
               <Dropdown menu={{ items: [
-                { key: "delete", label: "Delete" },
+                { key: "delete", label: "Delete", disabled: false },
               ]}}>
                 <Button type='text' icon={<PiDotsThreeOutline className='text-2xl' />} />
               </Dropdown>
