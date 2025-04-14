@@ -111,6 +111,27 @@ export function useDeleteCourse(successAction?: any, errorAction?: any) {
   );
 }
 
+export function useGetCourseStudents(id?: string) {
+  const url = `/teacher_api/courses/students/`;
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:all_course_students", id],
+    () => getRequest(axios as unknown as AxiosInstance, url, {course_id: id}),
+    {
+      enabled: Boolean(id),
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 
 
 
@@ -520,8 +541,6 @@ export function usePostLessonPlanAnalyze(id?: string, successAction?: any, error
     }
   );
 }
-
-
 
 
 // course lecture feedback API hooks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
