@@ -179,10 +179,6 @@ function CoursePage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div>
-            <p className='text-sm font-bold text-[#161617]'>Students</p>
-            <p className='text-xs font-semibold text-[#57585A]'>-- --</p>
-          </div>
           <Button onClick={postGoogleAuthAction} loading={postGoogleAuthLoad} hidden={user?.isGoogleConnected} icon={<FcGoogle />} shape='round' size='large'>Google Calendar Auth</Button>
           <Button onClick={() => setParams({section: "pacing-guide"})} type='primary' shape='round' size='large'>Pacing Guides</Button>
         </div>

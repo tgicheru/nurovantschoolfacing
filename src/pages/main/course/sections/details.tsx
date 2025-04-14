@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useGetCourseById } from '../../../../hooks/courses/courses';
+import { useGetCourseById, useGetCourseStudents } from '../../../../hooks/courses/courses';
 import { useSearchParams } from 'react-router-dom';
-import { Avatar, Breadcrumb, Button, Divider, Dropdown, Image, Modal, Spin } from 'antd';
+import { Avatar, Breadcrumb, Button, Divider, Drawer, Dropdown, Empty, Image, Modal, Spin } from 'antd';
 import moment from 'moment';
 import { PiBookOpenText, PiDotsThreeOutline } from 'react-icons/pi';
 import { BorderHOC } from '../../../../components';
@@ -15,6 +15,7 @@ import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { BsRepeat } from 'react-icons/bs';
 import { IoChatboxEllipsesOutline } from 'react-icons/io5';
 import CourseLectureSection from './lecture';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 type IconProp = {
   className?: string
@@ -24,15 +25,17 @@ function CourseDetailsSection() {
   const [page, setPage] = useState(1)
   const [list, setList] = useState("grid")
   const [isOpt, setIsOpt] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const [param, setParam] = useSearchParams()
   const onCloseOpt = () => setIsOpt(false)
+  const onClose = () => setIsOpen(false)
   const onOpenOpt = () => setIsOpt(true)
+  const onOpen = () => setIsOpen(true)
   const lecture = param.get("lecture")
   const width = window.innerWidth
   const id = param.get("id")
 
   const handleView = (lecture: any, tab?: any) => setParam(handleObj({ id, lecture, tab }) as any)
-
 
   const lists = [
     { key: "grid", Icon: ({ className }: IconProp) => <RxDashboard className={className} /> },
@@ -43,6 +46,11 @@ function CourseDetailsSection() {
     data: getCourseData,
     isLoading: getCourseLoad,
   } = useGetCourseById({ course_id: id });
+
+  const {
+    data: getStudentsData,
+    isLoading: getStudentsLoad,
+  } = useGetCourseStudents(id!)
 
   const { lectures, pages, handleNext, handlePrev } = {
     handleNext: () => setPage(page + 1),
@@ -113,7 +121,12 @@ function CourseDetailsSection() {
                   return (<Button className={String(isKey && "bg-[#E7E7E7]")} onClick={handleList} icon={<Icon className='text-lg' />} type='text' shape='circle' />)
                 })}
                 <Divider type='vertical'  className='m-0 !h-[30px] !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
-                <Button hidden onClick={onOpenOpt} className='!text-sm !font-bold bg-[#4970FC]' icon={<LuPlus className='text-xl' />} size='large' type='primary' shape='round'>Create lecture</Button>
+                <Button onClick={onOpen} loading={getStudentsLoad} size='large' type='text'>
+                  <div>
+                    <p className='text-sm font-bold text-[#161617]'>Students</p>
+                    <p className='text-xs font-semibold text-[#57585A]'>--  {getStudentsData?.data?.length}  --</p>
+                  </div>
+                </Button>
               </div>
             </div>
   
@@ -258,7 +271,42 @@ function CourseDetailsSection() {
           </div>
         </Modal>
 
-        
+        {/* course students modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Drawer
+          open={isOpen}
+          footer={false}
+          closeIcon={false}
+          onClose={onClose}
+          width={width <= 500 ? width : 500}
+          classNames={{ content: "!bg-transparent", wrapper: "!shadow-none" }}
+        >
+          <div className='w-full p-5 space-y-5 bg-white rounded-3xl'>
+            <div className='w-full flex justify-between gap-5'>
+              <div className='w-full'>
+                <p className='text-xl font-bold text-[#161617]'>Course Students</p>
+                <p className='text-sm font-medium text-[#57585A]'>These are the students under this course</p>
+              </div>
+              <Button onClick={onClose} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
+            </div>
+            <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+            <div className='w-full h-[80vh] overflow-y-auto space-y-5'>
+              <div hidden={getStudentsData?.data?.length} className='py-10'>
+                <Empty description="No student under this course" />
+              </div>
+              
+              <div className='space-y-2'>
+                {getStudentsData?.data?.map((d: any) => {return(
+                  <BorderHOC rounded='!rounded-xl'>
+                    <div className='w-full px-3 py-1'>
+                      <p className='text-base font-medium'>Name: <b className='text-primary'>{d?.name}</b></p>
+                      <p className='text-base font-normal'>Email: <b>{d?.email}</b></p>
+                    </div>
+                  </BorderHOC>
+                )})}
+              </div>
+            </div>
+          </div>
+        </Drawer>
       </div>
     </Spin>
   )
