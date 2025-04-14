@@ -1,15 +1,27 @@
-import React from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react'
 import { useGetLectureById, usePostCreativeAssessment } from '../../../../hooks/lecture/lecture';
 import { useSearchParams } from 'react-router-dom';
-import { Button, Card, Collapse, Spin } from 'antd';
+import { Button, Card, Collapse, Divider, Drawer, Form, Spin } from 'antd';
 import EmptyDisplay from '../../../../components/EmptyDisplay';
 import { LuPlus } from 'react-icons/lu';
 import moment from 'moment';
 import { BorderHOC } from '../../../../components';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { BiStopwatch } from 'react-icons/bi';
+import { handleCapitalize, isEqual } from '../../../../context/utils';
 
 function CreativeAssessmentTab() {
   const [param] = useSearchParams()
   const lecture = param.get("lecture")
+  const [payload, setPayload] = useState<any>({
+    duration: { hours: 0, minutes: 0 },
+    number_of_questions: 5
+  })
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = () => setIsOpen(false)
+  const onOpen = () => setIsOpen(true)
+  const width = window.innerWidth
 
   const {
     data: getLectureData,
@@ -25,15 +37,20 @@ function CreativeAssessmentTab() {
 
   const assessmentData = (getAssessmentData?.data || getLectureData?.creative_assessment)
 
+  useEffect(() => setPayload({...payload,
+    duration: assessmentData?.duration || payload?.duration,
+    number_of_questions: assessmentData?.number_of_questions || payload?.number_of_questions,
+  }), [assessmentData])
+
   const handleCreateAssessment = () => postAssessmentAction({ lecture_id: lecture! })
   return (
     <Spin spinning={getLectureLoad}>
       <div className='w-full'>
-        <EmptyDisplay hidden={getLectureData?.creative_assessment} className='w-full h-[50vh]'>
+        <EmptyDisplay hidden={assessmentData} className='w-full h-[50vh]'>
           <Button loading={postAssessmentLoad} onClick={handleCreateAssessment} className='!text-sm !font-bold bg-[#4970FC]' icon={<LuPlus className='text-xl' />} size='large' type='primary' shape='round'>Generate material</Button>
         </EmptyDisplay>
 
-        <div hidden={!getLectureData?.creative_assessment} className='w-full space-y-5'>
+        <div hidden={!assessmentData} className='w-full space-y-5'>
           <Card className="!bg-[#E1E7FF]">
             <div className="flex items-center flex-1 justify-between">
               {[
@@ -62,7 +79,7 @@ function CreativeAssessmentTab() {
                   </ul>
                 </div>
               </BorderHOC>
-              <Button hidden type='primary' shape='round'>Edit Quiz</Button>
+              <Button onClick={onOpen} type='primary' shape='round'>Edit Quiz</Button>
             </div>
             
             <div className='w-full'>
@@ -78,6 +95,49 @@ function CreativeAssessmentTab() {
             </div>
           </div>
         </div>
+
+        {/* create option modal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */}
+        <Drawer
+          open={isOpen}
+          footer={false}
+          onClose={onClose}
+          closeIcon={false}
+          width={width <= 500 ? width : 500}
+          classNames={{ content: "!bg-transparent", wrapper: "!shadow-none" }}
+        >
+          <div className='w-full p-5 space-y-5 bg-white rounded-3xl'>
+            <div className='w-full flex justify-between gap-5'>
+              <div className=''>
+                <p className='text-xl font-bold text-[#161617]'>Edit Quiz</p>
+              </div>
+              <Button onClick={onClose} icon={<AiOutlineCloseCircle className='text-xl' />} type='text' shape='circle' />
+            </div>
+            <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
+            <Form layout='vertical' className='space-y-5 pb-5'>
+              <div className='w-full bg-[#E1E7FF] p-5 text-center'>
+                <Button className='text-primary !text-sm font-bold' icon={<BiStopwatch />} type='text'>Current Time Limit: 45 minutes.</Button>
+              </div>
+
+              <Form.Item label="Quick Selection Options">
+                <div className='flex gap-3 flex-wrap'>
+                  {[
+                    { key: "minutes", value: 15 },
+                    { key: "minutes", value: 30 },
+                    { key: "minutes", value: 45 },
+                    { key: "hours", value: 1 },
+                  ].map(({key, value}) => {
+                    const isSelected = isEqual(payload?.duration?.[key], value)
+                    const handleSelect = () => setPayload({...payload, duration: {...payload?.duration, [key]: Number(!isSelected && value)}})
+                    return (<Button onClick={handleSelect} type={isSelected ? "primary" : "default"}>{value} {handleCapitalize(key)}</Button>)
+                  })}
+                </div>
+              </Form.Item>
+              <Form>
+
+              </Form>
+            </Form>
+          </div>
+        </Drawer>
       </div>
     </Spin>
   )

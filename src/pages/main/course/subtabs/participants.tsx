@@ -4,13 +4,13 @@ import moment from 'moment'
 import { formatNumber, statusType } from '../../../../context/utils'
 import { Button, Tag } from 'antd'
 import { LuEye } from 'react-icons/lu'
-import { useGetQuizParticipants } from '../../../../hooks/quiz/quiz'
+import { useGetQuizTakers } from '../../../../hooks/quiz/quiz'
 
 function QuizParticipantsTab({ data }: { data: any }) {
   const {
     data: getQuizParticipantsData,
     isLoading: getQuizParticipantsLoad,
-  } = useGetQuizParticipants(data?._id)
+  } = useGetQuizTakers(data?._id)
 
     const column  = [
     {

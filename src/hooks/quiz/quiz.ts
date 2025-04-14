@@ -71,6 +71,26 @@ export function useGetQuizParticipants(id: string) {
   );
 }
 
+export function useGetQuizTakers(id: string) {
+  const url = "/teacher_api/quiz/participants/";
+  const axios = useContext(AxiosContext);
+  return useQuery(
+    ["get:quiz_takers", id],
+    () => getRequest(axios as unknown as AxiosInstance, url + id),
+    {
+      onError: (error: any) =>
+        notification.error({
+          message: "Error!",
+          description: error?.message
+            ? Object.entries(error?.errors || { key: [error?.message] })
+                ?.map(([, value]) => (value as any)?.join(", "))
+                ?.join(", ")
+            : "something went wrong please check internet connection.",
+        }),
+    }
+  );
+}
+
 export function usePostQuiz(successAction?: any) {
   // const url = "/api_backend/quiz/create";
   const url = "/teacher_api/quiz/create_quiz";

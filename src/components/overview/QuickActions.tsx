@@ -12,15 +12,25 @@ export const QuickActions = () => {
       detail: `Create a new course for students at any academic level.`,
     },
     {
-      path: "/courses",
-      name: "Create quizes",
-      detail: `Create a new course for students at any academic level.`,
+      path: "/question-bank",
+      name: "Create question bank",
+      detail: `Create a new collection of questions for assessment use.`,
     },
     {
-      path: "/adaptive-learning",
-      name: "Create Adaptive Learning System",
-      detail: `Create a new course for students at any academic level.`,
+      path: "/review-report",
+      name: "Create review & report",
+      detail: `Create a new review and report for analysis and record keeping.`,
     },
+    // {
+    //   path: "/courses",
+    //   name: "Create quizes",
+    //   detail: `Create a new course for students at any academic level.`,
+    // },
+    // {
+    //   path: "/adaptive-learning",
+    //   name: "Create Adaptive Learning System",
+    //   detail: `Create a new course for students at any academic level.`,
+    // },
   ];
   return (
     <div className="w-full flex flex-col gap-[15px]">
