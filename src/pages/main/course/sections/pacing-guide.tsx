@@ -8,6 +8,7 @@ import { PiDotsThreeOutline } from 'react-icons/pi'
 import { useSearchParams } from 'react-router-dom'
 import moment from 'moment'
 import PacingGuideModal from '../components/pacing-guide-modal'
+import EmptyDisplay from '../../../../components/EmptyDisplay'
 
 function PacingGuideSection() {
   const [params, setParams] = useSearchParams()
@@ -125,6 +126,9 @@ function PacingGuideSection() {
       </div>
 
       <BorderHOC rounded='rounded-xl'>
+        <EmptyDisplay hidden={getAllPacesData?.length} className='w-full h-[50vh] py-10'>
+          <PacingGuideModal isUpload />
+        </EmptyDisplay>
         <Spin spinning={getAllPacesLoad}>
           <div className='w-full grid md:grid-cols-2 xl:grid-cols-3 gap-5 p-5'>
             {getAllPacesData?.map((d: any) => {
