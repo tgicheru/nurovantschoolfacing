@@ -13,6 +13,8 @@ export default atom({
     user: null,
     token: null,
     onBoarded: false,
+    role: null, // 'admin', 'teacher', 'student'
+    isAdmin: false,
   },
   effects_UNSTABLE: [persistAtom],
 });

@@ -516,7 +516,17 @@ const OverviewPage = () => {
                 ) : (
                   <Empty description="No upcoming activities" />
                 )}
-
+                <div className="mt-4 text-center">
+                  <Button 
+                    type="default" 
+                    icon={<PlusOutlined />}
+                    size="middle"
+                    className="text-sm"
+                    onClick={() => navigate('/calendar/create-event')}
+                  >
+                    Add Event
+                  </Button>
+                </div>
               </Card>
 
               {/* Performance Chart */}
@@ -560,7 +570,10 @@ const OverviewPage = () => {
         </>
       )}
 
-
+      {/* Footer */}
+      <div className="text-xs text-[#667085] mt-6 md:mt-8 text-center">
+        © NurovantAI 2024. All rights reserved.
+      </div>
     </div>
   );
 };

@@ -1,0 +1,599 @@
+import React, { useState, useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { useNavigate, Link } from "react-router-dom";
+import authAtom from "../../../atoms/auth/auth.atom";
+import { Card, Input, Tabs, Progress, Select, Button, Spin, message, Badge, Avatar, Tooltip, Row, Col, Empty } from 'antd';
+import { SearchOutlined, ReloadOutlined, ArrowRightOutlined, CalendarOutlined, PlusOutlined, UserOutlined, BookOutlined, LineChartOutlined } from '@ant-design/icons';
+import { FiClock, FiCalendar, FiUsers, FiBook, FiBarChart2, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+import { BsCheckCircle, BsCalendarEvent, BsGraphUp, BsBookmark } from 'react-icons/bs';
+
+const { TabPane } = Tabs;
+
+// Type definitions
+interface Course {
+  _id: string;
+  userId: string;
+  course_title: string;
+  course_image?: string;
+  state: string;
+  grade: string;
+  institution: string;
+  curriculum_url: string;
+  integrateWithGoogleCalendar: boolean;
+  googleCalendarId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  students: any[];
+}
+
+interface Lecture {
+  _id: string;
+  user: string;
+  course: string;
+  status: string;
+  title: string;
+  date: string;
+  unit: string;
+  sub_topic: string;
+  topics: string[];
+  quiz: string | null;
+  flash_card: string | null;
+  lesson_plan: string | null;
+  recap: string | null;
+  creative_assessment: string | null;
+  curricullum_alignment: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  startTime?: string;
+  endTime?: string;
+  isIntegratedWithGoogleCalendar?: boolean;
+  googleCalendarId?: string;
+  googleEventId?: string | null;
+  lessonPlan?: any | null;
+}
+
+interface CourseDeadline {
+  course: Course;
+  lecture: Lecture;
+}
+
+interface DashboardData {
+  upcomingCourseDeadlines: CourseDeadline[];
+  upcomingLectures: Lecture[];
+  userCourses: Course[];
+  todayLectures: Lecture[];
+}
+
+interface ClassData {
+  id: string;
+  name: string;
+  students: number;
+  averageScore: number;
+  progress: number;
+}
+
+interface PerformanceData {
+  week: string;
+  score: number;
+}
+
+interface CalendarActivity {
+  id: string;
+  title: string;
+  time: string;
+  type: 'lecture' | 'assignment' | 'exam' | 'meeting';
+  course: string;
+  status?: 'upcoming' | 'completed' | 'pending';
+}
+
+interface TaskItem {
+  icon: React.ReactNode;
+  title: string;
+  count: number;
+  label: string;
+}
+
+const OverviewPage = () => {
+  const navigate = useNavigate();
+  const { user } = useRecoilValue(authAtom);
+  const [selectedClass, setSelectedClass] = useState('1');
+  const [selectedWeek, setSelectedWeek] = useState('1');
+  const [selectedPerformanceClass, setSelectedPerformanceClass] = useState('1');
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+
+  // Mock data
+  const mockCourses: Course[] = [
+    {
+      _id: "67fd96a2a299d4b4f0618f87",
+      userId: "67fd92b577c3b6191c4278c8",
+      course_title: "Science",
+      course_image: "https://nurovantfrontend.s3.amazonaws.com/2025_04_14T23_09_05_728Z_user_favicon_48x48.png",
+      state: "Alaska",
+      grade: "Grade 6 (Middle School)",
+      institution: "Nurovant Sch",
+      curriculum_url: "https://nurovantfrontend.s3.amazonaws.com/2025_04_14T23_09_50_456Z_user_Early_Childhood_K10_Syllabus.pdf",
+      integrateWithGoogleCalendar: true,
+      googleCalendarId: "c_6385541aa1a6c7ace3c52dc92c2ee016856e70ecc8aae149748a7ac194db5506@group.calendar.google.com",
+      createdAt: "2025-04-14T23:13:38.154Z",
+      updatedAt: "2025-04-14T23:13:38.154Z",
+      __v: 0,
+      students: []
+    },
+    {
+      _id: "67fd98d3a299d4b4f061966d",
+      userId: "67fd92b577c3b6191c4278c8",
+      course_title: "Go Math",
+      state: "Illinois",
+      grade: "14",
+      institution: "Illinois",
+      curriculum_url: "https://nurovantfrontend.s3.amazonaws.com/2025_04_14T23_20_54_268Z_user_pacing_guide.pdf",
+      integrateWithGoogleCalendar: false,
+      googleCalendarId: null,
+      createdAt: "2025-04-14T23:23:07.154Z",
+      updatedAt: "2025-04-14T23:23:07.154Z",
+      __v: 0,
+      students: []
+    }
+  ];
+
+  const mockLectures: Lecture[] = [
+    {
+      _id: "67fd98d3a299d4b4f0619682",
+      user: "67fd92b577c3b6191c4278c8",
+      course: "67fd98d3a299d4b4f061966d",
+      status: "PENDING",
+      title: "Estimate Quotients Using Multiples & Opener 4.NBT",
+      date: "2025-04-20",
+      unit: ".6",
+      sub_topic: "In this lesson, students will learn to estimate quotients by using multiples.",
+      topics: [],
+      quiz: null,
+      flash_card: null,
+      lesson_plan: null,
+      recap: null,
+      creative_assessment: null,
+      curricullum_alignment: null,
+      createdAt: "2025-04-14T23:23:00.289Z",
+      updatedAt: "2025-04-14T23:23:00.289Z",
+      __v: 0,
+      endTime: "14:45",
+      startTime: "14:00"
+    },
+    {
+      _id: "67fd96b4a299d4b4f0618fe5",
+      user: "67fd92b577c3b6191c4278c8",
+      course: "67fd96a2a299d4b4f0618f87",
+      isIntegratedWithGoogleCalendar: true,
+      googleCalendarId: "c_6385541aa1a6c7ace3c52dc92c2ee016856e70ecc8aae149748a7ac194db5506@group.calendar.google.com",
+      googleEventId: null,
+      status: "PENDING",
+      title: "Introduction to Algebra",
+      date: "2025-04-22",
+      unit: "1",
+      sub_topic: "Simple Equations",
+      topics: [],
+      quiz: null,
+      flash_card: null,
+      lesson_plan: null,
+      recap: null,
+      creative_assessment: null,
+      curricullum_alignment: null,
+      createdAt: "2025-04-14T23:13:56.386Z",
+      updatedAt: "2025-04-20T07:51:09.308Z",
+      __v: 0,
+      endTime: "15:30",
+      startTime: "14:30"
+    }
+  ];
+
+  const mockTodayLectures: Lecture[] = [
+    {
+      _id: "67fd98d3a299d4b4f0619682",
+      user: "67fd92b577c3b6191c4278c8",
+      course: "67fd98d3a299d4b4f061966d",
+      status: "PENDING",
+      title: "Estimate Quotients Using Multiples & Opener 4.NBT",
+      date: "2025-04-20",
+      unit: ".6",
+      sub_topic: "In this lesson, students will learn to estimate quotients by using multiples.",
+      topics: [],
+      quiz: null,
+      flash_card: null,
+      lesson_plan: null,
+      recap: null,
+      creative_assessment: null,
+      curricullum_alignment: null,
+      createdAt: "2025-04-14T23:23:00.289Z",
+      updatedAt: "2025-04-14T23:23:00.289Z",
+      __v: 0,
+      endTime: "14:45",
+      startTime: "14:00",
+      lessonPlan: null
+    }
+  ];
+
+  const mockCourseDeadlines: CourseDeadline[] = [
+    {
+      course: mockCourses[1], // Go Math
+      lecture: mockLectures[0] // Estimate Quotients
+    },
+    {
+      course: mockCourses[0], // Science
+      lecture: mockLectures[1] // Introduction to Algebra
+    }
+  ];
+
+  // Mock data for class performance
+  const classData: ClassData[] = [
+    { id: '1', name: 'Go Math', students: 24, averageScore: 78, progress: 65 },
+    { id: '2', name: 'Science', students: 18, averageScore: 82, progress: 70 }
+  ];
+
+  // Mock data for performance chart
+  const performanceData: PerformanceData[] = [
+    { week: 'Week 1', score: 65 },
+    { week: 'Week 2', score: 70 },
+    { week: 'Week 3', score: 60 },
+    { week: 'Week 4', score: 75 },
+    { week: 'Week 5', score: 80 },
+    { week: 'Week 6', score: 85 },
+    { week: 'Week 7', score: 78 },
+    { week: 'Week 8', score: 82 },
+    { week: 'Week 9', score: 88 }
+  ];
+
+  // Mock data for calendar activities
+  const calendarActivities: CalendarActivity[] = [
+    { id: '1', title: 'Math Quiz - Fractions', time: '10:00 AM', type: 'exam', course: 'Go Math', status: 'upcoming' },
+    { id: '2', title: 'Science Lab - Plant Cells', time: '1:30 PM', type: 'lecture', course: 'Science', status: 'upcoming' },
+    { id: '3', title: 'Parent-Teacher Meeting', time: '3:00 PM', type: 'meeting', course: 'All Classes', status: 'upcoming' },
+    { id: '4', title: 'Homework Submission', time: '11:59 PM', type: 'assignment', course: 'Go Math', status: 'pending' }
+  ];
+
+  // Create a mock function to fetch dashboard data
+  const fetchDashboardData = async (): Promise<DashboardData> => {
+    // This is a mock implementation that returns hardcoded data
+    // In a real implementation, this would fetch from an API
+    return {
+      upcomingCourseDeadlines: mockCourseDeadlines,
+      upcomingLectures: mockLectures,
+      userCourses: mockCourses,
+      todayLectures: mockTodayLectures
+    };
+  };
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Use the mock data
+        const data = await fetchDashboardData();
+        setDashboardData(data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        message.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Process upcoming lectures from API data or use fallback
+  const upcomingTasks: TaskItem[] = dashboardData?.upcomingLectures ? [
+    // Show upcoming lectures
+    {
+      icon: <FiClock className="text-blue-500" />,
+      title: 'Upcoming Lectures',
+      count: dashboardData.upcomingLectures.length,
+      label: 'lectures'
+    },
+    // Show today's lectures
+    {
+      icon: <FiCalendar className="text-purple-500" />,
+      title: "Today's Lectures",
+      count: dashboardData.todayLectures.length,
+      label: 'today'
+    },
+    // Show courses
+    {
+      icon: <FiUsers className="text-green-500" />,
+      title: 'Active Courses',
+      count: dashboardData.userCourses.length,
+      label: 'courses'
+    }
+  ] : [
+    {
+      icon: <FiClock className="text-blue-500" />,
+      title: 'Upcoming Lectures',
+      count: 3,
+      label: 'lectures'
+    },
+    {
+      icon: <FiCalendar className="text-purple-500" />,
+      title: "Today's Lectures",
+      count: 1,
+      label: 'today'
+    },
+    {
+      icon: <FiUsers className="text-green-500" />,
+      title: 'Active Courses',
+      count: 2,
+      label: 'courses'
+    }
+  ];
+  
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Handle creating a new course
+  const handleCreateCourse = () => {
+    navigate('/courses/create');
+  };
+
+  // Handle class selection change
+  const handleClassChange = (value: string) => {
+    setSelectedClass(value);
+  };
+
+  // Handle calendar item click
+  const handleCalendarItemClick = (activityId: string) => {
+    // Navigate to the specific activity page based on type
+    const activity = calendarActivities.find(item => item.id === activityId);
+    if (activity) {
+      if (activity.type === 'lecture') {
+        navigate(`/courses/details?id=${activityId}`);
+      } else if (activity.type === 'assignment') {
+        navigate(`/courses/details?id=${activityId}`);
+      } else if (activity.type === 'exam') {
+        navigate(`/courses/details?id=${activityId}`);
+      } else if (activity.type === 'meeting') {
+        navigate(`/calendar/events/${activityId}`);
+      }
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      {/* Dashboard Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#101828] mb-1">Dashboard</h1>
+          <p className="text-[#667085]">
+            Welcome back, {user?.firstName || 'Educator'}! Here's what's happening with your classes today.
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Input
+              placeholder="Search..."
+              prefix={<SearchOutlined className="text-[#667085]" />}
+              className="w-64 rounded-lg"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />}
+            className="bg-[#4970FC] hover:bg-[#3a5ad9] flex items-center"
+            onClick={handleCreateCourse}
+          >
+            Create Course
+          </Button>
+        </div>
+      </div>
+
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <>
+          {/* Stats Cards */}
+          <Row gutter={[16, 16]} className="mb-8">
+            {upcomingTasks.map((task, index) => (
+              <Col xs={24} sm={8} key={index}>
+                <Card className="h-full shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center">
+                    <div className="p-3 rounded-full bg-[#F9FAFB] mr-4">
+                      {task.icon}
+                    </div>
+                    <div>
+                      <p className="text-[#667085] text-sm mb-1">{task.title}</p>
+                      <p className="text-xl font-semibold text-[#101828]">
+                        {task.count} {task.label}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {/* Main Content */}
+          <Row gutter={[24, 24]}>
+            {/* Today's Lessons */}
+            <Col xs={24} lg={16}>
+              <Card 
+                title="Today's Lessons" 
+                className="mb-6 shadow-sm"
+                extra={<Button type="link" onClick={() => navigate('/courses')}>View All</Button>}
+              >
+                {dashboardData?.todayLectures && dashboardData.todayLectures.length > 0 ? (
+                  dashboardData.todayLectures.map((lecture, index) => {
+                    // Find the course for this lecture
+                    const course = dashboardData.userCourses.find(c => c._id === lecture.course) || null;
+                    return (
+                      <div 
+                        key={lecture._id} 
+                        className="flex items-center p-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/courses/details?id=${lecture._id}`)}
+                      >
+                        <div className="flex-shrink-0 mr-4">
+                          <Avatar 
+                            size={48} 
+                            icon={<BookOutlined />} 
+                            className="bg-[#4970FC]" 
+                            src={course?.course_image}
+                          />
+                        </div>
+                        <div className="flex-grow">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-medium text-[#101828]">{lecture.title}</h3>
+                              <p className="text-sm text-[#667085]">{course?.course_title || 'Unknown Course'}</p>
+                            </div>
+                            <Badge 
+                              status={lecture.status === 'COMPLETED' ? 'success' : 'processing'} 
+                              text={lecture.status === 'COMPLETED' ? 'Completed' : 'Pending'} 
+                            />
+                          </div>
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="text-xs text-[#667085]">
+                              <span className="mr-2">
+                                <FiClock className="inline mr-1" />
+                                {lecture.startTime} - {lecture.endTime}
+                              </span>
+                              <span>
+                                <FiBook className="inline mr-1" />
+                                Unit {lecture.unit}
+                              </span>
+                            </p>
+                            <Tooltip title="View Lesson Details">
+                              <ArrowRightOutlined className="text-[#4970FC]" />
+                            </Tooltip>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <Empty description="No lessons scheduled for today" />
+                )}
+              </Card>
+
+              {/* Class Overview */}
+              <Card 
+                title="Class Overview" 
+                className="mb-6 shadow-sm"
+                extra={<Button type="link" onClick={() => navigate('/courses')}>View All Classes</Button>}
+              >
+                {classData.map((cls, index) => (
+                  <Link
+                    key={index}
+                    to={`/courses/details?id=${cls.id}`}
+                    className="block border-b last:border-b-0 py-4 cursor-pointer hover:bg-gray-50 transition-colors no-underline"
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-base font-medium text-[#101828]">{cls.name}</h3>
+                      <ArrowRightOutlined className="text-[#4970FC]" />
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-[#667085]">Progress</span>
+                      <span className="text-sm font-medium">{cls.progress}%</span>
+                    </div>
+                    <Progress percent={cls.progress} strokeColor="#4970FC" showInfo={false} />
+                    <div className="flex justify-between items-center mt-3 text-sm text-[#667085]">
+                      <span><UserOutlined className="mr-1" />{cls.students} students</span>
+                      <span><LineChartOutlined className="mr-1" />Avg. Score: {cls.averageScore}%</span>
+                    </div>
+                  </Link>
+                ))}
+              </Card>
+            </Col>
+
+            {/* Right Column */}
+            <Col xs={24} lg={8}>
+              {/* Calendar */}
+              <Card 
+                title="Calendar" 
+                className="mb-6 shadow-sm"
+                extra={<Button type="link" onClick={() => navigate('/calendar')}>View Calendar</Button>}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-base font-medium text-[#101828]">Today's Activities</h3>
+                  <CalendarOutlined className="text-[#4970FC]" />
+                </div>
+                {calendarActivities.map((activity, index) => (
+                  <div 
+                    key={index} 
+                    className="p-3 border-b last:border-b-0 hover:bg-gray-50 transition-colors cursor-pointer flex items-center"
+                    onClick={() => handleCalendarItemClick(activity.id)}
+                  >
+                    <div className="mr-3">
+                      {activity.type === 'lecture' && <FiBook className="text-blue-500" />}
+                      {activity.type === 'assignment' && <FiCheckCircle className="text-green-500" />}
+                      {activity.type === 'exam' && <FiAlertCircle className="text-red-500" />}
+                      {activity.type === 'meeting' && <FiUsers className="text-purple-500" />}
+                    </div>
+                    <div className="flex-grow">
+                      <p className="font-medium text-[#101828]">{activity.title}</p>
+                      <p className="text-xs text-[#667085]">
+                        {activity.time} · {activity.course}
+                      </p>
+                    </div>
+                    <ArrowRightOutlined className="text-[#4970FC]" />
+                  </div>
+                ))}
+                <div className="mt-4 text-center">
+                  <Button 
+                    type="default" 
+                    icon={<PlusOutlined />}
+                    onClick={() => navigate('/calendar/create-event')}
+                  >
+                    Add Event
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Performance Chart */}
+              <Card 
+                title="Class Performance" 
+                className="shadow-sm"
+                extra={
+                  <Select 
+                    defaultValue={selectedClass} 
+                    style={{ width: 120 }}
+                    onChange={handleClassChange}
+                    options={classData.map(cls => ({ value: cls.id, label: cls.name }))}
+                  />
+                }
+              >
+                <div className="h-64">
+                  <div className="flex h-full">
+                    {performanceData.map((item, index) => (
+                      <div key={index} className="flex flex-col items-center justify-end h-full flex-1">
+                        <div 
+                          className="w-8 bg-[#4970FC] opacity-70 rounded-t-md" 
+                          style={{ height: `${item.score}%` }}
+                        ></div>
+                        <p className="text-xs mt-2">{item.week.split(' ')[1]}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </>
+      )}
+
+      {/* Footer */}
+      <div className="text-xs text-[#667085] mt-8 text-center">
+        © NurovantAI 2024. All rights reserved.
+      </div>
+    </div>
+  );
+};
+
+export default OverviewPage;

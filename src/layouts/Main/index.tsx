@@ -23,6 +23,7 @@ import { Link } from "react-router-dom";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import { BorderHOC } from "../../components";
 import NotificationStatusImg from "../../assets/notification-status.svg";
+import ProfileMenu from "../../components/Header/ProfileMenu";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -63,13 +64,18 @@ const MainLayout = ({ children }: Props) => {
 
   const items = [
     {
-      key: "/",
+      key: "/main",
       label: "Overview",
       icon: "",
     },
     {
-      key: "/courses",
+      key: "/course",
       label: "Courses",
+      icon: "",
+    },
+    {
+      key: "/calendar",
+      label: "Calendar",
       icon: "",
     },
     // {
@@ -196,33 +202,15 @@ const MainLayout = ({ children }: Props) => {
                   </div>
 
                   <div className="flex items-center gap-[25px]">
-                    <button
-                      onClick={() => {}}
-                      className="h-[40px] w-[40px] flex items-center justify-center"
-                    >
+                    <div className="w-10 h-10 relative">
                       <img
                         src={NotificationStatusImg}
                         alt="notification"
-                        className="w-[20px] h-[20px]"
+                        className="absolute -top-1 -right-1"
                       />
-                    </button>
-                    <Dropdown menu={{ items: menu }} trigger={["click"]}>
-                      <div className="cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <Avatar
-                            alt="user"
-                            size="large"
-                            src={user?.info?.profile_img}
-                          >
-                            {extractAvatar(
-                              `${user?.first_name} ${user?.last_name}` ||
-                                user?.email ||
-                                "USER"
-                            )}
-                          </Avatar>
-                        </div>
-                      </div>
-                    </Dropdown>
+                      <HiOutlineBell className="text-[#667085] w-full h-full" />
+                    </div>
+                    <ProfileMenu userName={`${user?.first_name || 'User'}`} />
                   </div>
                 </div>
 
@@ -299,24 +287,24 @@ const MainLayout = ({ children }: Props) => {
         </div>
 
         {/* Static footer at bottom of screen */}
-        <div className="w-full bg-white py-4">
-          <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
-            <p className="text-[14px] leading-[20px] text-neutral-600">
-              &copy; NurovantAI 2024. All rights reserved..
+        <footer className="w-full bg-white py-4 px-4 sm:px-6 border-t border-gray-100">
+          <div className="max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-0">
+            <p className="text-xs sm:text-sm text-neutral-600 text-center md:text-left">
+              &copy; NurovantAI 2024. All rights reserved.
             </p>
-            <div className="flex items-center gap-[10px]">
-              <p className="text-[14px] leading-[20px] text-neutral-600">
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-5">
+              <a href="#" className="text-xs sm:text-sm text-neutral-600 hover:text-[#4970FC] transition-colors">
                 Contact
-              </p>
-              <p className="text-[14px] leading-[20px] text-neutral-600">
+              </a>
+              <a href="#" className="text-xs sm:text-sm text-neutral-600 hover:text-[#4970FC] transition-colors">
                 Terms of Service
-              </p>
-              <p className="text-[14px] leading-[20px] text-neutral-600">
+              </a>
+              <a href="#" className="text-xs sm:text-sm text-neutral-600 hover:text-[#4970FC] transition-colors">
                 Privacy Policy
-              </p>
+              </a>
             </div>
           </div>
-        </div>
+        </footer>
       </div>
     </ModalContainer>
   );

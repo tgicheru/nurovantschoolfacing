@@ -49,31 +49,29 @@ const Home = () => {
 
   return (
     <Spin spinning={getCoursesLoad}>
-      <div className="w-full h-full min-h-screen md:pb-5 space-y-5 my-6">
-        <div className="w-full flex items-center justify-between">
+      <div className="w-full h-full min-h-screen px-4 sm:px-6 md:pb-5 space-y-4 sm:space-y-5 my-4 sm:my-6">
+        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
           <ContentHeader
             headerText={`Courses 📚 ${activeType !== "normal" ? "" : ""}`}
             subText={`Organize and manage your course materials.`}
             marginBottom="mb-[0px]"
           />
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-5 w-full sm:w-auto">
             <Button
-              // disabled={!upldFile?.file}
-
-              // loading={createCourseLoad}
               onClick={() => {
                 setIsFeedbackOpen(true);
               }}
-              className="bg-[#E1E7FF] hover:!bg-[#E1E7FF] !w-[154px] !h-[40px] flex items-center justify-center gap-2"
+              className="bg-[#E1E7FF] hover:!bg-[#E1E7FF] !h-[40px] flex items-center justify-center gap-2 flex-1 sm:flex-none"
               type="primary"
               size="large"
               shape="round"
             >
               <span className="text-primary">Feedback</span>
-              {/* <LiaShareAltSolid className="text-primary text-[20px] flex-shrink-0" /> */}
             </Button>
-            <StudentsContainer />
+            <div className="flex-1 sm:flex-none">
+              <StudentsContainer />
+            </div>
           </div>
         </div>
 
@@ -89,12 +87,12 @@ const Home = () => {
                     Course
                   </p>
                 </div>
-                <div className="flex items-center gap-[10px] h-[40px]">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-[10px] h-auto sm:h-[40px]">
                   <div
                     className="h-full flex items-center py-[8px] gap-[7px] px-3 cursor-pointer"
                     onClick={() => {}}
                   >
-                    <TbFilterSearch className="text-neutral-900 text-[24px]" />
+                    <TbFilterSearch className="text-neutral-900 text-xl sm:text-[24px]" />
                     <p className="text-sm font-bold text-neutral-900">Filter</p>
                   </div>
                   <ShareCourseButton />
@@ -316,9 +314,9 @@ const Home = () => {
                   </div>
                 )}
                 <BorderHOC className="mt-[10px]" />
-                <div className="flex items-center h-[60px] justify-between text-sm text-gray-600">
+                <div className="flex flex-col sm:flex-row items-center h-auto sm:h-[60px] justify-between text-sm text-gray-600 gap-4 sm:gap-0 py-3 sm:py-0">
                   <p className="text-sm text-neutral-900">Page 1 of 10</p>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <button className="">
                       <BorderHOC className="w-full" rounded="rounded-[1000px]">
                         <div className="py-[10px] w-[106px] flex items-center justify-center">
@@ -341,8 +339,8 @@ const Home = () => {
               </div>
             ) : (
               activeType === "normal" && (
-                <div className="w-full flex items-center justify-center py-[72px]">
-                  <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px]">
+                <div className="w-full flex items-center justify-center py-10 sm:py-[72px]">
+                  <div className="flex items-center justify-center flex-col gap-[15px] max-w-[198px] px-4 sm:px-0">
                     <div className="flex flex-col items-center justify-center">
                       <img src={EmptyState} alt="empty courses" />
                       <span className="text-base font-bold text-neutral-900 text-center">
@@ -352,7 +350,7 @@ const Home = () => {
 
                     <Button
                       onClick={onOpen}
-                      className="bg-primary !rounded-[1000px]"
+                      className="bg-primary !rounded-[1000px] w-full sm:w-auto"
                       type="primary"
                       size="large"
                       icon={<FaPlus />}

@@ -47,6 +47,7 @@ type InitialValuesTypes = {
   institution: string;
   learning_standard_url: string;
   learning_standards: any[];
+  lecturesDuration: number; // Duration of lectures in minutes
 };
 
 export function removeSpacesFromPdfName(pdfName: string) {
@@ -291,6 +292,7 @@ const CreateCourseDrawer = ({
     institution: "",
     learning_standard_url: "",
     learning_standards: [standardSet?.data],
+    lecturesDuration: 60, // Default duration of 60 minutes
   });
 
   function getCurrentAndFutureDate(): { start_date: string; end_date: string } {
@@ -518,6 +520,25 @@ progress effectively`
                 }));
               }}
               value={initialValues.course_title}
+            />
+          </div>
+
+          <div className="flex flex-col gap-[6px] w-full">
+            <h4 className="text-sm font-bold text-neutral-900">Lecture Duration (minutes)</h4>
+            <input
+              type="number"
+              placeholder="Enter lecture duration in minutes"
+              className="px-5 py-[14px] placeholder:text-[#CECFD0] text-sm font-bold bg-[#F5f5f5] bg-opacity-90 rounded-[10px]"
+              min="1"
+              max="300"
+              onChange={(e: any) => {
+                const value = parseInt(e.target.value, 10);
+                setInitialValues((prev) => ({
+                  ...prev,
+                  lecturesDuration: isNaN(value) ? 60 : value,
+                }));
+              }}
+              value={initialValues.lecturesDuration}
             />
           </div>
 

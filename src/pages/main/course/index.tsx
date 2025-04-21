@@ -410,6 +410,17 @@ function CoursePage() {
               <Form.Item label="Select your preferred jurisdiction" name="jurisdiction" rules={[{required: true}]}>
                 <Select showSearch onChange={jurisdiction => setPayload({...payload, jurisdiction})} placeholder="Select learning standard" size="large" options={jurisdiction} loading={getJuryLoad} filterOption={(d, b: any) => (b?.label || "").toLowerCase().includes(d.toLowerCase())} />
               </Form.Item>
+              <Form.Item label="Lecture Duration (minutes)" name="lecturesDuration" rules={[{required: true, message: 'Please specify the lecture duration'}]}>
+                <Input 
+                  type="number" 
+                  size='large' 
+                  min={1} 
+                  max={300} 
+                  placeholder='Enter lecture duration in minutes' 
+                  defaultValue={60}
+                  onChange={(e) => setPayload({...payload, lecturesDuration: parseInt(e.target.value) || 60})}
+                />
+              </Form.Item>
               <Form.Item label="Integrate With Google Calendar">
                 <Checkbox checked={payload?.integrateWithGoogleCalendar} onChange={(e) => setPayload({...payload, integrateWithGoogleCalendar: e?.target?.checked})}>Integrate With Google Calendar</Checkbox>
               </Form.Item>

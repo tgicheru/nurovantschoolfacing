@@ -6,7 +6,7 @@ import { useLogin } from '../../hooks/auth/authentications';
 
 function LoginPage() {
   const navigate = useNavigate()
-  const toHome = () => navigate("/")
+  const toHome = () => navigate("/main")
   const { mutate, isLoading } = useLogin(toHome)
   return (
     <div className='w-full space-y-5'>
@@ -36,7 +36,7 @@ function LoginPage() {
 
       <div className='flex justify-center items-center gap-2'>
         <p className='text-base font-medium'>Don't have an account? </p>
-        <Link className="block text-base font-medium text-primary" to="/auth">Sign Up</Link>
+        <Link className="block text-base font-medium text-primary" to="/auth/role-selection">Sign Up</Link>
       </div>
     </div>
   )

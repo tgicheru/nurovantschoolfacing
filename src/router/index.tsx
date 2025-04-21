@@ -3,7 +3,7 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-import { routes } from "./routes";
+import { routes, RouteItem } from "./routeConfig";
 import Loading from "../components/loading";
 import Layout from "../layouts";
 
@@ -14,7 +14,7 @@ export default function CustomRoutes() {
         {routes.map(({
           path,
           component,
-        }) => {
+        }: RouteItem) => {
           return (
             <Route
               key={path}
@@ -30,4 +30,4 @@ export default function CustomRoutes() {
   );
 }
 
-export * from "./routes";
+export { routes } from "./routeConfig";

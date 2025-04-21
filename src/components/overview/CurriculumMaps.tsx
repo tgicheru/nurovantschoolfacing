@@ -109,7 +109,7 @@ const CurriculumMaps = () => {
                           // navigate(
                           //   `/courses/details?id=${course?._id}&type=mapped`
                           // );
-                          navigate("courses?id="+course?._id);
+                          navigate(`/courses?id=${course?._id}`);
                         }}
                       >
                         <BorderHOC className="" rounded="rounded-[10px]">

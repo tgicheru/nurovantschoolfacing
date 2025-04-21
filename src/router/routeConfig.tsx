@@ -32,10 +32,16 @@ const Overview = lazy(() => import("../pages/main/overview"));
 const CoursePage = lazy(() => import("../pages/main/course"));
 const Courses = lazy(() => import("../pages/main/courses/index"));
 const ClassDetail = lazy(() => import("../pages/main/class/detail"));
+const Calendar = lazy(() => import("../pages/main/calendar"));
+const StudentGroups = lazy(() => import("../pages/main/groups"));
 
 // admin pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const AdminDashboard = lazy(() => import("../pages/admin/dashboard/overview"));
 const AdminTeachers = lazy(() => import("../pages/admin/teachers"));
+const TeacherDetail = lazy(() => import("../pages/admin/teachers/detail"));
+const AdminStudents = lazy(() => import("../pages/admin/students/students"));
+const StudentDetail = lazy(() => import("../pages/admin/students/detail"));
+const AdminCurriculum = lazy(() => import("../pages/admin/curriculum"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
 const LectureDetails = lazy(() => import("../pages/main/courses/lecture"));
 const StudentsDetails = lazy(() => import("../pages/main/courses/students"));
@@ -99,6 +105,26 @@ export const routes: RouteItem[] = [
     label: "Admin Teachers",
     component: <AdminTeachers />,
   },
+  {
+    path: "/admin/teachers/:id",
+    label: "Teacher Detail",
+    component: <TeacherDetail />,
+  },
+  {
+    path: "/admin/students",
+    label: "Admin Students",
+    component: <AdminStudents />,
+  },
+  {
+    path: "/admin/students/:id",
+    label: "Student Detail",
+    component: <StudentDetail />,
+  },
+  {
+    path: "/admin/curriculum",
+    label: "Admin Curriculum",
+    component: <AdminCurriculum />,
+  },
 
   // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
@@ -112,103 +138,113 @@ export const routes: RouteItem[] = [
     component: <Overview />,
   },
   {
+    path: "/courses/class/:classId",
+    label: "Class Detail",
+    component: <ClassDetail />,
+  },
+  {
     path: "/course",
     label: "Course",
     component: <CoursePage />,
   },
   {
-    path: "/course",
+    path: "/courses",
     label: "Courses",
     component: <Courses />,
   },
   {
-    path: "/course/class/:classId",
-    label: "Class Detail",
-    component: <ClassDetail />,
+    path: "/calendar",
+    label: "Calendar",
+    component: <Calendar />,
   },
   {
-    path: "/course/gaming",
+    path: "/groups",
+    label: "Student Groups",
+    component: <StudentGroups />,
+  },
+  {
+    path: "/courses/gaming",
     label: "Gaming",
     component: <GamingPage />,
   },
   {
-    path: "/course/lecture/analyze",
+    path: "/courses/lecture/analyze",
     label: "Analyze Lesson",
     component: <AnalyzeLesson />,
   },
   {
-    path: "/course/lecture/continuousFeedback",
+    path: "/courses/lecture/continuousFeedback",
     label: "Continuous Feedback",
     component: <ContinuousFeedback />,
   },
   {
-    path: "/course/lecture/feedback",
+    path: "/courses/lecture/feedback",
     label: "Feedback",
     component: <Feedback />,
   },
   {
-    path: "/course/lecture/lmsIntegration",
+    path: "/courses/lecture/lmsIntegration",
     label: "Lms Integration",
     component: <LmsPage />,
   },
   {
-    path: "/course/lecture/groupAnalysis",
+    path: "/courses/lecture/groupAnalysis",
     label: "Group Analysis",
     component: <GroupAnalysis />,
   },
   {
-    path: "/course/lecture/groupActivity",
+    path: "/courses/lecture/groupActivity",
     label: "Group Activity",
     component: <GroupActivity />,
   },
   {
-    path: "/course/lecture/curriculum-alignment",
+    path: "/courses/lecture/curriculum-alignment",
     label: "Curriculum Alignment",
     component: <CurriculumAlignment />,
   },
   {
-    path: "/course/details",
-    label: "Course Detail",
+    path: "/courses/details",
+    label: "Courses Details",
     component: <CourseDetails />,
   },
   {
-    path: "/course/lecture",
-    label: "Course Lecture",
+    path: "/courses/lecture",
+    label: "Courses Lecture",
     component: <LectureDetails />,
   },
   {
-    path: "/course/students",
-    label: "Students",
+    path: "/courses/students",
+    label: "Courses Students",
     component: <StudentsDetails />,
   },
   {
-    path: "/course/import",
-    label: "Import",
+    path: "/courses/import",
+    label: "Courses Students",
     component: <CourseImport />,
   },
   {
-    path: "/course/lecture/quiz",
-    label: "Quiz",
+    path: "/courses/lecture/quiz",
+    label: "Lecture Quiz",
     component: <QuizPage />,
   },
   {
-    path: "/course/lecture/flashcard",
-    label: "Flashcard",
+    path: "/courses/lecture/flashcard",
+    label: "Lecture Flashcard",
     component: <FlashCardPage />,
   },
   {
-    path: "/course/lecture/recap",
-    label: "Recap",
+    path: "/courses/lecture/recap",
+    label: "Lecture Recap",
     component: <RecapsPage />,
   },
   {
-    path: "/course/lecture/recap/details",
-    label: "Recap Details",
+    path: "/courses/lecture/recap/details",
+    label: "Lecture Recap Details",
     component: <RecapsDetailsPage />,
   },
   {
-    path: "/course/lecture/discuss",
-    label: "Discuss",
+    path: "/courses/lecture/discuss",
+    label: "Lecture Discuss",
     component: <DiscussPage />,
   },
   {

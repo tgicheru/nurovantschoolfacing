@@ -23,9 +23,13 @@ const Layout = ({ children }: Props) => {
 
   // Layout Rendering
   const getLayout = () => {
+    // Root path (role selection) is treated as a public route
+    if (pathname === "/") return "public";
     if (/^\/auth(?=\/|$)/i.test(pathname)) return "auth";
     if (/^\/main(?=\/|$)/i.test(pathname)) return "main";
     if (/^\/public(?=\/|$)/i.test(pathname)) return "public";
+    // Admin routes are accessible without token requirements
+    if (/^\/admin(?=\/|$)/i.test(pathname)) return "public";
     return "main";
   };
 
