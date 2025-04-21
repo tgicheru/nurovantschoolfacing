@@ -93,11 +93,11 @@ const MainLayout = ({ children }: Props) => {
     //   label: "Speech Rate",
     //   icon: "",
     // },
-    {
-      key: "/question-bank",
-      label: "Question Bank",
-      icon: "",
-    },
+    // {
+    //   key: "/question-bank",
+    //   label: "Question Bank",
+    //   icon: "",
+    // },
     {
       key: "/review-report",
       label: "Review & Report",
