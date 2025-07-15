@@ -17,15 +17,16 @@ const useOnboardingRedirect = () => {
     if (auth.isLoggedIn && auth.token) {
       const currentPath = window.location.pathname;
       
+      // Skip onboarding check for admin users
+      if (auth.isAdmin) {
+        return;
+      }
+      
       // If user has completed onboarding but is still on an onboarding page,
       // redirect them to the appropriate dashboard
       if (auth.onBoarded && currentPath.startsWith('/onboarding')) {
         console.log('User has completed onboarding, redirecting to dashboard');
-        if (auth.isAdmin) {
-          navigate('/admin/dashboard');
-        } else {
-          navigate('/main');
-        }
+        navigate('/main');
       }
       
       // If user hasn't completed onboarding and tries to access protected routes,

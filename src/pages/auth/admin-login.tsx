@@ -43,7 +43,8 @@ const AdminLoginPage = () => {
           isLoggedIn: true,
           user: userData,
           isAdmin: true,
-          token: token
+          token: token,
+          onBoarded: true // Admin users don't need onboarding
         };
         
         console.log('Setting auth state:', newAuthState);

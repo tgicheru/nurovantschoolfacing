@@ -40,7 +40,8 @@ const AdminVerificationPage = () => {
       // Update auth state to indicate verification is complete
       setAuth({
         ...auth,
-        verified: true
+        verified: true,
+        onBoarded: true // Admin users don't need onboarding
       });
       
       // Navigate to admin dashboard
