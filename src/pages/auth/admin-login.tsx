@@ -1,31 +1,80 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Form, Input, Divider, Checkbox } from 'antd';
+import { Button, Form, Input, Divider, Checkbox, notification } from 'antd';
 import { useRecoilState } from 'recoil';
 import authAtom from '../../atoms/auth/auth.atom';
-import { useLogin } from '../../hooks/auth/authentications';
+import { useAdminLogin } from '../../hooks/auth/auth';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
   const [auth, setAuth] = useRecoilState(authAtom);
   const [rememberMe, setRememberMe] = useState(false);
   
-  // This would be replaced with an actual API call using the useLogin hook
-  const handleLogin = (values: any) => {
-    // Mock login for now
-    setAuth({
-      ...auth,
-      isLoggedIn: true,
-      user: {
-        ...values,
-        role: 'admin'
-      },
-      isAdmin: true,
-      token: 'mock-token-for-admin'
-    });
-    
-    // Navigate to admin dashboard
-    navigate('/admin/dashboard');
+  const { adminLogin, isLoading, error } = useAdminLogin();
+  
+  // Handle login with the admin login API
+  const handleLogin = async (values: any) => {
+    try {
+      console.log('Submitting admin login form:', { email: values.email });
+      
+      // Call the admin login API
+      const response = await adminLogin({
+        email: values.email,
+        password: values.password
+      });
+      
+      console.log('Admin login response received:', response);
+      
+      // Check if login was successful based on different possible response structures
+      const isSuccessful = response.success || 
+        (response.data && response.data.token) || 
+        response.token;
+      
+      if (isSuccessful) {
+        // Extract user data and token from different possible response structures
+        const userData = response.data?.user || response.user || {};
+        const token = response.data?.token || response.token;
+        
+        console.log('Login successful, extracted data:', { userData, token });
+        
+        // Update Recoil state with normalized data
+        const newAuthState = {
+          ...auth,
+          isLoggedIn: true,
+          user: userData,
+          isAdmin: true,
+          token: token
+        };
+        
+        console.log('Setting auth state:', newAuthState);
+        setAuth(newAuthState);
+        
+        notification.success({
+          message: 'Login Successful',
+          description: 'You have successfully logged in as an admin.'
+        });
+        
+        // Force a small delay to ensure state is updated before navigation
+        setTimeout(() => {
+          // Use direct window location change for a full page refresh
+          console.log('Redirecting to admin dashboard');
+          window.location.href = '/admin/dashboard';
+        }, 500);
+      } else {
+        // Handle unsuccessful login
+        console.error('Login unsuccessful:', response);
+        notification.error({
+          message: 'Login Failed',
+          description: response.message || 'Invalid credentials. Please try again.'
+        });
+      }
+    } catch (err: any) {
+      console.error('Admin login error:', err);
+      notification.error({
+        message: 'Login Failed',
+        description: err.response?.data?.message || 'An error occurred during login.'
+      });
+    }
   };
 
   return (
@@ -88,6 +137,7 @@ const AdminLoginPage = () => {
             htmlType="submit"
             className="w-full h-12 rounded-full font-medium bg-[#4970FC] text-white hover:bg-[#3A5AD9]"
             type="primary"
+            loading={isLoading}
           >
             Sign in
           </Button>

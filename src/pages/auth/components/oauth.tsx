@@ -4,15 +4,14 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from 'react-icons/fa';
 import { signInWithPopup } from 'firebase/auth';
 import { appleProvider, auth, provider } from '../../../firebaseAuth/config';
-import { useOAuthLogin } from '../../../hooks/auth/authentications';
+import { useCustomOAuthLogin } from '../../../hooks/auth/useCustomOAuthLogin';
 
 type Props = {
   isLoading?: boolean,
-  successAction?: any,
 }
-function OAuth({ successAction }: Props) {
+function OAuth() {
 
-  const { mutate, isLoading } = useOAuthLogin(successAction)
+  const { mutate, isLoading } = useCustomOAuthLogin()
 
   const handleSubmit = (data: any) => mutate({
     first_name: data?.displayName?.split(" ")?.at(0),

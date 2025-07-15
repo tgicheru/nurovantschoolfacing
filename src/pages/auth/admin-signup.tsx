@@ -59,21 +59,25 @@ const AdminSignupPage = () => {
       const response = await adminSignUp(signupData);
       
       if (response.success) {
-        // Update local auth state
+        // Extract user data and token from different possible response structures
+        const userData = response.data?.user || response.user || {};
+        const token = response.data?.token || response.token;
+        
+        // Update local auth state with safe access to properties
         setAuth({
           ...auth,
-          user: response.data.user,
+          user: userData,
           isAdmin: true,
-          token: response.data.token
+          token: token
         });
         
         notification.success({
           message: 'Sign Up Successful',
-          description: 'Your admin account has been created successfully.'
+          description: 'Your admin account has been created successfully. Please login to continue.'
         });
         
-        // Navigate directly to admin dashboard (bypassing verification)
-        navigate('/admin/dashboard');
+        // Navigate to admin login page
+        navigate('/auth/admin-login');
       }
     } catch (err: any) {
       console.error('Signup error:', err); // Debug error
@@ -93,7 +97,7 @@ const AdminSignupPage = () => {
         <p className="text-sm font-medium text-neutral-600">Create your admin account to manage the platform</p>
       </div>
       
-      <OAuth successAction={toHome} />
+      <OAuth />
       
       <Divider className="text-sm font-medium text-neutral-500">Or</Divider>
       

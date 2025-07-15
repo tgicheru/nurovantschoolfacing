@@ -1,25 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Card, Row, Col, Statistic } from 'antd';
-import { UserOutlined, BookOutlined, ReadOutlined, TeamOutlined } from '@ant-design/icons';
+import { Button, Card, Row, Col, Statistic, Spin, Alert, notification } from 'antd';
+import { UserOutlined, BookOutlined, ReadOutlined, TeamOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
 import authAtom from '../../../atoms/auth/auth.atom';
 import ProfileMenu from '../../../components/Header/ProfileMenu';
+import { useAdminDashboardStats } from '../../../hooks/admin/admin';
+import useOnboardingRedirect from '../../../hooks/useOnboardingRedirect';
 
 const AdminOverview = () => {
   const navigate = useNavigate();
   const auth = useRecoilValue(authAtom);
   const [activeTab, setActiveTab] = useState('overview');
-
-  // Mock statistics data
+  
+  // Fetch real dashboard stats from API
+  const { dashboardStats, isLoading, error, isAuthError, refetch } = useAdminDashboardStats();
+  
+  // Check if user needs onboarding
+  useOnboardingRedirect();
+  
+  // Handle authentication errors
+  useEffect(() => {
+    if (isAuthError) {
+      notification.error({
+        message: 'Authentication Error',
+        description: 'Your session has expired. Please log in again.',
+        duration: 5
+      });
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        navigate('/auth/admin-login');
+      }, 2000);
+    }
+  }, [isAuthError, navigate]);
+  
+  // Use API data with default values for missing fields
   const stats = {
-    totalTeachers: 20,
-    totalStudents: 156,
-    totalCourses: 45,
-    activeStudents: 132,
-    completionRate: 78,
-    averageScore: 85
+    totalTeachers: dashboardStats?.totalTeachers ?? 0,
+    totalStudents: dashboardStats?.totalStudents ?? 0,
+    totalCourses: dashboardStats?.totalCourses ?? 0,
+    totalLectures: dashboardStats?.totalLectures ?? 0
   };
+  
+  // Log the actual stats for debugging
+  console.log('Dashboard stats being displayed:', stats);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -41,6 +66,31 @@ const AdminOverview = () => {
 
       <main className="flex-1 p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Show loading state */}
+          {isLoading && (
+            <div className="flex justify-center items-center mb-8">
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+              <span className="ml-2">Loading dashboard data...</span>
+            </div>
+          )}
+          
+          {/* Show error state */}
+          {error && !isAuthError && (
+            <Alert
+              message="Error Loading Dashboard"
+              description={
+                <>
+                  <p>Failed to load dashboard data. {error.message}</p>
+                  <Button type="primary" onClick={() => refetch()} className="mt-2">
+                    Try Again
+                  </Button>
+                </>
+              }
+              type="error"
+              showIcon
+              className="mb-8"
+            />
+          )}
           <div className="mb-8">
             <div className="flex space-x-8 border-b border-[#EAECF0]">
               <button 
@@ -70,7 +120,8 @@ const AdminOverview = () => {
               >
                 Students
               </button>
-              <button 
+              {/* Curriculum tab commented out for now */}
+              {/* <button 
                 className={`py-2 px-1 ${activeTab === 'curriculum' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('curriculum');
@@ -78,12 +129,12 @@ const AdminOverview = () => {
                 }}
               >
                 Curriculum
-              </button>
+              </button> */}
               <button 
                 className={`py-2 px-1 ${activeTab === 'review' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('review');
-                  navigate('/admin/review');
+                  navigate('/review-report');
                 }}
               >
                 Review & Report
@@ -105,6 +156,7 @@ const AdminOverview = () => {
                     value={stats.totalTeachers}
                     prefix={<UserOutlined className="text-[#4970FC] mr-2" />}
                     className="text-[#101828]"
+                    loading={isLoading}
                   />
                   <div className="mt-2">
                     <Link to="/admin/teachers" className="text-[#4970FC] text-sm">
@@ -120,6 +172,7 @@ const AdminOverview = () => {
                     value={stats.totalStudents}
                     prefix={<TeamOutlined className="text-[#4970FC] mr-2" />}
                     className="text-[#101828]"
+                    loading={isLoading}
                   />
                   <div className="mt-2">
                     <Link to="/admin/students" className="text-[#4970FC] text-sm">
@@ -135,9 +188,10 @@ const AdminOverview = () => {
                     value={stats.totalCourses}
                     prefix={<BookOutlined className="text-[#4970FC] mr-2" />}
                     className="text-[#101828]"
+                    loading={isLoading}
                   />
                   <div className="mt-2">
-                    <Link to="/admin/curriculum" className="text-[#4970FC] text-sm">
+                    <Link to="#" className="text-[#4970FC] text-sm">
                       View all courses
                     </Link>
                   </div>
@@ -146,35 +200,20 @@ const AdminOverview = () => {
               <Col xs={24} sm={12} md={8}>
                 <Card bordered={false} className="shadow-sm">
                   <Statistic
-                    title="Active Students"
-                    value={stats.activeStudents}
-                    prefix={<TeamOutlined className="text-[#4970FC] mr-2" />}
-                    className="text-[#101828]"
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Card bordered={false} className="shadow-sm">
-                  <Statistic
-                    title="Completion Rate"
-                    value={stats.completionRate}
-                    suffix="%"
+                    title="Total Lectures"
+                    value={stats.totalLectures}
                     prefix={<ReadOutlined className="text-[#4970FC] mr-2" />}
                     className="text-[#101828]"
+                    loading={isLoading}
                   />
+                  <div className="mt-2">
+                    <Link to="#" className="text-[#4970FC] text-sm">
+                      View all lectures
+                    </Link>
+                  </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Card bordered={false} className="shadow-sm">
-                  <Statistic
-                    title="Average Score"
-                    value={stats.averageScore}
-                    suffix="%"
-                    prefix={<ReadOutlined className="text-[#4970FC] mr-2" />}
-                    className="text-[#101828]"
-                  />
-                </Card>
-              </Col>
+
             </Row>
           </div>
 
@@ -199,7 +238,8 @@ const AdminOverview = () => {
                   Add New Student
                 </Button>
               </Col>
-              <Col xs={24} sm={12} md={6}>
+              {/* Curriculum quick action commented out for now */}
+              {/* <Col xs={24} sm={12} md={6}>
                 <Button 
                   type="default" 
                   className="border-[#D0D5DD] h-auto py-2 px-4 w-full"
@@ -207,12 +247,12 @@ const AdminOverview = () => {
                 >
                   Create New Course
                 </Button>
-              </Col>
+              </Col> */}
               <Col xs={24} sm={12} md={6}>
                 <Button 
                   type="default" 
                   className="border-[#D0D5DD] h-auto py-2 px-4 w-full"
-                  onClick={() => navigate('/admin/review')}
+                  onClick={() => navigate('/review-report')}
                 >
                   Generate Reports
                 </Button>

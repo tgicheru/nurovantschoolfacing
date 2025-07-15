@@ -38,6 +38,58 @@ export const useAdminSignUp = () => {
 };
 
 /**
+ * Hook for admin login
+ * @returns Object containing mutation function, loading state, error, and data
+ */
+export const useAdminLogin = () => {
+  const [isAuthError, setIsAuthError] = useState(false);
+  
+  const mutation = useMutation<SignUpResponse, Error, { email: string; password: string }>(
+    async ({ email, password }) => {
+      try {
+        setIsAuthError(false);
+        console.log('useAdminLogin: Attempting login with:', { email });
+        
+        const response = await authService.adminLogin(email, password);
+        
+        console.log('useAdminLogin: Received response:', response);
+        
+        // Validate the response to ensure it has the expected structure
+        // This helps catch cases where the API returns a 200 but with an error message
+        const isSuccessful = response.success || 
+          (response.data && response.data.token) || 
+          response.token;
+        
+        if (!isSuccessful) {
+          console.error('useAdminLogin: Response indicates unsuccessful login:', response);
+          throw new Error(response.message || 'Login failed. Please check your credentials.');
+        }
+        
+        return response;
+      } catch (err: any) {
+        // Check if error is authentication related
+        if (err.response?.status === 401 || 
+            err.response?.status === 403 || 
+            (err.response?.data?.message && 
+             err.response?.data?.message.includes('not authenticated'))) {
+          console.error('Authentication error during admin login:', err);
+          setIsAuthError(true);
+        }
+        throw err;
+      }
+    }
+  );
+
+  return {
+    adminLogin: mutation.mutateAsync,
+    isLoading: mutation.isLoading,
+    error: mutation.error,
+    isAuthError,
+    data: mutation.data
+  };
+};
+
+/**
  * Hook for user sign-in
  * @returns Object containing mutation function, loading state, error, and data
  */

@@ -57,6 +57,11 @@ export interface DashboardData {
   upcomingLectures: Lecture[];
   userCourses: Course[];
   todayLectures: Lecture[];
+  upcomingLessons?: string[];
+  recentModifications?: string[];
+  events?: { time: string; title: string; link: string }[];
+  classPerformance?: { class: string; students: number; subject: string; score: string }[];
+  performanceData?: { week: string; score: number }[];
 }
 
 // API functions
@@ -368,6 +373,49 @@ export const fetchPerformanceData = async (classId: string, weekRange: string): 
     return {};
   } catch (error) {
     console.error('Error fetching performance data:', error);
+    throw error;
+  }
+};
+
+export const fetchTeacherLectures = async (params: {
+  status?: 'PENDING' | 'COMPLETED';
+  course_id?: string;
+  start_date?: string;
+  end_date?: string;
+  sort_by?: 'date' | 'title' | 'startTime';
+  sort_order?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+} = {}): Promise<any> => {
+  try {
+    const queryParams = new URLSearchParams();
+    
+    if (params.status) queryParams.append('status', params.status);
+    if (params.course_id) queryParams.append('course_id', params.course_id);
+    if (params.start_date) queryParams.append('start_date', params.start_date);
+    if (params.end_date) queryParams.append('end_date', params.end_date);
+    if (params.sort_by) queryParams.append('sort_by', params.sort_by);
+    if (params.sort_order) queryParams.append('sort_order', params.sort_order);
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+
+    // Get token from localStorage
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+    // Create axios instance with authentication
+    const axiosInstance = axios.create({
+      baseURL: process.env.REACT_APP_API_URL || '',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      }
+    });
+
+    const response = await axiosInstance.get(`/teacher_api/lecture/all?${queryParams.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching teacher lectures:', error);
     throw error;
   }
 };

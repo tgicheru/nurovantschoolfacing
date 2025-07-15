@@ -37,12 +37,19 @@ export interface StudentGroup {
 // API functions
 const BASE_URL = process.env.REACT_APP_API_URL || '';
 
+// Utility function to construct API URLs without double slashes
+const constructApiUrl = (endpoint: string) => {
+  const base = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${base}${path}`;
+};
+
 /**
  * Fetch teacher dashboard courses data
  */
 export const fetchDashboardCourses = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/teacher_api/courses/dashboard`);
+    const response = await axios.get(constructApiUrl('teacher_api/courses/dashboard'));
     return response.data;
   } catch (error) {
     console.error('Error fetching dashboard courses:', error);
@@ -55,7 +62,7 @@ export const fetchDashboardCourses = async () => {
  */
 export const createStudentGroup = async (payload: CreateStudentGroupPayload) => {
   try {
-    const response = await axios.post(`${BASE_URL}/teacher_api/student-groups/create`, payload);
+    const response = await axios.post(constructApiUrl('teacher_api/student-groups/create'), payload);
     return response.data;
   } catch (error) {
     console.error('Error creating student group:', error);
@@ -68,7 +75,7 @@ export const createStudentGroup = async (payload: CreateStudentGroupPayload) => 
  */
 export const updateGroupName = async (payload: UpdateGroupNamePayload) => {
   try {
-    const response = await axios.put(`${BASE_URL}/teacher_api/student-groups/name`, payload);
+    const response = await axios.put(constructApiUrl('teacher_api/student-groups/name'), payload);
     return response.data;
   } catch (error) {
     console.error('Error updating group name:', error);
@@ -81,7 +88,7 @@ export const updateGroupName = async (payload: UpdateGroupNamePayload) => {
  */
 export const changeGroupLeader = async (payload: ChangeGroupLeaderPayload) => {
   try {
-    const response = await axios.put(`${BASE_URL}/teacher_api/student-groups/leader`, payload);
+    const response = await axios.put(constructApiUrl('teacher_api/student-groups/leader'), payload);
     return response.data;
   } catch (error) {
     console.error('Error changing group leader:', error);
@@ -97,9 +104,10 @@ export const changeGroupLeader = async (payload: ChangeGroupLeaderPayload) => {
 export const fetchStudentGroups = async (lectureId?: string) => {
   try {
     // If a lectureId is provided, fetch groups for that lecture only
+    const baseUrl = constructApiUrl('teacher_api/student-groups');
     const url = lectureId 
-      ? `${BASE_URL}/teacher_api/student-groups?lecture_id=${lectureId}`
-      : `${BASE_URL}/teacher_api/student-groups`;
+      ? `${baseUrl}?lecture_id=${lectureId}`
+      : baseUrl;
     
     const response = await axios.get(url);
     return response.data;

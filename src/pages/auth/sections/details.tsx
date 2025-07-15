@@ -30,7 +30,7 @@ function DetailsSection({ handleSection }: Props) {
         <p className="text-sm font-semibold text-[#57585A]">Fill in these details to get your account running.</p>
       </div>
 
-      <OAuth successAction={toHome} />
+      <OAuth />
 
       <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
 

@@ -3,6 +3,13 @@ import axios from 'axios';
 // Define the base URL for API requests
 const BASE_URL = process.env.REACT_APP_API_URL || '';
 
+// Utility function to construct API URLs without double slashes
+const constructApiUrl = (endpoint: string) => {
+  const base = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${base}${path}`;
+};
+
 // Interface for the admin sign-up request
 export interface AdminSignUpRequest {
   first_name: string;
@@ -20,9 +27,9 @@ export interface AdminSignUpRequest {
 // Interface for the sign-up response
 export interface SignUpResponse {
   success: boolean;
-  data: {
+  data?: {
     token: string;
-    user: {
+    user?: {
       _id: string;
       first_name: string;
       last_name: string;
@@ -36,7 +43,22 @@ export interface SignUpResponse {
       updatedAt: string;
     };
   };
-  message: string;
+  // For direct response structure (not nested under data)
+  token?: string;
+  user?: {
+    _id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    state: string;
+    sex: string;
+    grade_level: string;
+    subject: string;
+    user_type: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  message?: string;
 }
 
 // Helper function to get authentication token
@@ -76,7 +98,7 @@ const authService = {
    */
   adminSignUp: async (data: AdminSignUpRequest): Promise<SignUpResponse> => {
     try {
-      const response = await axios.post(`${BASE_URL}teacher_api/auth/sign_up`, data, {
+      const response = await axios.post(constructApiUrl('teacher_api/auth/sign_up'), data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -95,6 +117,64 @@ const authService = {
   },
   
   /**
+   * Admin Login
+   * Endpoint: /teacher_api/auth/login
+   * @param email Admin email
+   * @param password Admin password
+   * @returns Promise with login response
+   */
+  adminLogin: async (email: string, password: string): Promise<SignUpResponse> => {
+    try {
+      console.log('Attempting admin login with:', { email });
+      
+      const response = await axios.post(constructApiUrl('teacher_api/auth/login'), {
+        email,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Admin login response:', response.data);
+      
+      // Extract data based on response structure
+      const responseData = response.data;
+      
+      // Determine if login was successful based on different possible response structures
+      const isSuccessful = responseData.success || 
+        (responseData.data && responseData.data.token) || 
+        responseData.token;
+      
+      if (isSuccessful) {
+        // Extract token and user data from different possible response structures
+        const token = responseData.data?.token || responseData.token;
+        const userData = responseData.data?.user || responseData.user || {};
+        
+        // Create a normalized auth data structure
+        const authData = {
+          success: true,
+          data: {
+            token: token,
+            user: userData
+          },
+          isLoggedIn: true,
+          isAdmin: true
+        };
+        
+        console.log('Storing auth data:', authData);
+        localStorage.setItem('authentication', JSON.stringify(authData));
+        localStorage.setItem('isAdmin', 'true');
+      }
+      
+      return responseData;
+    } catch (error) {
+      console.error('Error during admin login:', error);
+      throw error;
+    }
+  },
+  
+  /**
    * Sign In
    * @param email User email
    * @param password User password
@@ -102,7 +182,7 @@ const authService = {
    */
   signIn: async (email: string, password: string): Promise<SignUpResponse> => {
     try {
-      const response = await axios.post(`${BASE_URL}teacher_api/auth/sign_in`, {
+      const response = await axios.post(constructApiUrl('teacher_api/auth/sign_in'), {
         email,
         password
       }, {

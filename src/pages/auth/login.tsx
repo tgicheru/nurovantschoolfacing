@@ -2,12 +2,10 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button, Divider, Form, Input } from 'antd'
 import OAuth from './components/oauth';
-import { useLogin } from '../../hooks/auth/authentications';
+import { useCustomLogin } from '../../hooks/auth/useCustomLogin';
 
 function LoginPage() {
-  const navigate = useNavigate()
-  const toHome = () => navigate("/main")
-  const { mutate, isLoading } = useLogin(toHome)
+  const { mutate, isLoading } = useCustomLogin()
   return (
     <div className='w-full space-y-5'>
       <div className="w-full">
@@ -15,7 +13,7 @@ function LoginPage() {
         <p className="text-sm font-semibold text-[#57585A]">Welcome Back, glad to see you! 😊</p>
       </div>
 
-      <OAuth successAction={toHome} />
+      <OAuth />
 
       <Divider className='text-sm font-semibold text-[#6D6E71]'>Or</Divider>
 

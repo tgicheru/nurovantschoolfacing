@@ -84,7 +84,8 @@ const StudentDetail = () => {
               >
                 Students
               </button>
-              <button 
+              {/* Curriculum tab commented out for now */}
+              {/* <button 
                 className={`py-2 px-1 ${activeTab === 'curriculum' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('curriculum');
@@ -92,12 +93,12 @@ const StudentDetail = () => {
                 }}
               >
                 Curriculum
-              </button>
+              </button> */}
               <button 
                 className={`py-2 px-1 ${activeTab === 'review' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('review');
-                  navigate('/admin/review');
+                  navigate('/review-report');
                 }}
               >
                 Review & Report

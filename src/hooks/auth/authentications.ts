@@ -66,6 +66,7 @@ export function useLogin(successAction?: any) {
   const url = "/teacher_api/auth/login";
   const axios = useContext(AxiosContext);
   const [auth, setAuth] = useRecoilState(authAtom);
+  const navigate = useNavigate();
 
   return useMutation(
     (payload: any) =>
@@ -76,13 +77,25 @@ export function useLogin(successAction?: any) {
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        
+        // Update auth state with login information
         setAuth({
           ...auth,
           isLoggedIn: true,
           user: response?.user,
           token: response?.token,
+          // We'll set onBoarded based on the user's status
+          onBoarded: response?.user?.onBoarded || false,
         });
-        successAction?.(response);
+        
+        // If user has already completed onboarding, proceed with success action
+        if (response?.user?.onBoarded) {
+          successAction?.(response);
+        } else {
+          // Otherwise, proceed with normal success action
+          // Onboarding has already been shown before authentication
+          successAction?.(response);
+        }
       },
       onError: (error: any) =>
         notification.error({
@@ -97,6 +110,7 @@ export function useOAuthLogin(successAction?: any) {
   const url = "/teacher_api/auth/social_sign_in";
   const axios = useContext(AxiosContext);
   const [auth, setAuth] = useRecoilState(authAtom);
+  const navigate = useNavigate();
 
   return useMutation(
     (payload: any) =>
@@ -107,13 +121,25 @@ export function useOAuthLogin(successAction?: any) {
           message: "Success!",
           description: response?.message || "action successful.",
         });
+        
+        // Update auth state with login information
         setAuth({
           ...auth,
           isLoggedIn: true,
           user: response?.user,
           token: response?.token,
+          // We'll set onBoarded based on the user's status
+          onBoarded: response?.user?.onBoarded || false,
         });
-        successAction?.(response);
+        
+        // If user has already completed onboarding, proceed with success action
+        if (response?.user?.onBoarded) {
+          successAction?.(response);
+        } else {
+          // Otherwise, proceed with normal success action
+          // Onboarding has already been shown before authentication
+          successAction?.(response);
+        }
       },
       onError: (error: any) =>
         notification.error({

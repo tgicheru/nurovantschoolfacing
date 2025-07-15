@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Button, Input, Form, Select, Upload, message, Drawer, Dropdown, Menu } from 'antd';
-import { SearchOutlined, PlusOutlined, FilterOutlined, MoreOutlined, CloseOutlined, UploadOutlined, EyeOutlined } from '@ant-design/icons';
+import { Button, Input, Form, Select, Upload, message, Drawer, Dropdown, Menu, Table, Tag, Spin, Alert, notification, Pagination, Modal } from 'antd';
+import { SearchOutlined, PlusOutlined, FilterOutlined, MoreOutlined, CloseOutlined, UploadOutlined, EyeOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useRecoilValue } from 'recoil';
 import authAtom from '../../../atoms/auth/auth.atom';
+import { useAdminStudents } from '../../../hooks/admin/admin';
+import { Student } from '../../../services/admin.service';
 
 // SVG icons
 const GridViewIcon = () => (
@@ -26,39 +28,74 @@ const ListViewIcon = () => (
   </svg>
 );
 
-// Mock data for students
-const studentsData = [
+// Table columns for students
+const getTableColumns = (handleViewStudent: (student: Student) => void) => [
   {
-    key: '1',
-    name: 'Peter Olugbenga',
-    email: 'olasunkanmifinesse@gmail.com',
-    grade: '9th Grade',
-    progress: '75%',
-    status: 'Active',
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    render: (_: string, record: Student) => (
+      <div className="flex items-center">
+        <div className="w-8 h-8 rounded-full bg-[#F2F4F7] flex items-center justify-center mr-2 text-[#4970FC] font-medium">
+          {record.name?.[0] || 'S'}
+        </div>
+        <div>
+          <div className="font-medium">{record.name}</div>
+          <div className="text-xs text-[#667085]">{record.email}</div>
+        </div>
+      </div>
+    ),
   },
   {
-    key: '2',
-    name: 'Peter Olugbenga',
-    email: 'olasunkanmifinesse@gmail.com',
-    grade: '9th Grade',
-    progress: '75%',
-    status: 'Active',
+    title: 'Grade',
+    dataIndex: 'grade',
+    key: 'grade',
+    render: (grade: string) => (
+      <span className="text-sm">{grade || 'Not specified'}</span>
+    ),
   },
   {
-    key: '3',
-    name: 'Peter Olugbenga',
-    email: 'olasunkanmifinesse@gmail.com',
-    grade: '9th Grade',
-    progress: '75%',
-    status: 'Active',
+    title: 'Phone',
+    dataIndex: 'phoneNo',
+    key: 'phoneNo',
+    render: (phone: string) => (
+      <span className="text-sm">{phone || 'Not provided'}</span>
+    ),
   },
   {
-    key: '4',
-    name: 'Peter Olugbenga',
-    email: 'olasunkanmifinesse@gmail.com',
-    grade: '9th Grade',
-    progress: '75%',
-    status: 'Active',
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    render: (_: string, record: Student) => {
+      // For now, show all students as active since we don't have verification status
+      const status = 'Active';
+      return (
+        <Tag color="green">
+          {status}
+        </Tag>
+      );
+    },
+  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    render: (_: any, record: Student) => (
+      <Dropdown 
+        menu={{
+          items: [
+            {
+              key: 'view',
+              icon: <EyeOutlined />,
+              label: 'View Details',
+              onClick: () => handleViewStudent(record)
+            }
+          ]
+        }}
+        trigger={['click']}
+      >
+        <Button type="text" icon={<MoreOutlined />} />
+      </Dropdown>
+    ),
   },
 ];
 
@@ -66,11 +103,76 @@ const AdminStudents = () => {
   const navigate = useNavigate();
   const auth = useRecoilValue(authAtom);
   const [activeTab, setActiveTab] = useState('students');
-  const [viewMode, setViewMode] = useState('list');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(4);
+  const [pageSize, setPageSize] = useState(10);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isStudentDetailsModalVisible, setIsStudentDetailsModalVisible] = useState(false);
+  
+  // Fetch students data from API
+  const { 
+    students,
+    total: totalStudents,
+    isLoading,
+    error,
+    isAuthError,
+    refetch
+  } = useAdminStudents(currentPage, pageSize);
+  
+  // Log students data for debugging
+  useEffect(() => {
+    console.log('Students data:', students);
+    console.log('Loading state:', isLoading);
+    console.log('Error state:', error);
+    console.log('Auth error state:', isAuthError);
+  }, [students, isLoading, error, isAuthError]);
+  
+  // Log when component mounts to verify API call
+  useEffect(() => {
+    console.log('🔍 Admin Students page mounted - API call should be triggered');
+    console.log('🔑 Auth token exists:', !!auth?.token);
+    console.log('🔑 Auth token:', auth?.token);
+    console.log('🌐 API URL:', process.env.REACT_APP_API_URL);
+    console.log('📊 Current page:', currentPage, 'Page size:', pageSize);
+    
+    // Force refetch on mount to ensure API call happens
+    refetch();
+    
+    // Manual test API call
+    const testApiCall = async () => {
+      try {
+        console.log('🧪 Testing manual API call...');
+        // Fix double slash issue
+        const baseUrl = process.env.REACT_APP_API_URL || '';
+        const apiUrl = baseUrl.endsWith('/') 
+          ? `${baseUrl.slice(0, -1)}/teacher_api/students`
+          : `${baseUrl}/teacher_api/students`;
+        console.log('🧪 API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${auth?.token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('🧪 Manual API call response status:', response.status);
+        const data = await response.json();
+        console.log('🧪 Manual API call response data:', data);
+      } catch (error) {
+        console.error('🧪 Manual API call failed:', error);
+      }
+    };
+    
+    if (auth?.token) {
+      testApiCall();
+    } else {
+      console.error('❌ No auth token found!');
+    }
+  }, [refetch, auth?.token, currentPage, pageSize]);
   
   const showDrawer = () => {
     setDrawerVisible(true);
@@ -88,10 +190,30 @@ const AdminStudents = () => {
     closeDrawer();
   };
   
-  const handleViewStudent = (student: any) => {
-    // Navigate to the student detail page with the student data
-    console.log('View student:', student);
-    navigate(`/admin/students/${student.key}`, { state: { student } });
+  // Redirect to login page if authentication error
+  useEffect(() => {
+    if (isAuthError) {
+      message.error('Your session has expired. Please login again.');
+      navigate('/auth/admin-login');
+    }
+  }, [isAuthError, navigate]);
+
+  // Refetch data when pagination changes
+  useEffect(() => {
+    refetch();
+  }, [currentPage, pageSize, refetch]);
+
+  // Handle pagination change
+  const handlePageChange = (page: number, pageSize?: number) => {
+    setCurrentPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
+  
+  // Handle view student details
+  const handleViewStudent = (student: Student) => {
+    setSelectedStudent(student);
+    setIsStudentDetailsModalVisible(true);
+    console.log('View student details:', student);
   };
 
   return (
@@ -145,7 +267,8 @@ const AdminStudents = () => {
               >
                 Students
               </button>
-              <button 
+              {/* Curriculum tab commented out for now */}
+              {/* <button 
                 className={`py-2 px-1 ${activeTab === 'curriculum' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('curriculum');
@@ -153,12 +276,12 @@ const AdminStudents = () => {
                 }}
               >
                 Curriculum
-              </button>
+              </button> */}
               <button 
                 className={`py-2 px-1 ${activeTab === 'review' ? 'text-[#4970FC] border-b-2 border-[#4970FC] font-medium' : 'text-[#667085]'}`}
                 onClick={() => {
                   setActiveTab('review');
-                  navigate('/admin/review');
+                  navigate('/review-report');
                 }}
               >
                 Review & Report
@@ -173,7 +296,7 @@ const AdminStudents = () => {
 
           <div className="mb-5 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <div className="text-lg font-medium text-[#101828]">2000</div>
+              <div className="text-lg font-medium text-[#101828]">{totalStudents}</div>
               <div className="text-sm text-[#667085]">Student(s)</div>
             </div>
             <div className="flex items-center gap-3">
@@ -216,81 +339,109 @@ const AdminStudents = () => {
           </div>
 
           {/* Students Table */}
-          <div className="bg-white border border-[#EAECF0] rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#EAECF0]">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#667085] uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#667085] uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#667085] uppercase tracking-wider">Grade</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#667085] uppercase tracking-wider">Progress</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-[#667085] uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-[#667085] uppercase tracking-wider"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#EAECF0]">
-                {studentsData.map((student) => (
-                  <tr key={student.key} className="hover:bg-[#F9FAFB]">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-[#F9A826] flex items-center justify-center text-white font-medium mr-3">
-                          P
-                        </div>
-                        <div className="text-sm font-medium text-[#101828]">{student.name}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#667085]">{student.email}</td>
-                    <td className="px-6 py-4 text-sm text-[#667085]">{student.grade}</td>
-                    <td className="px-6 py-4 text-sm text-[#667085]">{student.progress}</td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#ECFDF3] text-[#027A48]">
-                        <span className="mr-1.5 w-1.5 h-1.5 rounded-full bg-[#12B76A]"></span>
-                        {student.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="view" icon={<EyeOutlined />} onClick={() => handleViewStudent(student)}>
-                              View
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                        placement="bottomRight"
-                      >
-                        <button className="text-[#667085] hover:text-[#101828]">
-                          <MoreOutlined />
-                        </button>
-                      </Dropdown>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="px-6 py-4 flex items-center justify-between border-t border-[#EAECF0]">
-              <div className="text-sm text-[#667085]">
-                Page {currentPage} of 10
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button 
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  className="border border-[#D0D5DD] rounded-lg px-3 py-1 h-auto text-sm"
-                >
-                  Previous
-                </Button>
-                <Button 
-                  disabled={currentPage === 10}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  className="border border-[#D0D5DD] rounded-lg px-3 py-1 h-auto text-sm"
-                >
-                  Next
-                </Button>
-              </div>
+          {/* Show loading state */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+              <span className="ml-2">Loading students...</span>
             </div>
+          )}
+          
+          {/* Show error state */}
+          {error && !isAuthError && (
+            <Alert
+              message="Error Loading Students"
+              description={
+                <>
+                  <p>Failed to load students data. {error.message}</p>
+                  <Button type="primary" onClick={() => refetch()} className="mt-2">
+                    Try Again
+                  </Button>
+                </>
+              }
+              type="error"
+              showIcon
+              className="mb-4"
+            />
+          )}
+          
+          <div className="bg-white rounded-lg border border-[#EAECF0] overflow-hidden mb-6">
+            {!isLoading && !error && (
+              <>
+                {viewMode === 'list' ? (
+                  <div className="overflow-x-auto">
+                    <Table
+                      dataSource={students.map(student => ({ ...student, key: student._id }))} 
+                      columns={getTableColumns(handleViewStudent)}
+                      pagination={false}
+                      loading={isLoading}
+                      rowKey="_id"
+                    />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                    {students.map((student) => (
+                      <div key={student._id} className="border border-[#EAECF0] rounded-lg p-4 hover:shadow-sm transition-shadow">
+                        <div className="flex items-center mb-4">
+                          <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center mr-3 text-[#4970FC] font-medium">
+                            {student.name?.[0] || 'S'}
+                          </div>
+                          <div>
+                            <div className="font-medium">{student.name}</div>
+                            <div className="text-xs text-[#667085]">{student.email}</div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                          <div>
+                            <div className="text-xs text-[#667085]">Grade</div>
+                            <div className="text-sm">{student.grade || 'Not specified'}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-[#667085]">Phone</div>
+                            <div className="text-sm">{student.phoneNo || 'Not provided'}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-[#667085]">Status</div>
+                            <div className="text-sm">
+                              <Tag color="green">
+                                Active
+                              </Tag>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <Button 
+                            type="primary" 
+                            size="small" 
+                            onClick={() => handleViewStudent(student)}
+                            className="bg-[#4970FC]"
+                          >
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
+          
+          {/* Pagination */}
+          {!isLoading && !error && students.length > 0 && (
+            <div className="flex justify-end p-4 border-t border-[#EAECF0]">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={totalStudents}
+                onChange={(page) => {
+                  console.log('Changing to page:', page);
+                  setCurrentPage(page);
+                }}
+                showSizeChanger={false}
+              />
+            </div>
+          )}
         </div>
       </main>
 
@@ -306,6 +457,80 @@ const AdminStudents = () => {
           </div>
         </div>
       </footer>
+
+      {/* Student Details Modal */}
+      <Modal
+        title="Student Details"
+        open={isStudentDetailsModalVisible}
+        onCancel={() => setIsStudentDetailsModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="close" onClick={() => setIsStudentDetailsModalVisible(false)}>
+            Close
+          </Button>
+        ]}
+      >
+        {selectedStudent && (
+          <div className="p-4">
+            <div className="flex items-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-[#F2F4F7] flex items-center justify-center mr-4 text-[#4970FC] text-xl font-medium">
+                {selectedStudent.name?.[0] || 'S'}
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">{selectedStudent.name}</h2>
+                <p className="text-[#667085]">{selectedStudent.email}</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="border border-[#EAECF0] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#667085] mb-1">Grade</h3>
+                <p className="font-medium">{selectedStudent.grade || 'Not specified'}</p>
+              </div>
+              <div className="border border-[#EAECF0] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#667085] mb-1">Phone</h3>
+                <p className="font-medium">{selectedStudent.phoneNo || 'Not provided'}</p>
+              </div>
+              <div className="border border-[#EAECF0] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#667085] mb-1">Username</h3>
+                <p className="font-medium">{selectedStudent.username || 'Not provided'}</p>
+              </div>
+              <div className="border border-[#EAECF0] rounded-lg p-4">
+                <h3 className="text-sm font-medium text-[#667085] mb-1">Status</h3>
+                <p className="font-medium">
+                  <Tag color="green">
+                    Active
+                  </Tag>
+                </p>
+              </div>
+            </div>
+            
+            <div className="border border-[#EAECF0] rounded-lg p-4 mb-6">
+              <h3 className="text-sm font-medium text-[#667085] mb-1">Account Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                <div>
+                  <p className="text-sm text-[#667085]">Student ID</p>
+                  <p className="font-medium">{selectedStudent._id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#667085]">Courses</p>
+                  <p className="font-medium">{selectedStudent.courses?.length || 0} courses</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#667085]">Created At</p>
+                  <p className="font-medium">{selectedStudent.createdAt ? new Date(selectedStudent.createdAt).toLocaleString() : 'Not available'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#667085]">Last Updated</p>
+                  <p className="font-medium">{selectedStudent.updatedAt ? new Date(selectedStudent.updatedAt).toLocaleString() : 'Not available'}</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Profile image section removed since it's not available in the API response */}
+          </div>
+        )}
+      </Modal>
 
       {/* Add Student Drawer */}
       <Drawer

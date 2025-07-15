@@ -21,9 +21,13 @@ import { GoGear } from "react-icons/go";
 import { FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "../../hooks/useWindowSize";
-import { BorderHOC } from "../../components";
 import NotificationStatusImg from "../../assets/notification-status.svg";
 import ProfileMenu from "../../components/Header/ProfileMenu";
+import useOnboardingRedirect from "../../hooks/useOnboardingRedirect";
+// Import components directly to avoid barrel file issues
+import OnboardingModal from "../../components/OnboardingModal";
+import OnboardingButton from "../../components/OnboardingButton";
+import { BorderHOC } from "../../components";
 
 type Props = {
   children: ReactComponentElement<any>;
@@ -61,6 +65,9 @@ const MainLayout = ({ children }: Props) => {
 
   // get user profile
   useGetProfile();
+  
+  // Check if user needs onboarding
+  useOnboardingRedirect();
 
   const items = [
     {
@@ -236,6 +243,11 @@ const MainLayout = ({ children }: Props) => {
                       activeLink(item)
                         ? "bg-prim-50 text-primary"
                         : "text-neutral-700 hidden md:block"
+                    } ${
+                      item.key === '/main' ? 'overview-tab' : 
+                      item.key === '/course' ? 'courses-tab' : 
+                      item.key === '/calendar' ? 'calendar-tab' : 
+                      item.key === '/review-report' ? 'review-report-tab' : ''
                     }`}
                     onClick={() => handleMenu(item.key)}
                   >
@@ -284,6 +296,10 @@ const MainLayout = ({ children }: Props) => {
           <div className="w-full h-full overflow-y-auto p-5 lg:max-w-7xl lg:mx-auto">
             {children}
           </div>
+          
+          {/* Onboarding components */}
+          <OnboardingModal />
+          <OnboardingButton />
         </div>
 
         {/* Static footer at bottom of screen */}

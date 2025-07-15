@@ -49,14 +49,12 @@ const RoleSelectionPage = () => {
         isAdmin: selectedRole === 'admin'
       });
       
-      // Navigate to the next step based on role
-      if (selectedRole === 'admin') {
-        navigate('/auth/admin-signup');
-      } else if (selectedRole === 'educator') {
-        navigate('/auth'); // Normal auth flow for educators
+      // Navigate to the main page after role selection
+      if (selectedRole === 'admin' || selectedRole === 'educator') {
+        navigate('/main');
       } else if (selectedRole === 'student') {
         // Redirect to external student app URL
-        window.location.href = 'https://app.nurovant.com/auth';
+        window.location.href = 'https://app.nurovant.com/main';
       }
     }
   };

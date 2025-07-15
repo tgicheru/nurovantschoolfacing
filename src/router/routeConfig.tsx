@@ -27,19 +27,33 @@ const TermsAndCondition = lazy(
   () => import("../pages/public/termsAndConditions")
 );
 
+// onboarding pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const OnboardingPage = lazy(() => import("../pages/onboarding"));
+const ClassInsightsOnboarding = lazy(() => import("../pages/onboarding/class-insights"));
+const StudentGroupsOnboarding = lazy(() => import("../pages/onboarding/student-groups"));
+const CourseLibraryOnboarding = lazy(() => import("../pages/onboarding/course-library"));
+const CourseCreationOnboarding = lazy(() => import("../pages/onboarding/course-creation"));
+const PacingGuidesOnboarding = lazy(() => import("../pages/onboarding/pacing-guides"));
+const CalendarViewOnboarding = lazy(() => import("../pages/onboarding/calendar-view"));
+const ReviewReportsOnboarding = lazy(() => import("../pages/onboarding/review-reports"));
+const FeaturesOnboarding = lazy(() => import("../pages/onboarding/features"));
+const CoursesOnboarding = lazy(() => import("../pages/onboarding/courses"));
+const CompleteOnboarding = lazy(() => import("../pages/onboarding/complete"));
+const TestOnboarding = lazy(() => import("../pages/onboarding/test"));
+
 // main pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const Overview = lazy(() => import("../pages/main/overview"));
 const CoursePage = lazy(() => import("../pages/main/course"));
 const Courses = lazy(() => import("../pages/main/courses/index"));
 const ClassDetail = lazy(() => import("../pages/main/class/detail"));
-const Calendar = lazy(() => import("../pages/main/calendar"));
+const Calendar = lazy(() => import("../pages/main/calendar/index"));
 const StudentGroups = lazy(() => import("../pages/main/groups"));
 
 // admin pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const AdminDashboard = lazy(() => import("../pages/admin/dashboard/overview"));
 const AdminTeachers = lazy(() => import("../pages/admin/teachers"));
 const TeacherDetail = lazy(() => import("../pages/admin/teachers/detail"));
-const AdminStudents = lazy(() => import("../pages/admin/students/students"));
+const AdminStudents = lazy(() => import("../pages/admin/students"));
 const StudentDetail = lazy(() => import("../pages/admin/students/detail"));
 const AdminCurriculum = lazy(() => import("../pages/admin/curriculum"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
@@ -298,6 +312,68 @@ export const routes: RouteItem[] = [
     path: "/public/terms",
     label: "Terms of Service",
     component: <TermsAndCondition />,
+  },
+
+  // onboarding pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  {
+    path: "/onboarding",
+    label: "Onboarding",
+    component: <OnboardingPage />,
+  },
+  {
+    path: "/onboarding/class-insights",
+    label: "Class Insights Onboarding",
+    component: <ClassInsightsOnboarding />,
+  },
+  {
+    path: "/onboarding/student-groups",
+    label: "Student Groups Onboarding",
+    component: <StudentGroupsOnboarding />,
+  },
+  {
+    path: "/onboarding/course-library",
+    label: "Course Library Onboarding",
+    component: <CourseLibraryOnboarding />,
+  },
+  {
+    path: "/onboarding/course-creation",
+    label: "Course Creation Onboarding",
+    component: <CourseCreationOnboarding />,
+  },
+  {
+    path: "/onboarding/pacing-guides",
+    label: "Pacing Guides Onboarding",
+    component: <PacingGuidesOnboarding />,
+  },
+  {
+    path: "/onboarding/calendar-view",
+    label: "Calendar View Onboarding",
+    component: <CalendarViewOnboarding />,
+  },
+  {
+    path: "/onboarding/review-reports",
+    label: "Review & Reports Onboarding",
+    component: <ReviewReportsOnboarding />,
+  },
+  {
+    path: "/onboarding/features",
+    label: "Features Onboarding",
+    component: <FeaturesOnboarding />,
+  },
+  {
+    path: "/onboarding/courses",
+    label: "Courses Onboarding",
+    component: <CoursesOnboarding />,
+  },
+  {
+    path: "/onboarding/complete",
+    label: "Complete Onboarding",
+    component: <CompleteOnboarding />,
+  },
+  {
+    path: "/onboarding/test",
+    label: "Test Onboarding",
+    component: <TestOnboarding />,
   },
 
   // auth pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

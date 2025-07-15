@@ -30,7 +30,7 @@ function ReviewReport() {
   const onOpenView = () => setIsView(true)
   const onCloseOpt = () => setIsOpt(false)
   const onOpenOpt = () => setIsOpt(true)
-  const targetRef = useRef()
+  const targetRef = useRef<HTMLDivElement>(null)
   const onCloseCreate = () => {
     setIsCreate(false)
     setPayload({})
@@ -190,7 +190,7 @@ function ReviewReport() {
 
           <Divider className='m-0 !bg-gradient-to-b from-[#D8B4E240] to-[#4970FC40]' />
 
-          <EmptyDisplay hidden={getRepsData?.data?.length} className='w-full h-[50vh]' description='You don’t have any review <br /> & report yet'>
+          <EmptyDisplay hidden={getRepsData?.data?.length} className='w-full h-[50vh]' description="You don't have any review & report yet">
             <Button onClick={onOpenOpt} className='!text-sm !font-bold bg-[#4970FC]' icon={<HiOutlineSparkles className='text-xl' />} size='large' type='primary' shape='round'>Generate Reports</Button>
           </EmptyDisplay>
 

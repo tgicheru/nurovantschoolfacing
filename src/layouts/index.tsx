@@ -6,11 +6,13 @@ import authAtom from "../atoms/auth/auth.atom";
 import AuthLayout from "./Auth";
 import MainLayout from "./Main";
 import PublicLayout from "./public";
+import OnboardingLayout from "./Onboarding";
 
 const Layouts = {
   auth: AuthLayout,
   main: MainLayout,
   public: PublicLayout,
+  onboarding: OnboardingLayout,
 };
 
 type Props = {
@@ -23,13 +25,15 @@ const Layout = ({ children }: Props) => {
 
   // Layout Rendering
   const getLayout = () => {
-    // Root path (role selection) is treated as a public route
-    if (pathname === "/") return "public";
+    // Onboarding routes use the onboarding layout
+    if (/^\/onboarding(?=\/|$)/i.test(pathname)) return "onboarding";
     if (/^\/auth(?=\/|$)/i.test(pathname)) return "auth";
     if (/^\/main(?=\/|$)/i.test(pathname)) return "main";
     if (/^\/public(?=\/|$)/i.test(pathname)) return "public";
     // Admin routes are accessible without token requirements
     if (/^\/admin(?=\/|$)/i.test(pathname)) return "public";
+    // Root path now redirects to onboarding
+    if (pathname === "/") return "public";
     return "main";
   };
 
@@ -41,21 +45,24 @@ const Layout = ({ children }: Props) => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // redirect to login page if current is not login page and user not authorized
+  // Authentication and route protection logic - simplified to avoid redirect loops
   useEffect(() => {
-    if (isMainLayout && !isLoggedIn) {
+    // Only protect main layout pages - require login
+    if (isMainLayout && !isLoggedIn && !pathname.includes('/auth/')) {
       message.info({
-        content: "Welcome! please authenticate to proceed.",
-        key: "updatable",
+        content: "Please log in to access this page.",
+        key: "auth-required",
       });
-      navigate("/auth");
+      navigate("/auth/login", { replace: true });
     }
+    
+    // Commented out maintenance redirect
     // if (pathname !== "/public/terms") {
     //   navigate("/public/maintenance");
     // } else {
     //   navigate("/public/terms");
     // }
-  }, [isLoggedIn, isMainLayout, navigate]);
+  }, [isLoggedIn, isMainLayout, navigate, pathname]);
   return (
     <Fragment>
       <Container>{children}</Container>

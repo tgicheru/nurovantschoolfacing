@@ -34,6 +34,13 @@ const Courses = lazy(() => import("../pages/main/courses/index"));
 const ClassDetail = lazy(() => import("../pages/main/class/detail"));
 
 // admin pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// onboarding pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const Onboarding = lazy(() => import("../pages/onboarding"));
+const OnboardingFeatures = lazy(() => import("../pages/onboarding/features"));
+const OnboardingCourses = lazy(() => import("../pages/onboarding/courses"));
+const OnboardingComplete = lazy(() => import("../pages/onboarding/complete"));
+
+// admin pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 const AdminDashboard = lazy(() => import("../pages/admin/dashboard/overview"));
 const AdminTeachers = lazy(() => import("../pages/admin/teachers"));
 const CourseDetails = lazy(() => import("../pages/main/courses/details"));
@@ -88,6 +95,27 @@ const AdaptiveLearning = lazy(() => import("../pages/main/adaptivelearning"));
 const QuestionTracker = lazy(() => import("../pages/main/questiontracker"));
 
 export const routes: RouteItem[] = [
+  // onboarding pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  {
+    path: "/onboarding",
+    label: "Onboarding",
+    component: <Onboarding />,
+  },
+  {
+    path: "/onboarding/features",
+    label: "Onboarding Features",
+    component: <OnboardingFeatures />,
+  },
+  {
+    path: "/onboarding/courses",
+    label: "Onboarding Courses",
+    component: <OnboardingCourses />,
+  },
+  {
+    path: "/onboarding/complete",
+    label: "Onboarding Complete",
+    component: <OnboardingComplete />,
+  },
   // admin pages >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   {
     path: "/admin/dashboard",

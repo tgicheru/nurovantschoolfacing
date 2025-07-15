@@ -1,0 +1,22 @@
+PLACEHOLDER IMAGES FOR ONBOARDING
+
+This directory needs the following images for the onboarding flow:
+
+1. dashboard-overview.png - Screenshot of the dashboard interface
+2. features-overview.png - Illustration of key features
+3. courses-overview.png - Screenshot of course management interface
+4. completion.png - Success/completion illustration
+
+Until you can create these images, you can use placeholder images from services like:
+
+- https://placeholder.com/
+- https://placehold.co/
+- https://picsum.photos/
+
+Example URLs for placeholder images:
+- https://placehold.co/800x600/4970FC/FFFFFF?text=Dashboard+Overview
+- https://placehold.co/800x600/4970FC/FFFFFF?text=Key+Features
+- https://placehold.co/800x600/4970FC/FFFFFF?text=Course+Management
+- https://placehold.co/800x600/4970FC/FFFFFF?text=Onboarding+Complete
+
+You can download these images and save them with the appropriate filenames in this directory.
